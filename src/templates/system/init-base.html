@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta id="viewport" name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,maximum-scale=5,user-scalable=yes">
+        <meta name="description" content="">
+        <link rel="shortcut icon" type="image/svg" href="/favicon.svg">
+        <link rel="shortcut icon" type="image/png" href="/favicon.png">
+        {% block head_assets %}
+            <style>@import url("/assets/main.css");</style>
+            <style>@import url("/system/first-setup/assets/aux.css");</style>
+            {% if "dark-mode" in head_asset_options %}
+                <style>@import url("/assets/dark-mode.css");</style>
+            {% endif %}
+            {% if "large-fonts" in head_asset_options %}
+                <style>@import url("/assets/large-fonts.css");</style>
+            {% endif %}
+        {% endblock %}
+        <title>Auxilium Setup</title>
+    </head>
+    <body>
+        {% block content %}{% endblock %}
+    </body>
+</html>

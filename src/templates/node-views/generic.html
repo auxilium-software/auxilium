@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block default_content_link %}{% endblock %}
+
+{% block content %}
+
+<span id="object_uuid" style="display: none;">{{ node.id }}</span>
+<span id="lfs_instance_fqdn" style="display: none;">{{ INSTANCE_BRANDING_DOMAIN_NAME }}</span>
+<script src="/js/node-page.js"></script>
+
+<div>
+    <div class="inner-content">
+        {% include "node-views/node-view-breadcrumbs.html" %}
+        <div id="main-content" class="reference-element"></div>
+        {% if progressive_load %}
+            <h1 href="/graph/{{ parent_node_path }}" id="dynamic_node_name_title"><script>document.getElementById("dynamic_node_name_title").appendChild((new PathNameView("{{ deegraph_path }}")).render())</script></h1>
+        {% else %}
+            {% if node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json") %}
+                <h1><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if node.properties.name %}{{ node.properties.name }}{% else %}{{ "{" ~ node.id ~ "}" }}{% endif %}</h1>
+            {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json") %}
+                <h1><span class="inline-icon-shift-left inline-icon-low-margin work-icon" title="Case"></span>{% if node.properties.title %}{{ node.properties.title }}{% else %}{{ "{" ~ node.id ~ "}" }}{% endif %}</h1>
+            {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
+                <h1><span class="inline-icon-shift-left inline-icon-low-margin format-list-bulleted-icon" title="Collection"></span>{% if primary_node_path_name | trim | length %}{{ primary_node_path_name | unpack_string | ndtitle }}{% else %}<em>{{ "unnamed_node" | uitxt | ndtitle }}</em>{% endif %}</h1>
+            {% else %}
+                <h1>{% if primary_node_path_name | trim | length %}{{ primary_node_path_name | unpack_string | ndtitle }}{% else %}<em>{{ "unnamed_node" | uitxt | ndtitle }}</em>{% endif %}</h1>
+            {% endif %}
+        {% endif %}
+        
+        <div class="left-preferential-box">
+        
+            {% block primary_content %}
+        
+            {% if progressive_load %}
+                {% if node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json") %}
+                {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json") %}
+                {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
+                {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json") %}
+                {% else %}
+                    <div class="marked-section">
+                        <h2>{{ "node_page_text/generic/content" | uitxtrt | ndsentence }}</h2>
+                        {{ deegraph_path | dnd | raw }}
+                    </div>
+                {% endif %}
+            {% else %}
+                {% if node.data %}
+                    <div class="marked-section">
+                        <h2>{{ "node_page_text/generic/content" | uitxtrt | ndsentence }}</h2>
+                        <p>{{ node.data | nl2br }}</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+            
+            <div class="marked-section">
+                <h2>{{ "node_page_text/generic/properties" | uitxtrt | ndsentence }} <a href="javascript:{let win = new NewPropertyPopup('PLAIN_TEXT', '{{ "{" ~ node.id ~ "}" }}/*' ,true);document.getElementById('main-content').after(win.render());win.focus();win.onSuccess(() => {nodePropertyList.reload()})};" class="inline-icon add-icon" title="{{ "add_entry" | uitxt | ndsentence }}"></a></h2><br />
+                {% if progressive_load %}
+                    <span id="dynamic_properties"></span>
+                    
+                    <script>
+                    let nodePropertyList = new PropertyList("{{ deegraph_path }}", false, {{ hidden_props | json_encode | raw }}, null, false);
+                    document.getElementById("dynamic_properties").appendChild(nodePropertyList.render());
+                    </script>
+                {% else %}
+                    <dl>
+                        {% set hide_edit_button = not "WRITE" in node.permissions %}
+                        {% set hide_list_node_button = true %}
+                        {% for prop_name, prop in node.properties %}
+                            {% if not (prop_name in hidden_props) %}
+                                {% set inline_node = prop %}
+                                {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/" ~ (prop_name | url_encode) %}
+                                {% if inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
+                                    <dt><a class="format-list-bulleted-icon inline-icon inline-icon-shift-left" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}" title="View collection"></a>{{ prop_name | uiprop | ndtitle }}</dt>
+                                    <dd>{{ include("node-views/inline-node-view.html") }}{% if not hide_edit_button %}<a class="add-icon inline-icon" title="Add item to list" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@new_property?{{ url_metadata.copy().setPath(primary_string_path ~ "/" ~ (prop_name | url_encode)) }}"></a><a class="delete-icon inline-icon" title="Remove entire list" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@unlink?{{ url_metadata.copy().setProperty("uln", prop.id) }}"></a>{% endif %}</dd>
+                                {% else %}
+                                    <dt>{{ prop_name | uiprop | ndtitle }}</dt>
+                                    <dd>{{ include("node-views/inline-node-view.html") }}{% if not hide_edit_button %}<a class="delete-icon inline-icon" title="Remove reference to data" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@unlink?{{ url_metadata.copy().setProperty("uln", prop.id) }}"></a>{% endif %}</dd>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </dl>
+                {% endif %}
+                
+                <a href="javascript:toggle_hidden_box('ext_props');"><strong>{{ "node_page_text/generic/extended_properties" | uitxtrt | ndsentence }}</strong><span id="hidden_box_ext_props_toggle_button" class="inline-icon-low-margin inline-icon-shift-right expand-more-icon" style="display: none;"></span></a>
+                <div class="small-spacer"></div>
+                <div id="hidden_box_ext_props" class="logical-box">
+                    <dl>
+                        <dt>{{ "node_id" | uiprop | ndtitle }}</dt>
+                        <dd>{{ "{" ~ node.id ~ "}" }}</dd>
+                        <dt>{{ "created_at" | uiprop | ndtitle }}</dt>
+                        <dd>{{ node.timestamp | date("jS F Y, g:ia T") }}</dd>
+                        {% if node.creator %}
+                            {% if node.creator.id != INSTANCE_UUID %}
+                                <dt>{{ "created_by" | uiprop | ndtitle }}</dt>
+                                {% if node.creator.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json") %}
+                                    <dd><a class="navigational-link" href="/graph/{{ primary_string_path | raw }}/@creator"><span class="inline-icon-low-margin account-box-icon" title="User account"></span>{% if node.creator.properties.name %}{{ node.creator.properties.name }}{% else %}{{ "{" ~ node.creator.id ~ "}" }}{% endif %}</a></dd>
+                                {% else %}
+                                    <dd><a class="navigational-link" href="/graph/~{{ node.creator.id }}">{{ "{" ~ node.creator.id ~ "}" }}</a></dd>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        {% if node.schema %}
+                            <dt>{{ "schema" | uiprop | ndtitle }}</dt>
+                            <dd>{{ node.schema }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                
+                <script>toggle_hidden_box("ext_props");</script>
+            </div>
+            
+            {% endblock %}
+        </div>
+        
+        <div class="right-preferential-box">
+            {% block secondary_content %}
+        
+            <div class="marked-section">
+                <h2>{{ "node_page_text/generic/node_management" | uitxtrt | ndsentence }}</h2><br />
+                {% if "DELETE" in node.permissions %}
+                    <a class="action-link action-link-delete" href="/graph/{{ primary_string_path | raw }}/@delete?{{ url_metadata }}">{{ "node_page_text/generic/delete_node" | uitxtrt | ndsentence }}</a><br />
+                {% endif %}
+                <a class="navigational-link" href="/graph/{{ primary_string_path | raw }}/@references?{{ url_metadata }}">{{ "node_page_text/generic/see_references" | uitxtrt | ndsentence }}</a>
+            </div>
+            
+            {% endblock %}
+        </div>
+        
+        <div class="separator"></div>
+        
+        {% block tertiary_content %}
+        {% endblock %}
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,679 @@
+/* Auto generated CSS icon definition file */
+.account-box-icon {
+    background-image: url("/assets/icons/account_box_white_48dp.svg");
+}
+.account-box-icon-inverted {
+    background-image: url("/assets/icons/account_box_black_48dp.svg");
+}
+.add-comment-icon {
+    background-image: url("/assets/icons/add_comment_white_48dp.svg");
+}
+.add-comment-icon-inverted {
+    background-image: url("/assets/icons/add_comment_black_48dp.svg");
+}
+.add-link-icon {
+    background-image: url("/assets/icons/add_link_white_48dp.svg");
+}
+.add-link-icon-inverted {
+    background-image: url("/assets/icons/add_link_black_48dp.svg");
+}
+.add-location-icon {
+    background-image: url("/assets/icons/add_location_white_48dp.svg");
+}
+.add-location-icon-inverted {
+    background-image: url("/assets/icons/add_location_black_48dp.svg");
+}
+.add-icon {
+    background-image: url("/assets/icons/add_white_48dp.svg");
+}
+.add-icon-inverted {
+    background-image: url("/assets/icons/add_black_48dp.svg");
+}
+.arrow-downward-icon {
+    background-image: url("/assets/icons/arrow_downward_white_48dp.svg");
+}
+.arrow-downward-icon-inverted {
+    background-image: url("/assets/icons/arrow_downward_black_48dp.svg");
+}
+.arrow-drop-down-icon {
+    background-image: url("/assets/icons/arrow_drop_down_white_48dp.svg");
+}
+.arrow-drop-down-icon-inverted {
+    background-image: url("/assets/icons/arrow_drop_down_black_48dp.svg");
+}
+.arrow-right-alt-icon {
+    background-image: url("/assets/icons/arrow_right_alt_white_48dp.svg");
+}
+.arrow-right-alt-icon-inverted {
+    background-image: url("/assets/icons/arrow_right_alt_black_48dp.svg");
+}
+.arrow-right-icon {
+    background-image: url("/assets/icons/arrow_right_white_48dp.svg");
+}
+.arrow-right-icon-inverted {
+    background-image: url("/assets/icons/arrow_right_black_48dp.svg");
+}
+.arrow-upward-icon {
+    background-image: url("/assets/icons/arrow_upward_white_48dp.svg");
+}
+.arrow-upward-icon-inverted {
+    background-image: url("/assets/icons/arrow_upward_black_48dp.svg");
+}
+.attach-file-icon {
+    background-image: url("/assets/icons/attach_file_white_48dp.svg");
+}
+.attach-file-icon-inverted {
+    background-image: url("/assets/icons/attach_file_black_48dp.svg");
+}
+.autorenew-icon {
+    background-image: url("/assets/icons/autorenew_white_48dp.svg");
+}
+.autorenew-icon-inverted {
+    background-image: url("/assets/icons/autorenew_black_48dp.svg");
+}
+.cable-icon {
+    background-image: url("/assets/icons/cable_white_48dp.svg");
+}
+.cable-icon-inverted {
+    background-image: url("/assets/icons/cable_black_48dp.svg");
+}
+.cached-icon {
+    background-image: url("/assets/icons/cached_white_48dp.svg");
+}
+.cached-icon-inverted {
+    background-image: url("/assets/icons/cached_black_48dp.svg");
+}
+.cases-icon {
+    background-image: url("/assets/icons/cases_white_48dp.svg");
+}
+.cases-icon-inverted {
+    background-image: url("/assets/icons/cases_black_48dp.svg");
+}
+.cell-tower-icon {
+    background-image: url("/assets/icons/cell_tower_white_48dp.svg");
+}
+.cell-tower-icon-inverted {
+    background-image: url("/assets/icons/cell_tower_black_48dp.svg");
+}
+.chat-icon {
+    background-image: url("/assets/icons/chat_white_48dp.svg");
+}
+.chat-icon-inverted {
+    background-image: url("/assets/icons/chat_black_48dp.svg");
+}
+.checklist-icon {
+    background-image: url("/assets/icons/checklist_white_48dp.svg");
+}
+.checklist-icon-inverted {
+    background-image: url("/assets/icons/checklist_black_48dp.svg");
+}
+.check-icon {
+    background-image: url("/assets/icons/check_white_48dp.svg");
+}
+.check-icon-inverted {
+    background-image: url("/assets/icons/check_black_48dp.svg");
+}
+.chevron-right-icon {
+    background-image: url("/assets/icons/chevron_right_white_48dp.svg");
+}
+.chevron-right-icon-inverted {
+    background-image: url("/assets/icons/chevron_right_black_48dp.svg");
+}
+.close-fullscreen-icon {
+    background-image: url("/assets/icons/close_fullscreen_white_48dp.svg");
+}
+.close-fullscreen-icon-inverted {
+    background-image: url("/assets/icons/close_fullscreen_black_48dp.svg");
+}
+.close-icon {
+    background-image: url("/assets/icons/close_white_48dp.svg");
+}
+.close-icon-inverted {
+    background-image: url("/assets/icons/close_black_48dp.svg");
+}
+.cloud-done-icon {
+    background-image: url("/assets/icons/cloud_done_white_48dp.svg");
+}
+.cloud-done-icon-inverted {
+    background-image: url("/assets/icons/cloud_done_black_48dp.svg");
+}
+.cloud-off-icon {
+    background-image: url("/assets/icons/cloud_off_white_48dp.svg");
+}
+.cloud-off-icon-inverted {
+    background-image: url("/assets/icons/cloud_off_black_48dp.svg");
+}
+.cloud-queue-icon {
+    background-image: url("/assets/icons/cloud_queue_white_48dp.svg");
+}
+.cloud-queue-icon-inverted {
+    background-image: url("/assets/icons/cloud_queue_black_48dp.svg");
+}
+.cloud-upload-icon {
+    background-image: url("/assets/icons/cloud_upload_white_48dp.svg");
+}
+.cloud-upload-icon-inverted {
+    background-image: url("/assets/icons/cloud_upload_black_48dp.svg");
+}
+.cloud-icon {
+    background-image: url("/assets/icons/cloud_white_48dp.svg");
+}
+.cloud-icon-inverted {
+    background-image: url("/assets/icons/cloud_black_48dp.svg");
+}
+.content-copy-icon {
+    background-image: url("/assets/icons/content_copy_white_48dp.svg");
+}
+.content-copy-icon-inverted {
+    background-image: url("/assets/icons/content_copy_black_48dp.svg");
+}
+.content-cut-icon {
+    background-image: url("/assets/icons/content_cut_white_48dp.svg");
+}
+.content-cut-icon-inverted {
+    background-image: url("/assets/icons/content_cut_black_48dp.svg");
+}
+.content-paste-icon {
+    background-image: url("/assets/icons/content_paste_white_48dp.svg");
+}
+.content-paste-icon-inverted {
+    background-image: url("/assets/icons/content_paste_black_48dp.svg");
+}
+.cookie-icon {
+    background-image: url("/assets/icons/cookie_white_48dp.svg");
+}
+.cookie-icon-inverted {
+    background-image: url("/assets/icons/cookie_black_48dp.svg");
+}
+.dangerous-icon {
+    background-image: url("/assets/icons/dangerous_white_48dp.svg");
+}
+.dangerous-icon-inverted {
+    background-image: url("/assets/icons/dangerous_black_48dp.svg");
+}
+.dark-mode-icon {
+    background-image: url("/assets/icons/dark_mode_white_48dp.svg");
+}
+.dark-mode-icon-inverted {
+    background-image: url("/assets/icons/dark_mode_black_48dp.svg");
+}
+.delete-forever-icon {
+    background-image: url("/assets/icons/delete_forever_white_48dp.svg");
+}
+.delete-forever-icon-inverted {
+    background-image: url("/assets/icons/delete_forever_black_48dp.svg");
+}
+.delete-sweep-icon {
+    background-image: url("/assets/icons/delete_sweep_white_48dp.svg");
+}
+.delete-sweep-icon-inverted {
+    background-image: url("/assets/icons/delete_sweep_black_48dp.svg");
+}
+.delete-icon {
+    background-image: url("/assets/icons/delete_white_48dp.svg");
+}
+.delete-icon-inverted {
+    background-image: url("/assets/icons/delete_black_48dp.svg");
+}
+.dns-icon {
+    background-image: url("/assets/icons/dns_white_48dp.svg");
+}
+.dns-icon-inverted {
+    background-image: url("/assets/icons/dns_black_48dp.svg");
+}
+.download-icon {
+    background-image: url("/assets/icons/download_white_48dp.svg");
+}
+.download-icon-inverted {
+    background-image: url("/assets/icons/download_black_48dp.svg");
+}
+.dynamic-form-icon {
+    background-image: url("/assets/icons/dynamic_form_white_48dp.svg");
+}
+.dynamic-form-icon-inverted {
+    background-image: url("/assets/icons/dynamic_form_black_48dp.svg");
+}
+.edit-icon {
+    background-image: url("/assets/icons/edit_white_48dp.svg");
+}
+.edit-icon-inverted {
+    background-image: url("/assets/icons/edit_black_48dp.svg");
+}
+.email-icon {
+    background-image: url("/assets/icons/email_white_48dp.svg");
+}
+.email-icon-inverted {
+    background-image: url("/assets/icons/email_black_48dp.svg");
+}
+.error-icon {
+    background-image: url("/assets/icons/error_white_48dp.svg");
+}
+.error-icon-inverted {
+    background-image: url("/assets/icons/error_black_48dp.svg");
+}
+.event-note-icon {
+    background-image: url("/assets/icons/event_note_white_48dp.svg");
+}
+.event-note-icon-inverted {
+    background-image: url("/assets/icons/event_note_black_48dp.svg");
+}
+.event-icon {
+    background-image: url("/assets/icons/event_white_48dp.svg");
+}
+.event-icon-inverted {
+    background-image: url("/assets/icons/event_black_48dp.svg");
+}
+.expand-circle-down-icon {
+    background-image: url("/assets/icons/expand_circle_down_white_48dp.svg");
+}
+.expand-circle-down-icon-inverted {
+    background-image: url("/assets/icons/expand_circle_down_black_48dp.svg");
+}
+.expand-less-icon {
+    background-image: url("/assets/icons/expand_less_white_48dp.svg");
+}
+.expand-less-icon-inverted {
+    background-image: url("/assets/icons/expand_less_black_48dp.svg");
+}
+.expand-more-icon {
+    background-image: url("/assets/icons/expand_more_white_48dp.svg");
+}
+.expand-more-icon-inverted {
+    background-image: url("/assets/icons/expand_more_black_48dp.svg");
+}
+.file-checked-icon {
+    background-image: url("/assets/icons/file_checked_white_48dp.svg");
+}
+.file-checked-icon-inverted {
+    background-image: url("/assets/icons/file_checked_black_48dp.svg");
+}
+.file-present-icon {
+    background-image: url("/assets/icons/file_present_white_48dp.svg");
+}
+.file-present-icon-inverted {
+    background-image: url("/assets/icons/file_present_black_48dp.svg");
+}
+.flag-red-48dp.svg-icon {
+    background-image: url("/assets/icons/flag_red_48dp.svg_white_48dp.svg");
+}
+.flag-red-48dp.svg-icon-inverted {
+    background-image: url("/assets/icons/flag_red_48dp.svg_black_48dp.svg");
+}
+.flag-icon {
+    background-image: url("/assets/icons/flag_white_48dp.svg");
+}
+.flag-icon-inverted {
+    background-image: url("/assets/icons/flag_black_48dp.svg");
+}
+.folder-icon {
+    background-image: url("/assets/icons/folder_white_48dp.svg");
+}
+.folder-icon-inverted {
+    background-image: url("/assets/icons/folder_black_48dp.svg");
+}
+.format-list-bulleted-icon {
+    background-image: url("/assets/icons/format_list_bulleted_white_48dp.svg");
+}
+.format-list-bulleted-icon-inverted {
+    background-image: url("/assets/icons/format_list_bulleted_black_48dp.svg");
+}
+.forum-icon {
+    background-image: url("/assets/icons/forum_white_48dp.svg");
+}
+.forum-icon-inverted {
+    background-image: url("/assets/icons/forum_black_48dp.svg");
+}
+.group-add-icon {
+    background-image: url("/assets/icons/group_add_white_48dp.svg");
+}
+.group-add-icon-inverted {
+    background-image: url("/assets/icons/group_add_black_48dp.svg");
+}
+.groups-icon {
+    background-image: url("/assets/icons/groups_white_48dp.svg");
+}
+.groups-icon-inverted {
+    background-image: url("/assets/icons/groups_black_48dp.svg");
+}
+.group-icon {
+    background-image: url("/assets/icons/group_white_48dp.svg");
+}
+.group-icon-inverted {
+    background-image: url("/assets/icons/group_black_48dp.svg");
+}
+.history-icon {
+    background-image: url("/assets/icons/history_white_48dp.svg");
+}
+.history-icon-inverted {
+    background-image: url("/assets/icons/history_black_48dp.svg");
+}
+.internal-link-marker-icon {
+    background-image: url("/assets/icons/internal_link_marker_white_48dp.svg");
+}
+.internal-link-marker-icon-inverted {
+    background-image: url("/assets/icons/internal_link_marker_black_48dp.svg");
+}
+.key-icon {
+    background-image: url("/assets/icons/key_white_48dp.svg");
+}
+.key-icon-inverted {
+    background-image: url("/assets/icons/key_black_48dp.svg");
+}
+.light-mode-icon {
+    background-image: url("/assets/icons/light_mode_white_48dp.svg");
+}
+.light-mode-icon-inverted {
+    background-image: url("/assets/icons/light_mode_black_48dp.svg");
+}
+.link-off-icon {
+    background-image: url("/assets/icons/link_off_white_48dp.svg");
+}
+.link-off-icon-inverted {
+    background-image: url("/assets/icons/link_off_black_48dp.svg");
+}
+.lock-icon {
+    background-image: url("/assets/icons/lock_white_48dp.svg");
+}
+.lock-icon-inverted {
+    background-image: url("/assets/icons/lock_black_48dp.svg");
+}
+.mail-lock-icon {
+    background-image: url("/assets/icons/mail_lock_white_48dp.svg");
+}
+.mail-lock-icon-inverted {
+    background-image: url("/assets/icons/mail_lock_black_48dp.svg");
+}
+.mark-email-read-icon {
+    background-image: url("/assets/icons/mark_email_read_white_48dp.svg");
+}
+.mark-email-read-icon-inverted {
+    background-image: url("/assets/icons/mark_email_read_black_48dp.svg");
+}
+.more-icon {
+    background-image: url("/assets/icons/more_white_48dp.svg");
+}
+.more-icon-inverted {
+    background-image: url("/assets/icons/more_black_48dp.svg");
+}
+.new-corner-icon {
+    background-image: url("/assets/icons/new_corner_white_48dp.svg");
+}
+.new-corner-icon-inverted {
+    background-image: url("/assets/icons/new_corner_black_48dp.svg");
+}
+.notification-important-icon {
+    background-image: url("/assets/icons/notification_important_white_48dp.svg");
+}
+.notification-important-icon-inverted {
+    background-image: url("/assets/icons/notification_important_black_48dp.svg");
+}
+.notifications-active-icon {
+    background-image: url("/assets/icons/notifications_active_white_48dp.svg");
+}
+.notifications-active-icon-inverted {
+    background-image: url("/assets/icons/notifications_active_black_48dp.svg");
+}
+.notifications-none-icon {
+    background-image: url("/assets/icons/notifications_none_white_48dp.svg");
+}
+.notifications-none-icon-inverted {
+    background-image: url("/assets/icons/notifications_none_black_48dp.svg");
+}
+.open-in-full-icon {
+    background-image: url("/assets/icons/open_in_full_white_48dp.svg");
+}
+.open-in-full-icon-inverted {
+    background-image: url("/assets/icons/open_in_full_black_48dp.svg");
+}
+.open-icon {
+    background-image: url("/assets/icons/open_white_48dp.svg");
+}
+.open-icon-inverted {
+    background-image: url("/assets/icons/open_black_48dp.svg");
+}
+.outgoing-mail-icon {
+    background-image: url("/assets/icons/outgoing_mail_white_48dp.svg");
+}
+.outgoing-mail-icon-inverted {
+    background-image: url("/assets/icons/outgoing_mail_black_48dp.svg");
+}
+.password-icon {
+    background-image: url("/assets/icons/password_white_48dp.svg");
+}
+.password-icon-inverted {
+    background-image: url("/assets/icons/password_black_48dp.svg");
+}
+.pin-icon {
+    background-image: url("/assets/icons/pin_white_48dp.svg");
+}
+.pin-icon-inverted {
+    background-image: url("/assets/icons/pin_black_48dp.svg");
+}
+.playlist-add-icon {
+    background-image: url("/assets/icons/playlist_add_white_48dp.svg");
+}
+.playlist-add-icon-inverted {
+    background-image: url("/assets/icons/playlist_add_black_48dp.svg");
+}
+.playlist-remove-icon {
+    background-image: url("/assets/icons/playlist_remove_white_48dp.svg");
+}
+.playlist-remove-icon-inverted {
+    background-image: url("/assets/icons/playlist_remove_black_48dp.svg");
+}
+.public-icon {
+    background-image: url("/assets/icons/public_white_48dp.svg");
+}
+.public-icon-inverted {
+    background-image: url("/assets/icons/public_black_48dp.svg");
+}
+.published-with-changes-icon {
+    background-image: url("/assets/icons/published_with_changes_white_48dp.svg");
+}
+.published-with-changes-icon-inverted {
+    background-image: url("/assets/icons/published_with_changes_black_48dp.svg");
+}
+.qr-code-scanner-icon {
+    background-image: url("/assets/icons/qr_code_scanner_white_48dp.svg");
+}
+.qr-code-scanner-icon-inverted {
+    background-image: url("/assets/icons/qr_code_scanner_black_48dp.svg");
+}
+.qr-code-icon {
+    background-image: url("/assets/icons/qr_code_white_48dp.svg");
+}
+.qr-code-icon-inverted {
+    background-image: url("/assets/icons/qr_code_black_48dp.svg");
+}
+.remove-circle-outline-icon {
+    background-image: url("/assets/icons/remove_circle_outline_white_48dp.svg");
+}
+.remove-circle-outline-icon-inverted {
+    background-image: url("/assets/icons/remove_circle_outline_black_48dp.svg");
+}
+.reply-all-icon {
+    background-image: url("/assets/icons/reply_all_white_48dp.svg");
+}
+.reply-all-icon-inverted {
+    background-image: url("/assets/icons/reply_all_black_48dp.svg");
+}
+.reply-icon {
+    background-image: url("/assets/icons/reply_white_48dp.svg");
+}
+.reply-icon-inverted {
+    background-image: url("/assets/icons/reply_black_48dp.svg");
+}
+.restore-from-trash-icon {
+    background-image: url("/assets/icons/restore_from_trash_white_48dp.svg");
+}
+.restore-from-trash-icon-inverted {
+    background-image: url("/assets/icons/restore_from_trash_black_48dp.svg");
+}
+.reverse-internal-link-marker-icon {
+    background-image: url("/assets/icons/reverse_internal_link_marker_white_48dp.svg");
+}
+.reverse-internal-link-marker-icon-inverted {
+    background-image: url("/assets/icons/reverse_internal_link_marker_black_48dp.svg");
+}
+.save-icon {
+    background-image: url("/assets/icons/save_white_48dp.svg");
+}
+.save-icon-inverted {
+    background-image: url("/assets/icons/save_black_48dp.svg");
+}
+.search-icon {
+    background-image: url("/assets/icons/search_white_48dp.svg");
+}
+.search-icon-inverted {
+    background-image: url("/assets/icons/search_black_48dp.svg");
+}
+.security-icon {
+    background-image: url("/assets/icons/security_white_48dp.svg");
+}
+.security-icon-inverted {
+    background-image: url("/assets/icons/security_black_48dp.svg");
+}
+.send-icon {
+    background-image: url("/assets/icons/send_white_48dp.svg");
+}
+.send-icon-inverted {
+    background-image: url("/assets/icons/send_black_48dp.svg");
+}
+.settings-ethernet-icon {
+    background-image: url("/assets/icons/settings_ethernet_white_48dp.svg");
+}
+.settings-ethernet-icon-inverted {
+    background-image: url("/assets/icons/settings_ethernet_black_48dp.svg");
+}
+.settings-icon {
+    background-image: url("/assets/icons/settings_white_48dp.svg");
+}
+.settings-icon-inverted {
+    background-image: url("/assets/icons/settings_black_48dp.svg");
+}
+.share-icon {
+    background-image: url("/assets/icons/share_white_48dp.svg");
+}
+.share-icon-inverted {
+    background-image: url("/assets/icons/share_black_48dp.svg");
+}
+.swap-horiz-icon {
+    background-image: url("/assets/icons/swap_horiz_white_48dp.svg");
+}
+.swap-horiz-icon-inverted {
+    background-image: url("/assets/icons/swap_horiz_black_48dp.svg");
+}
+.sync-alt-icon {
+    background-image: url("/assets/icons/sync_alt_white_48dp.svg");
+}
+.sync-alt-icon-inverted {
+    background-image: url("/assets/icons/sync_alt_black_48dp.svg");
+}
+.sync-problem-icon {
+    background-image: url("/assets/icons/sync_problem_white_48dp.svg");
+}
+.sync-problem-icon-inverted {
+    background-image: url("/assets/icons/sync_problem_black_48dp.svg");
+}
+.sync-icon {
+    background-image: url("/assets/icons/sync_white_48dp.svg");
+}
+.sync-icon-inverted {
+    background-image: url("/assets/icons/sync_black_48dp.svg");
+}
+.task-alt-icon {
+    background-image: url("/assets/icons/task_alt_white_48dp.svg");
+}
+.task-alt-icon-inverted {
+    background-image: url("/assets/icons/task_alt_black_48dp.svg");
+}
+.task-completed-icon {
+    background-image: url("/assets/icons/task_completed_white_48dp.svg");
+}
+.task-completed-icon-inverted {
+    background-image: url("/assets/icons/task_completed_black_48dp.svg");
+}
+.task-problem-icon {
+    background-image: url("/assets/icons/task_problem_white_48dp.svg");
+}
+.task-problem-icon-inverted {
+    background-image: url("/assets/icons/task_problem_black_48dp.svg");
+}
+.task-icon {
+    background-image: url("/assets/icons/task_white_48dp.svg");
+}
+.task-icon-inverted {
+    background-image: url("/assets/icons/task_black_48dp.svg");
+}
+.terminal-icon {
+    background-image: url("/assets/icons/terminal_white_48dp.svg");
+}
+.terminal-icon-inverted {
+    background-image: url("/assets/icons/terminal_black_48dp.svg");
+}
+.timeline-icon {
+    background-image: url("/assets/icons/timeline_white_48dp.svg");
+}
+.timeline-icon-inverted {
+    background-image: url("/assets/icons/timeline_black_48dp.svg");
+}
+.tune-icon {
+    background-image: url("/assets/icons/tune_white_48dp.svg");
+}
+.tune-icon-inverted {
+    background-image: url("/assets/icons/tune_black_48dp.svg");
+}
+.unarchive-icon {
+    background-image: url("/assets/icons/unarchive_white_48dp.svg");
+}
+.unarchive-icon-inverted {
+    background-image: url("/assets/icons/unarchive_black_48dp.svg");
+}
+.undo-icon {
+    background-image: url("/assets/icons/undo_white_48dp.svg");
+}
+.undo-icon-inverted {
+    background-image: url("/assets/icons/undo_black_48dp.svg");
+}
+.unfold-less-icon {
+    background-image: url("/assets/icons/unfold_less_white_48dp.svg");
+}
+.unfold-less-icon-inverted {
+    background-image: url("/assets/icons/unfold_less_black_48dp.svg");
+}
+.update-icon {
+    background-image: url("/assets/icons/update_white_48dp.svg");
+}
+.update-icon-inverted {
+    background-image: url("/assets/icons/update_black_48dp.svg");
+}
+.upload-icon {
+    background-image: url("/assets/icons/upload_white_48dp.svg");
+}
+.upload-icon-inverted {
+    background-image: url("/assets/icons/upload_black_48dp.svg");
+}
+.verified-icon {
+    background-image: url("/assets/icons/verified_white_48dp.svg");
+}
+.verified-icon-inverted {
+    background-image: url("/assets/icons/verified_black_48dp.svg");
+}
+.warning-icon {
+    background-image: url("/assets/icons/warning_white_48dp.svg");
+}
+.warning-icon-inverted {
+    background-image: url("/assets/icons/warning_black_48dp.svg");
+}
+.work-history-icon {
+    background-image: url("/assets/icons/work_history_white_48dp.svg");
+}
+.work-history-icon-inverted {
+    background-image: url("/assets/icons/work_history_black_48dp.svg");
+}
+.work-icon {
+    background-image: url("/assets/icons/work_white_48dp.svg");
+}
+.work-icon-inverted {
+    background-image: url("/assets/icons/work_black_48dp.svg");
+}

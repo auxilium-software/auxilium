@@ -11,6 +11,22 @@ The reccomended installation method is through use of the Docker container. If y
 ## Acknowledgements
 Auxilium was created in [Aberystwyth University](https://aber.ac.uk) with funding from the [UK National Lottery's Community Fund](https://www.tnlcommunityfund.org.uk). This software is used to support the work of [Veterans Legal Link](https://veteranslegallink.org/), a service providing free legal advice for UK veterans.
 
+## Dependencies and Licenses
+### Libraries
+- Twig: Revised BSD License
+- endroid/qr-code: MIT License
+- FDPF: BSD Zero Clause License
+- ezyang/htmlpurifier: LGPL v2.1
+- bigfish/pdf417: MIT License
+- zbateson/mail-mime-parser: BSD Two Clause License
+- lcobucci/jwt: BSD Three Clause License
+- web-token/jwt-core: MIT License
+### Supporting Software
+- PHP: PHP License v3.01
+- msgconvert: GPL v1 or later
+- Apache 2: Apache License v2.0
+- deegraph: GPL v3
+
 ## License
 Copyright 2021-2024 Aberystwyth University
 
