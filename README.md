@@ -1,6 +1,10 @@
 # Auxilium
 Auxilium is a hosted case management, referral management and client portal system for 3rd sector and public sector organisations.
 
+> [!IMPORTANT]
+> This repository is currently unstable, as it is currently being transferred from an internal version control system. This may manifest in broken software, including security related issues. Proceed with caution until this banner is removed.
+>
+
 ## Installation
 The reccomended installation method is through use of the Docker container. If you're using the software in production, please pull the latest release. For development purposes, pull the repository and use `install.sh` to get started. This script has been designed to work with Debian Bookworm, and should work on derivitive distributions.
 
