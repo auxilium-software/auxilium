@@ -1,7 +1,7 @@
 # Auxilium
 Auxilium is a hosted case management, referral management and client portal system for 3rd sector and public sector organisations.
 
-> [!IMPORTANT]
+> [!WARNING]
 > This repository is currently unstable, as it is currently being transferred from an internal version control system. This may manifest in broken software, including security related issues. Proceed with caution until this banner is removed.
 >
 
