@@ -6,18 +6,23 @@ Auxilium is a hosted case management, referral management and client portal syst
 >
 
 ## Installation
-The reccomended installation method is through use of the Docker container. If you're using the software in production, please pull the latest release from Docker Hub.
+The reccomended installation method is through use of the Docker container. If you're using the software in production, please pull the latest release from Docker Hub. This example assumes you already have valid SSL certificates avaliable.
 
 ```
-$ docker run -dit -p 80:80 -p 443:443 -v /etc/letsencrypt/live/test.auxsoft.co.uk:/etc/ssl/ext-certs --mount source=auxilium-volume,target=/store -e CONTAINER_FQDN="test.auxsoft.co.uk" -e HTTPS_PORT="443" --name auxilium auxiliumsoftware/auxilium
+sudo cp /etc/letsencrypt/live/test.auxsoft.co.uk /usr/local/certs/ -Lr
+docker run -dit -p 80:80 -p 443:443 -v /usr/local/certs/test.auxsoft.co.uk:/etc/ssl/ext-certs --mount source=auxilium-volume,target=/store -e CONTAINER_FQDN="test.auxsoft.co.uk" -e HTTPS_PORT="443" --name auxilium auxiliumsoftware/auxilium
 ```
 
-This example assumes you are using the standard configuration of [Let's Encrypt](https://letsencrypt.org/) for your certificates. If you are using a different certificate provider, you will need to provide certificates in a similar directory, with the same structure. Auxilium expects certificates to be in PEM format named in the following way:
+If you're not using the standard configuration of [Let's Encrypt](https://letsencrypt.org/) for your certificates, you will need to provide certificates in a similar structure. Auxilium expects certificates to be in PEM format named in the following way:
 
 - `fullchain.pem` - The full trust chain for the certificate.
 - `privkey.pem` - The unencrypted private key for the certificate.
 
-No other certificates will be required. The docker container will automatically configure Deegraph to also use these certificates.
+No other certificates will be required, but do make sure that the container can access these certificates. The docker container will automatically configure Deegraph to also use these certificates.
+
+> [!IMPORTANT]
+> If you get a `PR_END_OF_FILE_ERROR` or `ERR_CONNECTION_CLOSED` upon trying to visit the portal in your browser, you have configured certificates incorrectly. Ensure permissions are set so that docker can read the certificates correctly.
+>
 
 ### Peering Support
 
