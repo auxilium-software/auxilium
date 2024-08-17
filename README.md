@@ -6,7 +6,29 @@ Auxilium is a hosted case management, referral management and client portal syst
 >
 
 ## Installation
-The reccomended installation method is through use of the Docker container. If you're using the software in production, please pull the latest release. For development purposes, pull the repository and use `install.sh` to get started. This script has been designed to work with Debian Bookworm, and should work on derivitive distributions.
+The reccomended installation method is through use of the Docker container. If you're using the software in production, please pull the latest release from Docker Hub.
+
+```
+$ docker run -dit -p 80:80 -p 443:443 -v /etc/letsencrypt/live/test.auxsoft.co.uk:/etc/ssl/ext-certs --mount source=auxilium-volume,target=/store -e CONTAINER_FQDN="test.auxsoft.co.uk" -e HTTPS_PORT="443" --name auxilium auxiliumsoftware/auxilium
+```
+
+This example assumes you are using the standard configuration of [Let's Encrypt](https://letsencrypt.org/) for your certificates. If you are using a different certificate provider, you will need to provide certificates in a similar directory, with the same structure. Auxilium expects certificates to be in PEM format named in the following way:
+
+- `fullchain.pem` - The full trust chain for the certificate.
+- `privkey.pem` - The unencrypted private key for the certificate.
+
+No other certificates will be required. The docker container will automatically configure Deegraph to also use these certificates.
+
+### Peering Support
+
+> [!WARNING]
+> Peering support is currently experimental, it is adviseable to leave this option disabled in production environments.
+>
+
+In order to enable peering support, you must directly expose the deegraph instance running inside the container by adding `-p 8880:8880` to the arguments of the `docker run` command. You can then peer to other instances that have this setting enabled.
+
+## Manual Installation
+For development purposes, pull the repository and use `install.sh` to get started. This script has been designed to work with Debian Bookworm, and should work on derivitive distributions.
 
 ## Acknowledgements
 Auxilium was created in [Aberystwyth University](https://aber.ac.uk) with funding from the [UK National Lottery's Community Fund](https://www.tnlcommunityfund.org.uk). This software is used to support the work of [Veterans Legal Link](https://veteranslegallink.org/), a service providing free legal advice for UK veterans.

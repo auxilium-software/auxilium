@@ -14,6 +14,7 @@ else
     echo "New install"
     NEW_INSTALL=1
 
+    mkdir /store/local-assets/
     mkdir /store/mysql-data/
     chown mysql:mysql /store/mysql-data/
     mv /var/lib/mysql/* /store/mysql-data/
@@ -49,14 +50,18 @@ EOF
 fi
 
 #openssl x509 -outform der -in /etc/ssl/ext-certs/rootCA.crt -out /usr/local/share/ca-certificates/development-ca.crt
-cat /etc/ssl/ext-certs/rootCA.crt >> /etc/ssl/certs/ca-certificates.crt
+if [ -f /etc/ssl/ext-certs/rootCA.crt ]; then
+    cat /etc/ssl/ext-certs/rootCA.crt >> /etc/ssl/certs/ca-certificates.crt
 #update-ca-certificates
+fi
 
 mkdir /var/ecs/
 mkdir /var/ecs/jobs/
 mkdir /var/ecs/forms-in-progress/
 mkdir /var/ecs/indexes/
 mkdir /var/ecs/message-drafts/
+
+ln -s /store/local-assets /var/www/assets/local
 
 chown www-data:www-data /var/ecs -R
 
