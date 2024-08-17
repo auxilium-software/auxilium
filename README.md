@@ -55,7 +55,7 @@ Auxilium was created in [Aberystwyth University](https://aber.ac.uk) with fundin
 - deegraph: GPL v3
 
 ## License
-Copyright 2021-2024 Aberystwyth University
+Copyright 2021-2024 Aberystwyth University and contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
