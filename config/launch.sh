@@ -60,10 +60,17 @@ mkdir /var/ecs/jobs/
 mkdir /var/ecs/forms-in-progress/
 mkdir /var/ecs/indexes/
 mkdir /var/ecs/message-drafts/
+mkdir /var/ecs/certs/
+mkdir /var/ecs/certs/deegraph/
+mkdir /var/ecs/certs/apache/
+cp /etc/ssl/ext-certs/* /var/ecs/certs/apache/
 
 ln -s /store/local-assets /var/www/assets/local
 
 chown www-data:www-data /var/ecs -R
+
+cp /etc/ssl/ext-certs/* /var/ecs/certs/deegraph/
+chown deegraph:deegraph /var/ecs/certs/deegraph -R
 
 echo "127.0.0.1     $CONTAINER_FQDN" >> /etc/hosts
 
@@ -72,8 +79,8 @@ cat > /app/deegraph-config.json << EOF
     "fqdn": "c",
     "data_directory": "/store/deegraph/dgdata/",
     "ssl_certs": {
-        "private_key": "/etc/ssl/ext-certs/privkey.pem",
-        "full_chain": "/etc/ssl/ext-certs/fullchain.pem"
+        "private_key": "/var/ecs/certs/deegraph/privkey.pem",
+        "full_chain": "/var/ecs/certs/deegraph/fullchain.pem"
     },
     "port": 8880,
     "root_auth_tokens": ["$DEEGRAPH_ROOT_AUTH_TOKEN"],

@@ -1,4 +1,4 @@
 #!/bin/bash
-docker kill auxilium
-docker rm auxilium
-docker volume rm auxilium-volume
+docker kill auxilium-$1
+docker rm auxilium-$1
+docker volume rm auxilium-volume-$1

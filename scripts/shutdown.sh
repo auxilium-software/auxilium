@@ -1,3 +1,3 @@
 #!/bin/bash
-docker stop auxilium-dev
-docker rm auxilium-dev
+docker stop auxilium-$1
+docker rm auxilium-$1
