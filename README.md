@@ -10,7 +10,7 @@ The reccomended installation method is through use of the Docker container. If y
 
 ```
 sudo cp /etc/letsencrypt/live/test.auxsoft.co.uk /usr/local/certs/ -Lr
-docker run -dit -p 80:80 -p 443:443 -v /usr/local/certs/test.auxsoft.co.uk:/etc/ssl/ext-certs --mount source=auxilium-volume,target=/store -e CONTAINER_FQDN="test.auxsoft.co.uk" -e HTTPS_PORT="443" --name auxilium auxiliumsoftware/auxilium
+docker run -dit -p 80:80 -p 443:443 -v /usr/local/certs/test.auxsoft.co.uk:/etc/ssl/ext-certs --mount source=auxilium-volume,target=/store -e CONTAINER_FQDN="test.auxsoft.co.uk" -e HTTPS_PORT="443" --name auxilium auxiliumsoftware/auxilium:2.0-RC1
 ```
 
 If you're not using the standard configuration of [Let's Encrypt](https://letsencrypt.org/) for your certificates, you will need to provide certificates in a similar structure. Auxilium expects certificates to be in PEM format named in the following way:
