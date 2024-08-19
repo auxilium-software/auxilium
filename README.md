@@ -35,6 +35,10 @@ In order to enable peering support, you must directly expose the deegraph instan
 ## Manual Installation
 For development purposes, pull the repository and use `install.sh` to get started. This script has been designed to work with Debian Bookworm, and should work on derivitive distributions.
 
+> [!TIP]
+> If you're cloning this repo on Windows, you may have to use the `git config core.protectNTFS false` command as there are files named "`aux.css`".
+>
+
 ## Acknowledgements
 Auxilium was created in [Aberystwyth University](https://aber.ac.uk) with funding from the [UK National Lottery's Community Fund](https://www.tnlcommunityfund.org.uk). This software is used to support the work of [Veterans Legal Link](https://veteranslegallink.org/), a service providing free legal advice for UK veterans.
 
