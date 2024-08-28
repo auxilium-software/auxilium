@@ -20,6 +20,7 @@ function showHelp {
     echo
     echo "Syntax: ./install.sh [options]"
     echo "-h, --help                Print this Help."
+    echo "-l, --local               Install locally. THIS WILL MODIFY YOUR HOST."
     echo "-b, --build-only          Build only, do not test."
     echo "-n <hostname>,            Set the fully qualified domain name the"
     echo "    --hostname <name>     server will self-identify as."
@@ -54,11 +55,9 @@ DEEGRAPH_PORT=8880
 CERT_LOC=$(pwd)/certs
 CREATE_SSC=1
 INSTALL=1
+LOCAL_INSTALL=0
 SKIP_QUESTIONS=0
 PREEXISTING_VOLUME=0
-if dockerVolumeExists auxilium-volume-$INSTANCE_IDENITIFIER; then
-    PREEXISTING_VOLUME=1
-fi
 
 # Transform long options to short ones
 for arg in "$@"; do
@@ -68,21 +67,25 @@ for arg in "$@"; do
         '--hostname')       set -- "$@" '-n'   ;;
         '--identifier')     set -- "$@" '-i'   ;;
         '--build-only')     set -- "$@" '-b'   ;;
+        '--local')          set -- "$@" '-l'   ;;
         '--certs')          set -- "$@" '-c'   ;;
         *)                  set -- "$@" "$arg" ;;
     esac
 done
 
 OPTIND=1
-while getopts "hybi:n:c:" opt; do
+while getopts "hylbi:n:c:" opt; do
     case $opt in
         h) # display Help
             showHelp
             exit;;
         b) # Enter a name
+            LOCAL_INSTALL=0
             INSTALL=0;;
         y) # Enter a name
             SKIP_QUESTIONS=1;;
+        l) # Enter a name
+            LOCAL_INSTALL=1;;
         i) # Enter a name
             INSTANCE_IDENITIFIER=$OPTARG;;
         n) # Enter a name
@@ -97,6 +100,13 @@ while getopts "hybi:n:c:" opt; do
 done
 shift $(expr $OPTIND - 1) # remove options from positional parameters
 
+if [ "$INSTALL" -eq 1 ]; then
+    if [ "$LOCAL_INSTALL" -eq 0 ]; then
+        if dockerVolumeExists auxilium-volume-$INSTANCE_IDENITIFIER; then
+            PREEXISTING_VOLUME=1
+        fi
+    fi
+fi
 
 
 tput bold
@@ -119,6 +129,14 @@ if [ "$INSTALL" -eq 1 ]; then
         echo "Creating new self-signed certs for development purposes"
     else
         echo "Using SSL certificates at $CERT_LOC"
+    fi
+    if [ "$LOCAL_INSTALL" -eq 1 ]; then
+        echo ""
+        tput bold
+        tput setaf 1
+        tput rev
+        echo "ABOUT TO INSTALL TO HOST MACHINE, THIS MAY BREAK YOUR APACHE CONFIGURATION"
+        tput sgr0
     fi
 else
     echo "About to build Auxilium"
