@@ -76,7 +76,7 @@ echo "127.0.0.1     $CONTAINER_FQDN" >> /etc/hosts
 
 cat > /app/deegraph-config.json << EOF
 {
-    "fqdn": "c",
+    "fqdn": "$CONTAINER_FQDN",
     "data_directory": "/store/deegraph/dgdata/",
     "ssl_certs": {
         "private_key": "/var/ecs/certs/deegraph/privkey.pem",
@@ -132,7 +132,7 @@ const INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PRIVATE_KEY = "$AUTH_JWT_SECRET";
 const INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PUBLIC_KEY = "$AUTH_JWT_PUBLIC";
 
 const INSTANCE_CREDENTIAL_LOCAL_IP_RANGES = [
-    "192.168.0.0/24",
+    "172.17.0.0/16",
     "127.0.0.0/8"
 ];
 
