@@ -326,7 +326,7 @@ if [ "$LOCAL_INSTALL" -eq 1 ]; then
     sudo cp bin/deegraph.jar /opt/deegraph/deegraph.jar
     sudo chmod +x /opt/deegraph/deegraph.jar
 
-    JSON_KEYS=$(php /app/new-keys.php --user=nobody)
+    JSON_KEYS=$(php scripts/new-keys.php --user=nobody)
 
     MYSQL_PASSWORD=$(echo $JSON_KEYS | jq -r '.mysqlPassword')
     DEEGRAPH_ROOT_AUTH_TOKEN=$(echo $JSON_KEYS | jq -r '.deegraphRootToken')
@@ -347,7 +347,8 @@ EOF
     
     if [ -f $CERT_LOC/rootCA.crt ]; then
         sudo su - root -c "cat $CERT_LOC/rootCA.crt >> /etc/ssl/certs/ca-certificates.crt"
-        #update-ca-certificates
+        sudo su - root -c "cp $CERT_LOC/rootCA.crt /usr/local/share/ca-certificates/auxroot.crt"
+        sudo update-ca-certificates
     fi
     
 cat > apache-auxilium.conf << EOF
@@ -385,12 +386,10 @@ cat > apache-auxilium.conf << EOF
 
 EOF
     sudo cp apache-auxilium.conf /etc/apache2/sites-enabled/default.conf
-
-    cat config/apache2/apache2.conf > apache-auxilium.conf
     
     cat > deegraph-config.json << EOF
 {
-    "fqdn": "$CONTAINER_FQDN",
+    "fqdn": "$HOSTNAME",
     "data_directory": "/var/auxilium/dgdata/",
     "ssl_certs": {
         "private_key": "/var/auxilium/ecs/certs/deegraph/privkey.pem",
@@ -440,7 +439,7 @@ EOF
     
     cat > credentials.php << EOF
 <?php
-const INSTANCE_DOMAIN_NAME = "$CONTAINER_FQDN:$HTTPS_PORT";
+const INSTANCE_DOMAIN_NAME = "$HOSTNAME";
 const INSTANCE_UUID = "$DDS_ROOT_NODE";
 
 const INSTANCE_CREDENTIAL_SQL_HOST = "localhost";
@@ -449,7 +448,7 @@ const INSTANCE_CREDENTIAL_SQL_PASSWORD = '$MYSQL_PASSWORD';
 const INSTANCE_CREDENTIAL_SQL_DATABASE = "auxilium2";
 
 const INSTANCE_CREDENTIAL_DDS_PORT = 8880;
-const INSTANCE_CREDENTIAL_DDS_HOST = "$CONTAINER_FQDN";
+const INSTANCE_CREDENTIAL_DDS_HOST = "$HOSTNAME";
 const INSTANCE_CREDENTIAL_DDS_LOGIN_NODE = "$DDS_ROOT_NODE";
 const INSTANCE_CREDENTIAL_DDS_TOKEN = '$DEEGRAPH_ROOT_AUTH_TOKEN';
 
