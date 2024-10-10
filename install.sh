@@ -23,6 +23,48 @@ if [ "$EUID" -eq 0 ]
     echo -e "${FONT__ERROR}This script must not be run as root.${FONT_RESET}"
     exit
 fi
+
+
+if [ ! -d bin ]; then
+    mkdir bin
+fi
+
+#########################
+# ASCII AUXILIUM(TM) LOGO
+echo ""
+tput setaf 4
+tput bold
+echo -e "  /AAAAAA                      /II /LL /II                             "
+echo -e " /AA__  AA                    |__/| LL|__/                         (TM)"
+echo -e "| AA  \ AA /UU   /UU /XX   /XX /II| LL /II /UU   /UU /MMMMMM/MMMM      "
+echo -e "| AAAAAAAA| UU  | UU|  XX /XX/| II| LL| II| UU  | UU| MM_  MM_  MM     "
+echo -e "| AA__  AA| UU  | UU \  XXXX/ | II| LL| II| UU  | UU| MM \ MM \ MM     "
+echo -e "| AA  | AA| UU  | UU  >XX  XX | II| LL| II| UU  | UU| MM | MM | MM     "
+echo -e "| AA  | AA|  UUUUUU/ /XX/\  XX| II| LL| II|  UUUUUU/| MM | MM | MM     "
+echo -e "|__/  |__/ \______/ |__/  \__/|__/|__/|__/ \______/ |__/ |__/ |__/     "
+tput sgr0
+
+echo ""
+echo "$(tput bold)Welcome to the Auxilium docker package build tool$(tput sgr0)"
+echo ""
+
+#echo "Writing default config files"
+#########################
+# PORTS
+HTTP_PORT=8080
+HTTPS_PORT=8081
+DEEGRAPH_PORT=8880
+
+#########################
+# VERSIONS
+DEEGRAPH_VERSION=0.8
+
+#########################
+# MISC.
+HOSTNAME=$(hostname --fqdn)
+INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
+INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
+CERT_LOC=$(pwd)/certs
 ####################################################################################################
 
 
@@ -101,51 +143,6 @@ function showHelp {
     echo -e "\t\tSkip questions."
 }
 ####################################################################################################
-
-
-
-
-
-if [ ! -d bin ]; then
-    mkdir bin
-fi
-
-#########################
-# ASCII AUXILIUM(TM) LOGO
-echo ""
-tput setaf 4
-tput bold
-echo -e "  /AAAAAA                      /II /LL /II                             "
-echo -e " /AA__  AA                    |__/| LL|__/                         (TM)"
-echo -e "| AA  \ AA /UU   /UU /XX   /XX /II| LL /II /UU   /UU /MMMMMM/MMMM      "
-echo -e "| AAAAAAAA| UU  | UU|  XX /XX/| II| LL| II| UU  | UU| MM_  MM_  MM     "
-echo -e "| AA__  AA| UU  | UU \  XXXX/ | II| LL| II| UU  | UU| MM \ MM \ MM     "
-echo -e "| AA  | AA| UU  | UU  >XX  XX | II| LL| II| UU  | UU| MM | MM | MM     "
-echo -e "| AA  | AA|  UUUUUU/ /XX/\  XX| II| LL| II|  UUUUUU/| MM | MM | MM     "
-echo -e "|__/  |__/ \______/ |__/  \__/|__/|__/|__/ \______/ |__/ |__/ |__/     "
-tput sgr0
-
-echo ""
-echo "$(tput bold)Welcome to the Auxilium docker package build tool$(tput sgr0)"
-echo ""
-
-#echo "Writing default config files"
-#########################
-# PORTS
-HTTP_PORT=8080
-HTTPS_PORT=8081
-DEEGRAPH_PORT=8880
-
-#########################
-# VERSIONS
-DEEGRAPH_VERSION=0.8
-
-#########################
-# MISC.
-HOSTNAME=$(hostname --fqdn)
-INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
-INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
-CERT_LOC=$(pwd)/certs
 
 
 
