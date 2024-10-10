@@ -26,7 +26,6 @@ function dockerVolumeExists {
 }
 
 function showHelp {
-    # Display Help
     #########################
     # DISPLAY HELP OPTIONS
     echo "Installs and builds Auxilium with given options for testing and deployment"
@@ -61,9 +60,6 @@ echo "$(tput bold)Welcome to the Auxilium docker package build tool$(tput sgr0)"
 echo ""
 
 #echo "Writing default config files"
-HOSTNAME=$(hostname --fqdn)
-INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
-INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
 #########################
 # PORTS
 HTTP_PORT=8080
@@ -72,17 +68,15 @@ DEEGRAPH_PORT=8880
 
 #########################
 # VERSIONS
+DEEGRAPH_VERSION=0.8
 
 #########################
 # MISC.
+HOSTNAME=$(hostname --fqdn)
+INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
+INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
 CERT_LOC=$(pwd)/certs
-CREATE_SSC=1
-INSTALL=1
-LOCAL_INSTALL=0
-SKIP_QUESTIONS=0
-PREEXISTING_VOLUME=0
 
-# Transform long options to short ones
 
 
 
@@ -95,6 +89,12 @@ PREEXISTING_VOLUME=0
 #  / ____ \| | \ \| |__| | |__| | |  | | |____| |\  |  | |        | |  | |/ ____ \| |\  | |__| | |____ _| |_| |\  | |__| |
 # /_/    \_\_|  \_\\_____|\____/|_|  |_|______|_| \_|  |_|        |_|  |_/_/    \_\_| \_|_____/|______|_____|_| \_|\_____|
 ####################################################################################################
+_MODE__CREATE_SELF_SIGNED_CERTS=1
+_MODE__INSTALL=1
+_MODE__LOCAL_INSTALL=0
+_MODE__SKIP_QUESTIONS=0
+_MODE__PREEXISTING_VOLUME=0
+
 #########################
 # TRANSFORM LONG OPTIONS TO SHORT ONES
 for arg in "$@"; do
@@ -117,30 +117,32 @@ while getopts "hylbi:n:c:" opt; do
             showHelp
             exit;;
         b) # Enter a name
-            LOCAL_INSTALL=0
-            INSTALL=0;;
+            _MODE__LOCAL_INSTALL=0
+            _MODE__INSTALL=0;;
         y) # Enter a name
-            SKIP_QUESTIONS=1;;
+            _MODE__SKIP_QUESTIONS=1;;
         l) # Enter a name
-            LOCAL_INSTALL=1;;
+            _MODE__LOCAL_INSTALL=1;;
         i) # Enter a name
             INSTANCE_IDENITIFIER=$OPTARG;;
         n) # Enter a name
             HOSTNAME=$OPTARG;;
         c)
             CERT_LOC=$OPTARG
-            CREATE_SSC=0;;
+            _MODE__CREATE_SELF_SIGNED_CERTS=0;;
         \?) # Invalid option
             echo "Error: Invalid option"
             exit;;
     esac
 done
-shift $(expr $OPTIND - 1) # remove options from positional parameters
+#########################
+# REMOVE OPTIONS FROM POSITIONAL PARAMETERS
+shift $(expr $OPTIND - 1)
 
-if [ "$INSTALL" -eq 1 ]; then
-    if [ "$LOCAL_INSTALL" -eq 0 ]; then
+if [ "$_MODE__INSTALL" -eq 1 ]; then
+    if [ "$_MODE__LOCAL_INSTALL" -eq 0 ]; then
         if dockerVolumeExists auxilium-volume-$INSTANCE_IDENITIFIER; then
-            PREEXISTING_VOLUME=1
+            _MODE__PREEXISTING_VOLUME=1
         fi
     fi
 fi
@@ -159,7 +161,7 @@ fi
 ####################################################################################################
 tput bold
 tput rev
-if [ "$INSTALL" -eq 1 ]; then
+if [ "$_MODE__INSTALL" -eq 1 ]; then
     echo "About to build and install Auxilium with the following options:"
     tput sgr0
     echo ""
@@ -168,17 +170,17 @@ if [ "$INSTALL" -eq 1 ]; then
     echo "HTTP port on $HTTP_PORT"
     echo "HTTPS port on $HTTPS_PORT"
     echo "Deegraph server on port $DEEGRAPH_PORT"
-    if [ "$PREEXISTING_VOLUME" -eq 1 ]; then
+    if [ "$_MODE__PREEXISTING_VOLUME" -eq 1 ]; then
         echo "Reinstalling with existing user data"
     else
         echo "Creating a new instance"
     fi
-    if [ "$CREATE_SSC" -eq 1 ]; then
+    if [ "$_MODE__CREATE_SELF_SIGNED_CERTS" -eq 1 ]; then
         echo "Creating new self-signed certs for development purposes"
     else
         echo "Using SSL certificates at $CERT_LOC"
     fi
-    if [ "$LOCAL_INSTALL" -eq 1 ]; then
+    if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
         echo ""
         tput bold
         tput setaf 1
@@ -190,11 +192,11 @@ if [ "$INSTALL" -eq 1 ]; then
 else
     echo "About to build Auxilium"
     tput sgr0
-    CREATE_SSC=0
-    SKIP_QUESTIONS=1
+    _MODE__CREATE_SELF_SIGNED_CERTS=0
+    _MODE__SKIP_QUESTIONS=1
 fi
 
-if [ "$SKIP_QUESTIONS" -eq 0 ]; then
+if [ "$_MODE__SKIP_QUESTIONS" -eq 0 ]; then
     echo ""
     tput bold
     read -p "Do you want to continue with the installation? [Y/n] " CONFIRM_VALUES
@@ -206,7 +208,6 @@ if [ "$SKIP_QUESTIONS" -eq 0 ]; then
     fi
 fi
 
-if [ "$LOCAL_INSTALL" -eq 1 ]; then
 
 
 
@@ -219,6 +220,7 @@ if [ "$LOCAL_INSTALL" -eq 1 ]; then
 # | |  | | |__| | |__| | |____   _      | |___| |__| | |____ / ____ \| |____       _| |_| |\  |____) |  | |/ ____ \| |____| |____ 
 # |_|  |_|\____/|_____/|______| (_)     |______\____/ \_____/_/    \_\______|     |_____|_| \_|_____/   |_/_/    \_\______|______|
 ####################################################################################################
+if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     echo ""
     tput bold
     echo "Installing dependencies"
@@ -278,7 +280,6 @@ if [ "$LOCAL_INSTALL" -eq 1 ]; then
 
 fi
 
-if [ "$CREATE_SSC" -eq 1 ]; then
 
 
 
@@ -291,6 +292,7 @@ if [ "$CREATE_SSC" -eq 1 ]; then
 # | |____| |____| | \ \  | |   _| |_| |     _| || |____ / ____ \| |  | |____ ____) |
 #  \_____|______|_|  \_\ |_|  |_____|_|    |_____\_____/_/    \_\_|  |______|_____/ 
 ####################################################################################################
+if [ "$_MODE__CREATE_SELF_SIGNED_CERTS" -eq 1 ]; then
 
 CERT_LOC="$(pwd)/certs/$INSTALL_ID"
 
@@ -368,7 +370,6 @@ cd $INSTALL_DIR
 fi
 
 
-if [ ! -f bin/deegraph-v0.8.jar ]; then
 
 
 
@@ -380,12 +381,13 @@ if [ ! -f bin/deegraph-v0.8.jar ]; then
 # | |__| | |____| |___| |__| | | \ \  / ____ \| |    | |  | |
 # |_____/|______|______\_____|_|  \_\/_/    \_\_|    |_|  |_|
 ####################################################################################################
+if [ ! -f bin/deegraph-v${DEEGRAPH_VERSION}.jar ]; then
     if [ ! -f bin/deegraph.jar ]; then
         rm bin/deegraph.jar
     fi
     echo "Downloading Deegraph"
-    wget -O bin/deegraph-v0.8.jar https://github.com/owoalex/deegraph/releases/download/v0.8/deegraph.jar
-    cp bin/deegraph-v0.8.jar bin/deegraph.jar 
+    wget -O bin/deegraph-v${DEEGRAPH_VERSION}.jar https://github.com/owoalex/deegraph/releases/download/v${DEEGRAPH_VERSION}/deegraph.jar
+    cp bin/deegraph-v${DEEGRAPH_VERSION}.jar bin/deegraph.jar 
 fi
 
 
@@ -400,7 +402,6 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-if [ "$LOCAL_INSTALL" -eq 1 ]; then
 
 
 
@@ -610,7 +611,7 @@ else
     echo "Building docker image"
     docker build -t auxilium .
     if [ $? -eq 0 ]; then
-        if [ "$INSTALL" -eq 1 ]; then
+        if [ "$_MODE__INSTALL" -eq 1 ]; then
             echo "Running new image"
             docker stop auxilium-$INSTANCE_IDENITIFIER
             docker rm auxilium-$INSTANCE_IDENITIFIER
@@ -628,7 +629,7 @@ else
             tput sgr0
             echo ""
 
-            if [ "$PREEXISTING_VOLUME" -eq 1 ]; then
+            if [ "$_MODE__PREEXISTING_VOLUME" -eq 1 ]; then
                 echo "Data restored from disk"
                 echo "Go to <https://$HOSTNAME:$HTTPS_PORT/login> to examine this instance"
                 echo ""
