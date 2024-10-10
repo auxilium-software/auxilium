@@ -109,10 +109,7 @@ function dockerVolumeExists {
         return 1
     fi
 }
-
 function showHelp {
-    #########################
-    # DISPLAY HELP OPTIONS
     echo -e "${FONT__HELP_HEADER}NAME${FONT_RESET}"
     echo -e "\tAuxilium installer script"
     echo -e ""
@@ -180,7 +177,9 @@ for arg in "$@"; do
 done
 
 OPTIND=1
-while getopts "hylbi:n:c:" opt; do
+
+# optstring starts with a colon so getopts lets the case block handle errors
+while getopts ":hylbi:n:c:" opt; do
     case $opt in
         h) # display Help
             showHelp
@@ -203,6 +202,7 @@ while getopts "hylbi:n:c:" opt; do
             fatalErrorMessage "Invalid option $OPTARG";;
     esac
 done
+
 #########################
 # REMOVE OPTIONS FROM POSITIONAL PARAMETERS
 shift $(expr $OPTIND - 1)
@@ -215,7 +215,6 @@ if [ "$_MODE__INSTALL" -eq 1 ]; then
     fi
 fi
 ####################################################################################################
-
 
 
 
