@@ -79,13 +79,16 @@ CERT_LOC=$(pwd)/certs
 # | |    | |__| | |\  | |____   | |   _| || |__| | |\  |____) |
 # |_|     \____/|_| \_|\_____|  |_|  |_____\____/|_| \_|_____/ 
 ####################################################################################################
+function fatalErrorMessage {
+    echo -e "${FONT__ERROR}Error: ${1}${FONT_RESET}"
+    exit
+}
 function checkUserIsInGroup {
     if groups $USER | grep -q "\b${1}\b"; then
         # No action, just continue
         :
     else
-        echo -e "${FONT__ERROR}User is not in the ${1} group${FONT_RESET}"
-        exit
+        fatalErrorMessage "User is not in the ${1} group"
     fi
 }
 function checkPackageIsInstalled {
@@ -93,8 +96,7 @@ function checkPackageIsInstalled {
         # No action, just continue
         :
     else
-        echo -e "${FONT__ERROR}Package '${1}' is not installed${FONT_RESET}"
-        exit
+        fatalErrorMessage "Package '${1}' is not installed"
     fi
 }
 function dockerVolumeExists {
@@ -198,8 +200,7 @@ while getopts "hylbi:n:c:" opt; do
             CERT_LOC=$OPTARG
             _MODE__CREATE_SELF_SIGNED_CERTS=0;;
         \?) # Invalid option
-            echo "Error: Invalid option"
-            exit;;
+            fatalErrorMessage "Invalid option $OPTARG";;
     esac
 done
 #########################
