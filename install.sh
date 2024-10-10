@@ -268,6 +268,16 @@ if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     tput bold
     echo "Installing dependencies"
     tput sgr0
+
+
+    if groups $USER | grep -q '\bsudo\b'; then
+        # No action, just continue
+        :
+    else
+        echo -e "${FONT__ERROR}User is not in the sudo group${FONT_RESET}"
+        exit
+    fi
+
     
     sudo apt-get update
     sudo apt-get -y install supervisor wget grep curl openjdk-17-jre-headless
