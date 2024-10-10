@@ -1,9 +1,10 @@
 #!/bin/bash
 
-BOLD_F=$(tput bold)
-NORMAL_F=$(tput sgr0)
-UNDERLINE_F=$(tput smul)
-INV_F=$(tput rev)
+FONT_RESET='\033[0m'
+FONT__HELP_HEADER='\033[1;34m'
+FONT__HELP_WARNING='\033[5;31m'
+FONT__HELP_ARG='\033[1;34m'
+FONT__HELP_PARAM='\033[1;32m'
 
 
 
@@ -28,19 +29,36 @@ function dockerVolumeExists {
 function showHelp {
     #########################
     # DISPLAY HELP OPTIONS
-    echo "Installs and builds Auxilium with given options for testing and deployment"
-    echo
-    echo "Syntax: ./install.sh [options]"
-    echo "-h, --help                Print this Help."
-    echo "-l, --local               Install locally. THIS WILL MODIFY YOUR HOST."
-    echo "-b, --build-only          Build only, do not test."
-    echo "-n <hostname>,            Set the fully qualified domain name the"
-    echo "    --hostname <name>     server will self-identify as."
-    echo "-i <name>,                Set the identifier name of the container."
-    echo "    --identifier <name>   "
-    echo "-c <dir>, --certs <dir>   Point to real certificates, and don't "
-    echo "    create self-signed certs."
-    echo "-y                        Skip questions."
+    echo -e "${FONT__HELP_HEADER}NAME${FONT_RESET}"
+    echo -e "\tAuxilium installer script"
+    echo -e ""
+    echo -e "${FONT__HELP_HEADER}SYNOPSIS${FONT_RESET}"
+    echo -e "\t./install.sh ${FONT__HELP_ARG}--help${FONT_RESET}"
+    echo -e "\t./install.sh [${FONT__HELP_ARG}OPTION${FONT_RESET}]..."
+    echo -e ""
+    echo -e "${FONT__HELP_HEADER}DESCRIPTION${FONT_RESET}"
+    echo -e "\tInstalls and builds Auxilium with given options for testing and deployment."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-h${FONT_RESET}, ${FONT__HELP_ARG}--help${FONT_RESET}"
+    echo -e "\t\tPrint this Help."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-l${FONT_RESET}, ${FONT__HELP_ARG}--local${FONT_RESET}"
+    echo -e "\t\tInstall locally, ${FONT__HELP_WARNING}THIS WILL MODIFY YOUR HOST${FONT_RESET}."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-b${FONT_RESET}, ${FONT__HELP_ARG}--build-only${FONT_RESET}"
+    echo -e "\t\tBuild only, do not test."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-n ${FONT__HELP_PARAM}<hostname>${FONT_RESET}, ${FONT__HELP_ARG}--hostname ${FONT__HELP_PARAM}<hostname>${FONT_RESET}"
+    echo -e "\t\tSet the fully qualified domain name the server will self-identify as."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-i ${FONT__HELP_PARAM}<name>${FONT_RESET}, ${FONT__HELP_ARG}--name ${FONT__HELP_PARAM}<name>${FONT_RESET}"
+    echo -e "\t\tSet the identifier name of the container."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-c ${FONT__HELP_PARAM}<dir>${FONT_RESET}, ${FONT__HELP_ARG}--certs ${FONT__HELP_PARAM}<dir>${FONT_RESET}"
+    echo -e "\t\tPoint to real certificates, and don't create self-signed certs."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-y${FONT_RESET}"
+    echo -e "\t\tSkip questions."
 }
 
 if [ ! -d bin ]; then
