@@ -70,7 +70,14 @@ fi
 echo ""
 tput setaf 4
 tput bold
-echo "H4sICAd/eWYAA2FzY2lpLWFydC50eHQAfZCxDcMwDAR7TfFFiqTiBtnAXUoBXITDh3xaoiAoeYAvyy8daQPyoHCUh6NamCpwPmuqYp7Fema5np/r1YyEjhtdTeaTodrW2xAXElLJYl/cl3KKpUbu02MYEfkxdcRnIljwG5Fz94FYgkTgHeb1BzGtbeNn8/iGju165TuC/5velZLcxVZsqS2f1r72zncjBAIAAA==" | base64 -d | gzip -dc
+echo -e "  /AAAAAA                      /II /LL /II                             "
+echo -e " /AA__  AA                    |__/| LL|__/                         (TM)"
+echo -e "| AA  \ AA /UU   /UU /XX   /XX /II| LL /II /UU   /UU /MMMMMM/MMMM      "
+echo -e "| AAAAAAAA| UU  | UU|  XX /XX/| II| LL| II| UU  | UU| MM_  MM_  MM     "
+echo -e "| AA__  AA| UU  | UU \  XXXX/ | II| LL| II| UU  | UU| MM \ MM \ MM     "
+echo -e "| AA  | AA| UU  | UU  >XX  XX | II| LL| II| UU  | UU| MM | MM | MM     "
+echo -e "| AA  | AA|  UUUUUU/ /XX/\  XX| II| LL| II|  UUUUUU/| MM | MM | MM     "
+echo -e "|__/  |__/ \______/ |__/  \__/|__/|__/|__/ \______/ |__/ |__/ |__/     "
 tput sgr0
 
 echo ""
