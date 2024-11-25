@@ -36,7 +36,10 @@ class CommonFilters extends AbstractExtension
     }
     public function uitxtrt($string): string
     {
-        return MicroTemplate::ui_text_root($string, $this->twigVariables["selected_lang"], $this->twigVariables);
+        // return MicroTemplate::ui_text_root($string, $_COOKIE["lang"], $this->twigVariables);
+        return MicroTemplate::ui_text_root($string, $_COOKIE["lang"], [
+
+        ]);
     }
     public function ndtitle($string): string
     {
@@ -52,11 +55,11 @@ class CommonFilters extends AbstractExtension
     }
     public function uihdg($string): string
     {
-        return MicroTemplate::ui_heading($string, $this->twigVariables["selected_lang"]);
+        return MicroTemplate::ui_heading($string, $_COOKIE["lang"]);
     }
     public function unpack_string($string): string
     {
-        return MicroTemplate::from_packed_template($string, $this->twigVariables["selected_lang"]);
+        return MicroTemplate::from_packed_template($string, $_COOKIE["lang"]);
     }
     public function b64_url_safe($string): string
     {

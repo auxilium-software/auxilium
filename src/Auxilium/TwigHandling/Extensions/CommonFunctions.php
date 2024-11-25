@@ -12,7 +12,7 @@ class CommonFunctions extends AbstractExtension
     {
         return [
             new TwigFunction('proplist', [$this, 'proplist'], ['is_safe' => ['html']]),
-            new TwigFunction('ui_templates', [$this, 'ui_templates'], ['is_safe' => ['html']]),
+            new TwigFunction('ui_template', [$this, 'ui_template'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -30,7 +30,7 @@ class CommonFunctions extends AbstractExtension
         return "<span id=\"dynamic_property_list_element_$rid\"></span><script>document.getElementById(\"dynamic_property_list_element_$rid\").appendChild((new PropertyList(\"$path\", ".($compact?"true":"false").", ".json_encode($hidden_props).", ".json_encode($sort).", ".($recursive?"true":"false").")).render())</script>";
     }
 
-    public function ui_templates(
+    public function ui_template(
         $path,
         $template_variables = []
     )
