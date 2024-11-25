@@ -5,6 +5,8 @@ use Auxilium\EncodingTools;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\MicroTemplate;
 use Auxilium\Session;
+use Auxilium\TwigHandling\Extensions\CommonFilters;
+use Auxilium\TwigHandling\Extensions\CommonFunctions;
 
 class PageBuilder {
     private static $instance = null;
@@ -173,77 +175,10 @@ class PageBuilder {
         $twig = new \Twig\Environment($twigLoader, [
             "cache" => false,
         ]);
-        $filter = new \Twig\TwigFilter("uiprop", function ($string) {
-            return MicroTemplate::data_type_to_human_name($string, $this->twigVariables["selected_lang"]);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("uitxt", function ($string) {
-            return MicroTemplate::ui_text($string, $this->twigVariables["selected_lang"]);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("uitxtrt", function ($string) {
-            return MicroTemplate::ui_text_root($string, $this->twigVariables["selected_lang"], $this->twigVariables);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("ndtitle", function ($string) {
-            $pcs = mb_split(" ", $string);
-            foreach ($pcs as &$pc) {
-                $pc = mb_strtoupper(mb_substr($pc, 0, 1)) . mb_substr($pc, 1);
-            }
-            return implode(" ", $pcs);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("ndsentence", function ($string) {
-            return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("uihdg", function ($string) {
-            return MicroTemplate::ui_heading($string, $this->twigVariables["selected_lang"]);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("unpack_string", function ($string) {
-            return MicroTemplate::from_packed_template($string, $this->twigVariables["selected_lang"]);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("b64_url_safe", function ($string) {
-            return EncodingTools::base64_encode_url_safe($string);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("un_b64_url_safe", function ($string) {
-            return EncodingTools::base64_decode_url_safe($string);
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("human_filesize", function ($string) {
-            $size = intval($string);
-            if ($size <= 256) {
-                return $size." B";
-            } elseif ($size <= 256 * pow(1024, 1)) {
-                return substr($size / pow(1024, 1), 0, 3)." KiB";
-            } elseif ($size <= 256 * pow(1024, 2)) {
-                return substr($size / pow(1024, 2), 0, 3)." MiB";
-            } elseif ($size <= 256 * pow(1024, 3)) {
-                return substr($size / pow(1024, 3), 0, 3)." GiB";
-            } else {
-                return substr($size / pow(1024, 4), 0, 3)." TiB";
-            }
-        });
-        $twig->addFilter($filter);
-        $filter = new \Twig\TwigFilter("dnd", function ($path) {
-            $rid = openssl_random_pseudo_bytes(16);
-            $rid = bin2hex($rid);
-            return "<span id=\"dynamic_inline_node_element_$rid\"></span><script>document.getElementById(\"dynamic_inline_node_element_$rid\").appendChild((new InlineNodeView(\"$path\")).render())</script>";
-        }); // Macro to insert a dynamically loaded node view
-        $twig->addFilter($filter);
-        $function = new \Twig\TwigFunction("proplist", function ($path, $hidden_props = [], $compact = false, $sort = null, $recursive = false) {
-            $rid = openssl_random_pseudo_bytes(16);
-            $rid = bin2hex($rid);
-            return "<span id=\"dynamic_property_list_element_$rid\"></span><script>document.getElementById(\"dynamic_property_list_element_$rid\").appendChild((new PropertyList(\"$path\", ".($compact?"true":"false").", ".json_encode($hidden_props).", ".json_encode($sort).", ".($recursive?"true":"false").")).render())</script>";
-        }); // Macro to insert a dynamically loaded property list
-        $twig->addFunction($function);
-        $function = new \Twig\TwigFunction("ui_template", function ($path, $template_variables = []) {
-            return strval(new MicroTemplate("ui_templates/".$path, $this->twigVariables["selected_lang"], $template_variables, false));
-        });
-        $twig->addFunction($function);
+
+        $twig->addExtension(new CommonFilters());
+        $twig->addExtension(new CommonFunctions());
+
         $this->twigVariables["current_uri"] = $_SERVER["REQUEST_URI"];
         try {
             echo $twig->render($this->template, $this->twigVariables);
