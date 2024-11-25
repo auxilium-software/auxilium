@@ -279,4 +279,3 @@ class Node {
         return $this->rawContent;
     }
 }
-?>

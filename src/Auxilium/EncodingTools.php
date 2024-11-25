@@ -36,4 +36,3 @@ class EncodingTools {
         return addcslashes(mb_encode_mimeheader($string, "UTF-8", "Q"), '"');
     }
 }
-?>

@@ -42,4 +42,3 @@ class User extends Node {
         }
     }
 }
-?>

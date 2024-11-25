@@ -247,4 +247,3 @@ class URLMetadata {
         return $jwt;
     }
 }
-?>

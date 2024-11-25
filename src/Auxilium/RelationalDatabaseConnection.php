@@ -15,5 +15,3 @@ class RelationalDatabaseConnection {
         return self::$pdo;
     }
 }
-    
-?>

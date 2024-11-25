@@ -370,4 +370,3 @@ class RFC822Object extends DataObject {
         return $this->getMessage()->getHtmlContent();
     }
 }
-?>

@@ -32,4 +32,3 @@ class NodeFactory {
         return \Auxilium\GraphDatabaseConnection::new_node($this->data, $this->mimeType, $this->schema, $this->actor);
     }
 }
-?>

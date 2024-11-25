@@ -50,5 +50,3 @@ class Session {
         return !($this->currentUser == null);
     }
 }
-    
-?>

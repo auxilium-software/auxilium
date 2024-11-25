@@ -44,4 +44,3 @@ if (isset($_POST["query"])) {
     } 
 }
 $pb->render();
-?>

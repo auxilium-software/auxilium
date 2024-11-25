@@ -9,5 +9,3 @@ setcookie("session_key", null, time() - (3600 * 48), "/", null, true, true);
 $pb->setVariable("current_user", null);
 $pb->setTemplate("logout");
 $pb->render();
-
-?>

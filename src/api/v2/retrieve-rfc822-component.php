@@ -89,5 +89,3 @@ foreach($desired_components as &$desired_component) {
 //$at->setVariable("uri", strval($lfsobj));
 //$at->setVariable("data", $lfsobj->getData());
 $at->output();
-
-?>

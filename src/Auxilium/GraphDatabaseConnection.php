@@ -222,5 +222,3 @@ class GraphDatabaseConnection {
         return GraphDatabaseConnection::new_node_raw($data_url, $schema, $creator);
     }
 }
-    
-?>

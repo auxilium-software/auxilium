@@ -49,4 +49,3 @@ class Schema {
         return $this->url;
     }
 }
-?>

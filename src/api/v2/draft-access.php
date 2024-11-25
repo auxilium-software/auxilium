@@ -188,5 +188,3 @@ if ($action == "access") {
     $at->setErrorText("Invalid action");
     $at->output();
 }
-
-?>

@@ -27,6 +27,3 @@ if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPe
     http_response_code(403);
     $pb->render();
 }
-
-
-?>

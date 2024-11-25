@@ -84,5 +84,3 @@ if ($regenerate_index) {
 
 $at->setVariable("index", $new_index);
 $at->output();
-
-?>

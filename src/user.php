@@ -364,5 +364,3 @@ switch($uri_components[1]) {
         var_dump($uri_components);
         exit();
 }
-
-?>

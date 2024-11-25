@@ -100,5 +100,3 @@ try {
     $at->setVariable("stack_trace", $e->getInnerTrace());
     $at->output();
 } 
-
-?>

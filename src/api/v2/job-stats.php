@@ -26,5 +26,3 @@ foreach ($jobs as &$job_name) {
 
 $at->setVariable("jobs", $job_names);
 $at->output();
-            
-?>

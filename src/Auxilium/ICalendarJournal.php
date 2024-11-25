@@ -10,4 +10,3 @@ class ICalendarJournal extends ICalendarComponent {
         return "BEGIN:VJOURNAL\r\n".parent::stringify()."END:VJOURNAL\r\n";
     }
 }
-?>

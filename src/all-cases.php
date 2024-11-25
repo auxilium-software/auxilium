@@ -15,6 +15,3 @@ try {
     $pb->setTemplate("internal-system-error");
     $pb->render();
 }
-
-
-?>

@@ -139,4 +139,3 @@ class AuxiliumLFSObject {
         return "auxlfs://".$this->domain."/".$this->uuid."+".$this->getHash()."+".urlencode($this->getMimeType())."+".$this->getSize();
     }
 }
-?>

@@ -120,5 +120,3 @@ $at->setVariable("remaining_jobs", $total_jobs - $completed_jobs);
 $at->setVariable("elapsed_time_us", ceil((hrtime(true) - $time_pre) / 1000));
 $at->setVariable("exec_time_limit_us", EXEC_TIME_LIMIT);
 $at->output();
-            
-?>

@@ -65,5 +65,3 @@ switch ($action) {
 }
 
 $pb->render();
-
-?>

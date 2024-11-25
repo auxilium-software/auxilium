@@ -456,4 +456,3 @@ if (isset($uri_components[0])) {
 
     $pb->render();
 }
-?>

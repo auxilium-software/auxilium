@@ -214,5 +214,3 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
 //$redirect_uri = $openid_config["openid_login_uri"]."&redirect_uri=https%3A%2F%2F".INSTANCE_DOMAIN_NAME."%2Flogin&state=$jwt&nonce=$nonce";
 //header("Location: ".$redirect_uri);
 exit();
-
-?>

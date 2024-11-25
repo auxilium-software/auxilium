@@ -62,4 +62,3 @@ class ICalendarComponent {
         return $this->stringify();
     }
 }
-?>

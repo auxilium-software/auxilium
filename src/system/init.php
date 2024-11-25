@@ -126,4 +126,3 @@ if (isset($_GET["page"])) {
     }
 }
 $pb->render();
-?>

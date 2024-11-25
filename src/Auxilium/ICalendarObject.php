@@ -105,4 +105,3 @@ class ICalendarObject {
         return $this->stringify();
     }
 }
-?>

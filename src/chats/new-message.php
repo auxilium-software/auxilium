@@ -37,5 +37,3 @@ if ($bytes_written === FALSE) {
     header("Location: /chats/drafts/".$message_uuid);
     exit();
 }
-
-?>

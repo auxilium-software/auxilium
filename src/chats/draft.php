@@ -33,4 +33,3 @@ $pb->setVariable("raw_message_draft", $message_draft);
 $pb->setVariable("draft_id", $message_uuid);
 $pb->setTemplate("chats/draft");
 $pb->render();
-?>

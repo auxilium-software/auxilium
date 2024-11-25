@@ -147,4 +147,3 @@ if (isset($_POST["submit"])) {
     $pb->setVariable("query", $query, JSON_PRETTY_PRINT);*/
 }
 $pb->render();
-?>
