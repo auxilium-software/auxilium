@@ -8,7 +8,7 @@ if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPe
     try {
         $pb->setTemplate("system/index");
         $pb->render();
-    } catch (Auxilium\DatabaseConnectionException $e) {
+    } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

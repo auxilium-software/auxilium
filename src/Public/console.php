@@ -26,7 +26,7 @@ if (isset($_POST["query"])) {
         }
         $pb->setVariable("result", json_encode($result, JSON_PRETTY_PRINT));
         $pb->setVariable("query", $query);
-    } catch (Auxilium\DeegraphException $e) {
+    } catch (\Auxilium\Exceptions\DeegraphException $e) {
         if (strtoupper($_POST["return_format"]) == "RAW") {
             header("Content-Type: application/json; charset=utf-8");
             $json_out = json_encode($e->getInnerTrace(), JSON_PRETTY_PRINT);

@@ -1,6 +1,9 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\Exceptions\DatabaseConnectionException;
+use Auxilium\Exceptions\DeegraphException;
+
 require_once CREDENTIALS_FILE_LOCATION;
 
 class GraphDatabaseConnection {

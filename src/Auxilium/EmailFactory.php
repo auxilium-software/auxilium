@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\Exceptions\MessageSendException;
+
 class EmailFactory extends RFC822ObjectFactory {
     private $emailData = null;
     private $recipients = [];

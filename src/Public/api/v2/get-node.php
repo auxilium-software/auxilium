@@ -36,7 +36,7 @@ try {
             $at->output();
             break;
     }
-} catch (Auxilium\DeegraphException $e) {
+} catch (\Auxilium\Exceptions\DeegraphException $e) {
     $at->setErrorText("Database error");
     $at->setVariable("stack_trace", $e->getInnerTrace());
     $at->output();

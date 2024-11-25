@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\Exceptions\DatabaseConnectionException;
+
 class PageBuilder {
     private static $instance = null;
     private $twigVariables;

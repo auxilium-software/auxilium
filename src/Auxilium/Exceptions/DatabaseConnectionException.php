@@ -1,5 +1,7 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\Exceptions;
+
+use Auxilium\Throwable;
 
 class DatabaseConnectionException extends \Exception {
     public function __construct($reason = null, $code = 0, Throwable $previous = null) {

@@ -1,5 +1,7 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\Exceptions;
+
+use Auxilium\Throwable;
 
 class DeegraphException extends \Exception {
     protected $trace = null;

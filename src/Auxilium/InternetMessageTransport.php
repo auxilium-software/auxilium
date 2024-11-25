@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\Exceptions\MessageSendException;
+
 class InternetMessageTransport {
     public static function scan_inboxes() {
         if (INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "MS_APP_GRAPH") {

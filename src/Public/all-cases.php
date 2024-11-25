@@ -11,7 +11,7 @@ try {
     }
     $pb->setTemplate("all-cases");
     $pb->render();
-} catch (Auxilium\DatabaseConnectionException $e) {
+} catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
     $pb->setTemplate("internal-system-error");
     $pb->render();
 }

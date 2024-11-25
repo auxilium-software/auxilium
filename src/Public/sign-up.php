@@ -277,7 +277,7 @@ try {
                 $pb->render();
                 break;
         }
-    } catch (Auxilium\DatabaseConnectionException | Auxilium\MessageSendException $e) {
+    } catch (\Auxilium\Exceptions\DatabaseConnectionException | \Auxilium\Exceptions\MessageSendException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

@@ -379,7 +379,7 @@ try {
 
         $pb->render();
 
-    } catch (Auxilium\DatabaseConnectionException $e) {
+    } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

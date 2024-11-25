@@ -95,7 +95,7 @@ try {
         $at->setErrorText("Missing query parameter");
         $at->output();
     }
-} catch (Auxilium\DeegraphException $e) {
+} catch (\Auxilium\Exceptions\DeegraphException $e) {
     $at->setErrorText("Query error");
     $at->setVariable("stack_trace", $e->getInnerTrace());
     $at->output();
