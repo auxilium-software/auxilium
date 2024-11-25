@@ -3,7 +3,7 @@
 
 <div>
     <div class="inner-content">
-        {% include "node-views/node-view-breadcrumbs.html" %}
+        {% include "node-views/node-view-breadcrumbs.html.twig" %}
     
         <form action="?{{ url_metadata }}" method="POST">
         {% if last_page %}
@@ -49,7 +49,7 @@
                             {% set inline_node_path = "/graph/~" ~ value.object.id %}
                             {% set inline_node_new_tab = true %}
                             {% set hide_edit_button = true %}
-                            <dd>{{ include("node-views/inline-node-view.html") }}</dd>
+                            <dd>{{ include("node-views/inline-node-view.html.twig") }}</dd>
                             {% set inline_node_new_tab = false %}
                             {% set hide_edit_button = false %}
                         {% elseif value.text %}

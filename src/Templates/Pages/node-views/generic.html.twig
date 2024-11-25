@@ -10,7 +10,7 @@
 
 <div>
     <div class="inner-content">
-        {% include "node-views/node-view-breadcrumbs.html" %}
+        {% include "node-views/node-view-breadcrumbs.html.twig" %}
         <div id="main-content" class="reference-element"></div>
         {% if progressive_load %}
             <h1 href="/graph/{{ parent_node_path }}" id="dynamic_node_name_title"><script>document.getElementById("dynamic_node_name_title").appendChild((new PathNameView("{{ deegraph_path }}")).render())</script></h1>
@@ -69,10 +69,10 @@
                                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/" ~ (prop_name | url_encode) %}
                                 {% if inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
                                     <dt><a class="format-list-bulleted-icon inline-icon inline-icon-shift-left" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}" title="View collection"></a>{{ prop_name | uiprop | ndtitle }}</dt>
-                                    <dd>{{ include("node-views/inline-node-view.html") }}{% if not hide_edit_button %}<a class="add-icon inline-icon" title="Add item to list" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@new_property?{{ url_metadata.copy().setPath(primary_string_path ~ "/" ~ (prop_name | url_encode)) }}"></a><a class="delete-icon inline-icon" title="Remove entire list" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@unlink?{{ url_metadata.copy().setProperty("uln", prop.id) }}"></a>{% endif %}</dd>
+                                    <dd>{{ include("node-views/inline-node-view.html.twig") }}{% if not hide_edit_button %}<a class="add-icon inline-icon" title="Add item to list" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@new_property?{{ url_metadata.copy().setPath(primary_string_path ~ "/" ~ (prop_name | url_encode)) }}"></a><a class="delete-icon inline-icon" title="Remove entire list" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@unlink?{{ url_metadata.copy().setProperty("uln", prop.id) }}"></a>{% endif %}</dd>
                                 {% else %}
                                     <dt>{{ prop_name | uiprop | ndtitle }}</dt>
-                                    <dd>{{ include("node-views/inline-node-view.html") }}{% if not hide_edit_button %}<a class="delete-icon inline-icon" title="Remove reference to data" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@unlink?{{ url_metadata.copy().setProperty("uln", prop.id) }}"></a>{% endif %}</dd>
+                                    <dd>{{ include("node-views/inline-node-view.html.twig") }}{% if not hide_edit_button %}<a class="delete-icon inline-icon" title="Remove reference to data" href="/graph/{{ primary_string_path | raw }}/{{ prop_name | url_encode }}/@unlink?{{ url_metadata.copy().setProperty("uln", prop.id) }}"></a>{% endif %}</dd>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}

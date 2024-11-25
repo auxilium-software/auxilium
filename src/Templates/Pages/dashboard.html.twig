@@ -51,7 +51,7 @@
                                 {% for prop_name, prop in current_user.properties.cases.properties %}
                                     {% set inline_node = prop %}
                                     {% set inline_node_path = "/graph/~" ~ prop.id %}
-                                    <li>{{ include("node-views/inline-node-view.html") }}</li>
+                                    <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
                                 {% else %}
                                     <li><em>No cases</em></li>
                                 {% endfor %}
@@ -88,7 +88,7 @@
                                 {% for prop_name, prop in current_user.properties.messages.properties %}
                                     {% set inline_node = prop %}
                                     {% set inline_node_path = "/graph/~" ~ current_user.id ~ "/messages/" ~ (prop_name | url_encode) %}
-                                    <li>{{ include("node-views/inline-node-view.html") }}</li>
+                                    <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
                                 {% else %}
                                     <li><em>No messages</em></li>
                                 {% endfor %}
