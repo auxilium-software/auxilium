@@ -148,6 +148,7 @@ class PageBuilder {
     }
     
     public function setTemplate($template) {
+        $template = "/Pages/" . $template;
         if (str_ends_with($template, ".html")) {
             $this->template = $template;
         } else {
@@ -191,7 +192,7 @@ class PageBuilder {
                 $this->twigVariables["technical_details"] = "Exception Type:\n    ".get_class($e);
                 $this->twigVariables["technical_details"] .= "\nMessage:\n    ".$e->getMessage();
                 $this->twigVariables["technical_details"] .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-                echo $twig->render("internal-system-error.html", $this->twigVariables);
+                echo $twig->render("internal-system-error.html.twig", $this->twigVariables);
                 exit();
             } else {
                 echo "<pre>";
