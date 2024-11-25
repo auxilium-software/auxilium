@@ -92,7 +92,7 @@ class EmailFactory extends RFC822ObjectFactory {
             $this->emailData["template_properties"]["recipient"] = $this->recipients[0];
             $this->emailData["template_properties"]["selected_lang"] = $this->recipients[0]->getLanguagePreference();
         }
-        $templatePath = "email-templates/".$this->emailData["template"].".html";
+        $templatePath = "Emails/".$this->emailData["template"].".html";
         $content = null;
         $fixedTemplateProperties = [
             "INSTANCE_BRANDING_LOGO" => INSTANCE_BRANDING_LOGO,

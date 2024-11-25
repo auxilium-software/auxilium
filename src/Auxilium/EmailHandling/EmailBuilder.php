@@ -53,7 +53,7 @@ class EmailBuilder {
         
         //$this->emailData["template_properties"]["selected_lang"] = "en";
 
-        $templatePath = "email-templates/".$this->emailData["template"].".html";
+        $templatePath = "Emails/".$this->emailData["template"].".html";
         $content = null;
         $fixedTemplateProperties = [
             "INSTANCE_BRANDING_LOGO" => INSTANCE_BRANDING_LOGO,

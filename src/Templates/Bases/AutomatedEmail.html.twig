@@ -1,4 +1,4 @@
-{% extends "/Bases/StandardWebPage.html.twig" %}
+{% extends "/Bases/Email.html.twig" %}
 
 {% block content %}
     <p style="{{ default_text_style }}">Hi {% if recipient_name %}{{ recipient_name }}{% else %}{{ recipient.displayName }}{% endif %},</p>
