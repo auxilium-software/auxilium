@@ -1,7 +1,10 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\TwigHandling;
 
+use Auxilium\EncodingTools;
 use Auxilium\Exceptions\DatabaseConnectionException;
+use Auxilium\MicroTemplate;
+use Auxilium\Session;
 
 class PageBuilder {
     private static $instance = null;

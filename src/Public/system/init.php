@@ -11,13 +11,13 @@ if (isset($_GET["setup_key"])) {
         if (trim($match_key) == trim($_GET["setup_key"])) {
             $setup_key = trim($_GET["setup_key"]);
         } else {
-            $pb = Auxilium\PageBuilder::get_instance();
+            $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
             $pb->setTemplate("system/init-locked-out");
             $pb->render();
             exit();
         }
     } else {
-        $pb = Auxilium\PageBuilder::get_instance();
+        $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
         $pb->setTemplate("system/init-done");
         $pb->render();
         exit();
@@ -27,13 +27,13 @@ if (isset($_GET["setup_key"])) {
 if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock")) {
     if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key")) {
         if ($setup_key == null) {
-            $pb = Auxilium\PageBuilder::get_instance();
+            $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
             $pb->setTemplate("system/init-locked-out");
             $pb->render();
             exit();
         }
     } else {
-        $pb = Auxilium\PageBuilder::get_instance();
+        $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
         $pb->setTemplate("system/init-done");
         $pb->render();
         exit();
@@ -63,7 +63,7 @@ if ($setup_key == null) {
     fclose($key_file);
 }
 
-$pb = Auxilium\PageBuilder::get_instance();
+$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $pb->setTemplate("system/init");
 $pb->setVariable("setup_key", $setup_key);
 if (isset($_GET["lang"])) {
@@ -113,7 +113,7 @@ if (isset($_GET["page"])) {
                 
                 
                 if (unlink(LOCAL_STORAGE_DIRECTORY."setup.key")) {
-                    $pb = Auxilium\PageBuilder::get_instance();
+                    $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
                     $pb->setTemplate("system/init-done");
                     $pb->render();
                     exit();

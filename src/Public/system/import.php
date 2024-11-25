@@ -1,7 +1,7 @@
 <?php
 require_once "../environment.php";
 
-$pb = Auxilium\PageBuilder::get_instance();
+$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $pb->requireLogin();
 $pb->setTemplate("system/import");
 
