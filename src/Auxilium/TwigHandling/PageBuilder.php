@@ -171,7 +171,7 @@ class PageBuilder {
     }
     
     public function render() {
-        $twigLoader = new \Twig\Loader\FilesystemLoader(WEB_ROOT_DIRECTORY."/templates");
+        $twigLoader = new \Twig\Loader\FilesystemLoader(WEB_ROOT_DIRECTORY."/Templates");
         $twig = new \Twig\Environment($twigLoader, [
             "cache" => false,
         ]);
