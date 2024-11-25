@@ -1,5 +1,7 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\EmailHandling;
+
+use Auxilium\NodeFactory;
 
 class RFC822ObjectFactory extends NodeFactory {
     private $emailData = null;

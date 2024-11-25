@@ -1,5 +1,9 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\EmailHandling;
+use Auxilium\DataObject;
+use Auxilium\EncodingTools;
+use Auxilium\ReadPermissionException;
+
 class RFC822Object extends DataObject {
     protected $message = null;
     protected $attachmentParts = null;

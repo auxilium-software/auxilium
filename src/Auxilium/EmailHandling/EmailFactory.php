@@ -1,7 +1,10 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\EmailHandling;
 
 use Auxilium\Exceptions\MessageSendException;
+use Auxilium\MicroTemplate;
+use Auxilium\Session;
+use Auxilium\User;
 
 class EmailFactory extends RFC822ObjectFactory {
     private $emailData = null;

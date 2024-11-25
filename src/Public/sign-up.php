@@ -187,7 +187,7 @@ try {
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($temporary_data);
                     
-                    $email_builder = new Auxilium\EmailBuilder();
+                    $email_builder = new \Auxilium\EmailHandling\EmailBuilder();
                     $email_builder->setTemplate("new-account-verification-code");
                     $email_builder->setTemplateProperty("verification_code", $verification_code);
                     $email_builder->setTemplateProperty("recipient_name", explode(" ", $form_values["full_name"])[0]);

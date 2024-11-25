@@ -125,7 +125,7 @@ switch($uri_components[1]) {
                             $user_name = $target_node->getProperty("name");
                         }
                         
-                        $email_builder = new Auxilium\EmailBuilder();
+                        $email_builder = new \Auxilium\EmailHandling\EmailBuilder();
                         $email_builder->setTemplate("new-login-verification-code");
                         $email_builder->setTemplateProperty("verification_code", $verification_code);
                         $email_builder->setTemplateProperty("recipient_name", $user_name);

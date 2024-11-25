@@ -1,5 +1,8 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\EmailHandling;
+
+use Auxilium\Exception;
+use Auxilium\MicroTemplate;
 
 class EmailBuilder {
     private $emailData = null;
