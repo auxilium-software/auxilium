@@ -1,14 +1,14 @@
 <?php
 require_once "../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
 
-$message_uuid = \auxilium\EncodingTools::generate_new_uuid(); // We don't need to assign this to a table, this is just for convenience to get a unique file handle.
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/".$message_uuid.".json";
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
+$message_uuid = Auxilium\EncodingTools::generate_new_uuid(); // We don't need to assign this to a table, this is just for convenience to get a unique file handle.
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$message_uuid.".json";
+if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/")) {
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
 }
 $new_message_template = [
     "body" => "",

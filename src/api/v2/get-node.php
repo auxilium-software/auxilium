@@ -1,7 +1,7 @@
 <?php
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
 try {
@@ -25,18 +25,18 @@ try {
     switch ($_SERVER['REQUEST_METHOD']) {
         case "DELETE":
             $query = "DELETE {".$node_id."}";
-            \auxilium\GraphDatabaseConnection::query(\auxilium\Session::get_current()->getUser(), $query);
+            Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $query);
             $at->output();
             break;
         case "GET":
         default:
-            $node_info = \auxilium\GraphDatabaseConnection::get_raw_node_info(\auxilium\Session::get_current()->getUser(), $node_id);
+            $node_info = Auxilium\GraphDatabaseConnection::get_raw_node_info(Auxilium\Session::get_current()->getUser(), $node_id);
             $at->setVariable("result", $node_info);
             $at->setVariable("request", $node_id);
             $at->output();
             break;
     }
-} catch (\auxilium\DeegraphException $e) {
+} catch (Auxilium\DeegraphException $e) {
     $at->setErrorText("Database error");
     $at->setVariable("stack_trace", $e->getInnerTrace());
     $at->output();

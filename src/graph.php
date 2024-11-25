@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 try {
     try {
         $pb->requireLogin();
@@ -34,7 +34,7 @@ try {
             }
         }
         if (count($uri_components) == 0) {
-            header("Location: /graph/~".\auxilium\Session::get_current()->getUser()->getId());
+            header("Location: /graph/~". Auxilium\Session::get_current()->getUser()->getId());
             exit();
         }
 
@@ -106,10 +106,10 @@ try {
                 
                 if ((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim)) {
                     $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
-                    $primary_node_path_nodes[$np] = \auxilium\Node::from_path($absolute_path);
+                    $primary_node_path_nodes[$np] = Auxilium\Node::from_path($absolute_path);
                     if ($primary_node_path_nodes[$np] != null) {
                         if ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
-                            if ($primary_node_path_nodes[$np]->is(\auxilium\Session::get_current()->getUser())) {
+                            if ($primary_node_path_nodes[$np]->is(Auxilium\Session::get_current()->getUser())) {
                                 $primary_node_path_names[$np] = "::auxpckstr:ui_heading/my_account::";
                                 $pb->setVariable("is_own_account", true);
                             } else {
@@ -124,7 +124,7 @@ try {
                         }
                     }
                 } else {
-                    if (\auxilium\MicroTemplate::does_template_exist("data_types/".$pth_prim)) {
+                    if (Auxilium\MicroTemplate::does_template_exist("data_types/".$pth_prim)) {
                         $primary_node_path_names[$np] = "::auxpckstr:data_types/".$pth_prim."::";
                     } else {
                         $primary_node_path_names[$np] = str_replace("_", " ", $pth_prim);
@@ -137,21 +137,21 @@ try {
             $pb->setVariable("primary_node_path_name", end($primary_node_path_names));
         }
 
-        $node = \auxilium\Node::from_path($primary_string_path);
+        $node = Auxilium\Node::from_path($primary_string_path);
 
         $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated. 
         //This is not the current state of the url_metadata, rather the state it was in when we received the request
 
-        $url_metadata = \auxilium\URLMetadata::from_jwt($get_params);
+        $url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
         if ($url_metadata == null) {
-            $url_metadata = new \auxilium\URLMetadata();
+            $url_metadata = new Auxilium\URLMetadata();
             $url_metadata->setPath($primary_string_path);
         } else {
             if ($url_metadata->checkPath($primary_string_path)) { // Both path parts match -> this was likely a clicked or history link
                 if ($url_metadata->checkNode($node)) { // Check the end result is the node we expected - otherwise throw error - the database has changed what we're looking at!
                     $jwt_validation_passed = $url_metadata->isSecureMatch(); // We don't just want to check validity - we want to use this as a CSRF token for a particular user
                     if (!$jwt_validation_passed) {
-                        $url_metadata = new \auxilium\URLMetadata();
+                        $url_metadata = new Auxilium\URLMetadata();
                         $url_metadata->setPath($primary_string_path);
                     }
                 } else {
@@ -159,16 +159,16 @@ try {
                         header("Location: /graph/~".$node->getId()."/@ref_error");
                         exit();
                     }
-                    $url_metadata = new \auxilium\URLMetadata();
+                    $url_metadata = new Auxilium\URLMetadata();
                     $url_metadata->setPath($primary_string_path);
                 }
             } else {
-                $url_metadata = new \auxilium\URLMetadata();
+                $url_metadata = new Auxilium\URLMetadata();
                 $url_metadata->setPath($primary_string_path);
             }
         }
         $pb->setVariable("url_metadata", $url_metadata);
-        $pb->setVariable("root_url_metadata", new \auxilium\URLMetadata());
+        $pb->setVariable("root_url_metadata", new Auxilium\URLMetadata());
         $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 
         //$node->getProperties();
@@ -217,7 +217,7 @@ try {
                             //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
                             
                             $data = $_POST["value"];
-                            $new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+                            $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                             
                             foreach ($refs as $ref_name => &$ref_nodes) {
                                 foreach ($ref_nodes as &$ref_node) {
@@ -269,8 +269,8 @@ try {
                                 //echo $node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                                 
                                 //exit();
-                                $return_node_id = \auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                                $return_node = \auxilium\Node::from_id($return_node_id);
+                                $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                                $return_node = Auxilium\Node::from_id($return_node_id);
                                 $query_result = $node->addProperty($_POST["name"], $return_node);
                                 if ($query_result !== false) {
                                     //var_dump($query_result);
@@ -327,7 +327,7 @@ try {
                             "user_uuid" => $node->getId(),
                         ];
                         $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         $user_data = $statement->fetch();
                         if ($user_data != null) {
@@ -340,7 +340,7 @@ try {
                             "user_uuid" => $node->getId()
                         ];
                         $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         $returned_data = $statement->fetch();
                         while ($returned_data != null) {
@@ -351,7 +351,7 @@ try {
                             $returned_data = $statement->fetch();
                         }
                         
-                        if ($node->getId() == \auxilium\Session::get_current()->getUser()->getId()) {
+                        if ($node->getId() == Auxilium\Session::get_current()->getUser()->getId()) {
                             $pb->setVariable("is_own_account", true);
                         }
                         
@@ -379,7 +379,7 @@ try {
 
         $pb->render();
 
-    } catch (\auxilium\DatabaseConnectionException $e) {
+    } catch (Auxilium\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

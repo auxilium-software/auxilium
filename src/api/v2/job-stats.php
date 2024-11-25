@@ -1,7 +1,7 @@
 <?php
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 //$at->requireInternalIpRange();
 //$at->requireInternalApiKey();
 

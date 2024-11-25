@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 
 $style_options = [];
 

@@ -2,7 +2,7 @@
 
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
 $draft_content = null;
@@ -22,7 +22,7 @@ if (count($uri_components) > 5) {
     $action = strtolower($uri_components[5]);
 }
 if ($draft_id == "new") {
-    $draft_id = \auxilium\EncodingTools::generate_new_uuid();
+    $draft_id = Auxilium\EncodingTools::generate_new_uuid();
     $draft_content = [];
     $put_data = true;
 }
@@ -30,9 +30,9 @@ if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
     $at->setErrorText("Malformed uuid");
     $at->output();
 }
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/".$draft_id.".json";
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$draft_id.".json";
+if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/")) {
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" || $_SERVER["REQUEST_METHOD"] === "PUT") {
@@ -57,20 +57,20 @@ if ($action == "access") {
     $at->output();
 } elseif ($action == "send") {
     $draft_content = json_decode(file_get_contents($message_draft_path), true);
-    $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/".$draft_id.".eml";
+    $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$draft_id.".eml";
     $build_content = "X-Auxilium-Message-Version: 2.0\r\n";
     $build_content .= "MIME-Version: 1.0\r\n";
-    $build_content .= "Message-ID: $draft_id.".\auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
-    $boundary = \auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(48));
+    $build_content .= "Message-ID: $draft_id.". Auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
+    $boundary = Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(48));
     
     $message_parties = [];
     
-    array_push($message_parties, \auxilium\Session::get_current()->getUser());
-    $from_user_name = \auxilium\Session::get_current()->getUser()->getDisplayName();
+    array_push($message_parties, Auxilium\Session::get_current()->getUser());
+    $from_user_name = Auxilium\Session::get_current()->getUser()->getDisplayName();
     if ($from_user_name != null) {
-        $build_content .= "From: \"".\auxilium\EncodingTools::rfc2047_encode($from_user_name)."\" <auxiliuminbox+".\auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME.">\r\n";
+        $build_content .= "From: \"". Auxilium\EncodingTools::rfc2047_encode($from_user_name)."\" <auxiliuminbox+". Auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME.">\r\n";
     } else {
-        $build_content .= "From: auxiliuminbox+".\auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
+        $build_content .= "From: auxiliuminbox+". Auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
     }
     
     $build_content .= "To: ";
@@ -84,7 +84,7 @@ if ($action == "access") {
         $to_user_name = null;
         $recipient = null;
         if (preg_match("/\{[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}\}/", $recipient_string)){
-            $recipient = new \auxilium\User(substr($recipient_string, 1, 36));
+            $recipient = new Auxilium\User(substr($recipient_string, 1, 36));
             if ($recipient == null) {
                 $at->setErrorText("Failed to create valid RFC822 object. Invalid local user id provided.");
                 $at->output();
@@ -93,7 +93,7 @@ if ($action == "access") {
             }
             $to_user_name = $recipient->getDisplayName();
             if ($to_user_name != null) {
-                $build_content .= "\"".\auxilium\EncodingTools::rfc2047_encode($to_user_name)."\" <auxiliuminbox+".$recipient->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME.">";
+                $build_content .= "\"". Auxilium\EncodingTools::rfc2047_encode($to_user_name)."\" <auxiliuminbox+".$recipient->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME.">";
             } else {
                 $build_content .= "auxiliuminbox+".$recipient->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."";
             }
@@ -146,7 +146,7 @@ if ($action == "access") {
         $at->setErrorText("Failed to write new RFC822 object to RAM disk");
         $at->output();
     } else {
-        $message_node = \auxilium\GraphDatabaseConnection::new_node_raw("auxlfs://".INSTANCE_BRANDING_DOMAIN_NAME."/++message%3Arfc822+".$bytes_written, "https://schemas.auxiliumsoftware.co.uk/v1/message.json");
+        $message_node = Auxilium\GraphDatabaseConnection::new_node_raw("auxlfs://".INSTANCE_BRANDING_DOMAIN_NAME."/++message%3Arfc822+".$bytes_written, "https://schemas.auxiliumsoftware.co.uk/v1/message.json");
         
         rename($message_build_path, LOCAL_STORAGE_DIRECTORY.$message_node->getId());
         
@@ -158,7 +158,7 @@ if ($action == "access") {
                 try {
                     // Due to caching, we MUST add property using the node returned from creation
                     if ($message_party->getProperty("messages") == null) {
-                        $messages_node = \auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/collection.json");
+                        $messages_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/collection.json");
                         $message_party->addProperty("messages", $messages_node);
                         $messages_node->addProperty("#", $message_node);
                     } else {
@@ -171,7 +171,7 @@ if ($action == "access") {
             }
         }
         
-        $job_reference = \auxilium\InternetMessageTransport::send(file_get_contents(LOCAL_STORAGE_DIRECTORY.$message_node->getId()), "MIME");
+        $job_reference = Auxilium\InternetMessageTransport::send(file_get_contents(LOCAL_STORAGE_DIRECTORY.$message_node->getId()), "MIME");
         
         $at->setVariable("job_reference", $job_reference);
         

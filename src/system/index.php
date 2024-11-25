@@ -1,14 +1,14 @@
 <?php
 require_once "../environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 $pb->requireLogin();
 
-if (in_array("ACT", \auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
+if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
     try {
         $pb->setTemplate("system/index");
         $pb->render();
-    } catch (\auxilium\DatabaseConnectionException $e) {
+    } catch (Auxilium\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

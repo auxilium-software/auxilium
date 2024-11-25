@@ -2,7 +2,7 @@
 
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
 $file_id = null;
@@ -34,7 +34,7 @@ if ($mime_type == null) {
 
 $desired_components = explode(",", strtolower($get_params));
 
-$lfsobj = new \auxilium\AuxiliumLFSObject("auxlfs://".INSTANCE_CREDENTIAL_DDS_HOST."/".$file_id."+".$file_hash."+".urlencode($mime_type));
+$lfsobj = new Auxilium\AuxiliumLFSObject("auxlfs://".INSTANCE_CREDENTIAL_DDS_HOST."/".$file_id."+".$file_hash."+".urlencode($mime_type));
 
 if (!$lfsobj->canRead()) {
     $at->setErrorText("Missing read permission");

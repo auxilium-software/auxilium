@@ -1,7 +1,7 @@
 <?php
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 //$at->requireInternalIpRange();
 $at->requireInternalApiKey();
 
@@ -62,10 +62,10 @@ foreach ($jobs as &$job_name) {
         try {
             switch ($job_payload["type"]) {
                 case "SEND_EMAIL":
-                    $success = \auxilium\InternetMessageTransport::send_now($job_payload["content"]);
+                    $success = Auxilium\InternetMessageTransport::send_now($job_payload["content"]);
                     break;
                 case "SCAN_INBOXES":
-                    $success = \auxilium\InternetMessageTransport::scan_inboxes();
+                    $success = Auxilium\InternetMessageTransport::scan_inboxes();
                     break;
                 case "INGEST_S3_EMAIL":
                     //$success = \auxilium\InternetMessageTransport::ingest_s3_object($job_payload["key"]);

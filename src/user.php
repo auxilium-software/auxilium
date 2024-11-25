@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));
@@ -24,18 +24,18 @@ $jwt_validation_passed = false; // This is used to make sure that a user has cli
 
 $target_node_id_uri = $uri_components[0];
 
-$url_metadata = \auxilium\URLMetadata::from_jwt($get_params);
+$url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
 if ($url_metadata == null) {
-    $url_metadata = new \auxilium\URLMetadata();
+    $url_metadata = new Auxilium\URLMetadata();
     $url_metadata->setPath("{".$target_node_id_uri."}");
 } else {
     $jwt_validation_passed = $url_metadata->isValid();
     if (!$jwt_validation_passed) {
-        $url_metadata = new \auxilium\URLMetadata();
+        $url_metadata = new Auxilium\URLMetadata();
     }
 }
 $pb->setVariable("url_metadata", $url_metadata);
-$pb->setVariable("root_url_metadata", new \auxilium\URLMetadata());
+$pb->setVariable("root_url_metadata", new Auxilium\URLMetadata());
 $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 
 if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $target_node_id_uri)) {
@@ -55,7 +55,7 @@ if ($jwt_validation_passed) { // Only accept the JWT tn if it's valid
 if ($target_node == null) {
     $target_node = $target_node_id_uri;
 } else {
-    $target_node = \auxilium\URLMetadata::expand_crushed_uuid($target_node);
+    $target_node = Auxilium\URLMetadata::expand_crushed_uuid($target_node);
     if ($target_node != $target_node_id_uri) {
         $pb->setDefaultVariables();
         $pb->setTemplate("request-error");
@@ -67,7 +67,7 @@ if ($target_node == null) {
         exit();
     }
 }
-$target_node = \auxilium\Node::from_id($target_node);
+$target_node = Auxilium\Node::from_id($target_node);
 
 $pb->setVariable("user_uuid", $target_node->getId());
 
@@ -84,7 +84,7 @@ switch($uri_components[1]) {
                         "email_address" => strtolower($_POST["email_address"]),
                     ];
                     $sql = "SELECT COUNT(*) FROM standard_logins WHERE email_address=:email_address";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
 
                     if ($statement->fetchColumn() > 0) {
@@ -107,7 +107,7 @@ switch($uri_components[1]) {
                             "verification_code" => str_replace(" ", "", $verification_code),
                         ];
                         $sql = "INSERT INTO email_verification_codes (user_uuid, verification_code, email_address) VALUES (:user_uuid, :verification_code, :email_address)";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($temporary_data);
                     
                         $pb->setVariable("encoded_password_hash", base64_encode($hashed_password));
@@ -125,14 +125,14 @@ switch($uri_components[1]) {
                             $user_name = $target_node->getProperty("name");
                         }
                         
-                        $email_builder = new \auxilium\EmailBuilder();
+                        $email_builder = new Auxilium\EmailBuilder();
                         $email_builder->setTemplate("new-login-verification-code");
                         $email_builder->setTemplateProperty("verification_code", $verification_code);
                         $email_builder->setTemplateProperty("recipient_name", $user_name);
                         $email_builder->setSubject("Login security code");
                         $email_builder->addRecipient(strtolower($_POST["email_address"]), $user_name);
                         $email = $email_builder->build();
-                        \auxilium\InternetMessageTransport::send($email, "MIME");
+                        Auxilium\InternetMessageTransport::send($email, "MIME");
                         
                         $pb->setVariable("form_validation", $form_validation);
                         $pb->setTemplate("users/add-basic-login-verify");
@@ -145,7 +145,7 @@ switch($uri_components[1]) {
                         "user_uuid" => $target_node->getId(),
                     ];
                     $sql = "SELECT user_uuid, email_address FROM email_verification_codes WHERE verification_code=:verification_code AND user_uuid=:user_uuid";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     $returned_data = $statement->fetch();
                     if ($returned_data == null) {
@@ -163,7 +163,7 @@ switch($uri_components[1]) {
                             "password" => base64_decode($_POST["encoded_password_hash"])
                         ];
                         $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         
                         header("Location: /users/".$target_node->getId()."/login-methods");
@@ -200,18 +200,18 @@ switch($uri_components[1]) {
             if ((count($uri_components) > 2) && $jwt_validation_passed) {
                 switch($uri_components[2]) {
                     case "oauth":
-                        $sub = \auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
+                        $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
                         $bind_variables = [
                             "user_uuid" => $target_node->getId(),
                             "unique_sub" => $sub
                         ];
                         $sql = "DELETE FROM oauth_logins WHERE user_uuid=:user_uuid AND unique_sub=:unique_sub";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         header("Location: /users/".$target_node->getId()."/login-methods");
                         exit();
                     case "standard":
-                        $sub = \auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
+                        $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
                         $email = explode("/", $sub);
                         array_shift($email);
                         $email = implode("/", $email);
@@ -220,7 +220,7 @@ switch($uri_components[1]) {
                             "email_address" => $email
                         ];
                         $sql = "DELETE FROM standard_logins WHERE user_uuid=:user_uuid AND email_address=:email_address";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         header("Location: /users/".$target_node->getId()."/login-methods");
                         exit();
@@ -257,7 +257,7 @@ switch($uri_components[1]) {
         break;
     case "login-methods":
         if (in_array("ACT", $target_node->getPermissions())) {
-            if ($target_node->getId() == \auxilium\Session::get_current()->getUser()->getId()) {
+            if ($target_node->getId() == Auxilium\Session::get_current()->getUser()->getId()) {
                 $pb->setVariable("is_own_account", true);
             }
             
@@ -268,7 +268,7 @@ switch($uri_components[1]) {
                 "user_uuid" => $target_node->getId()
             ];
             $sql = "SELECT session_uuid, ip_address, unique_sub, session_key, active, start_timestamp FROM portal_sessions WHERE user_uuid=:user_uuid";
-            $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $session_rows = $statement->fetchAll();
             
@@ -294,7 +294,7 @@ switch($uri_components[1]) {
                 "user_uuid" => $target_node->getId(),
             ];
             $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
-            $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $user_data = $statement->fetch();
             if ($user_data != null) {
@@ -306,7 +306,7 @@ switch($uri_components[1]) {
                 array_push($login_methods, [
                     "type" => "classic",
                     "is_current" => ($current_sub == $unique_sub),
-                    "sub" => \auxilium\EncodingTools::base64_encode_url_safe($unique_sub),
+                    "sub" => Auxilium\EncodingTools::base64_encode_url_safe($unique_sub),
                     "sessions" => $sessions
                 ]);
             }
@@ -315,7 +315,7 @@ switch($uri_components[1]) {
                 "user_uuid" => $target_node->getId()
             ];
             $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
-            $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $returned_data = $statement->fetch();
             while ($returned_data != null) {
@@ -326,7 +326,7 @@ switch($uri_components[1]) {
                 array_push($login_methods, [
                     "type" => "oauth",
                     "vendor" => explode("/", $returned_data["unique_sub"])[0],
-                    "sub" => \auxilium\EncodingTools::base64_encode_url_safe($returned_data["unique_sub"]),
+                    "sub" => Auxilium\EncodingTools::base64_encode_url_safe($returned_data["unique_sub"]),
                     "is_current" => ($current_sub == $returned_data["unique_sub"]),
                     "sessions" => $sessions
                 ]);

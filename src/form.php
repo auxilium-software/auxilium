@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));
@@ -22,23 +22,23 @@ if (count($uri_components) > 0) {
 $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated. 
 //This is not the current state of the url_metadata, rather the state it was in when we received the request
 
-$url_metadata = \auxilium\URLMetadata::from_jwt($get_params);
+$url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
 if ($url_metadata == null) {
-    $url_metadata = new \auxilium\URLMetadata();
+    $url_metadata = new Auxilium\URLMetadata();
     $url_metadata->setPath($primary_string_path);
 } else {
     $jwt_validation_passed = $url_metadata->isValid();
     if (!$jwt_validation_passed) {
-        $url_metadata = new \auxilium\URLMetadata();
+        $url_metadata = new Auxilium\URLMetadata();
     }
 }
 $pb->setVariable("url_metadata", $url_metadata);
-$pb->setVariable("root_url_metadata", new \auxilium\URLMetadata());
+$pb->setVariable("root_url_metadata", new Auxilium\URLMetadata());
 $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 
 $target_node = $url_metadata->getProperty("tn");
 if ($target_node != null) {
-    $target_node = \auxilium\Node::from_id(\auxilium\URLMetadata::expand_crushed_uuid($target_node));
+    $target_node = Auxilium\Node::from_id(Auxilium\URLMetadata::expand_crushed_uuid($target_node));
 }
 
 if (isset($uri_components[0])) {
@@ -66,7 +66,7 @@ if (isset($uri_components[0])) {
             if ($fpid == null) {
                 $fpth = null;
                 do {
-                    $fpid = \auxilium\EncodingTools::generate_new_uuid();
+                    $fpid = Auxilium\EncodingTools::generate_new_uuid();
                     $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE."forms-in-progress/".$fpid.".json";
                 } while (file_exists($fpth));
                 $url_metadata->setProperty("fpid", $fpid);
@@ -95,7 +95,7 @@ if (isset($uri_components[0])) {
             }
             
             $internal_vars = [
-                "user" => \auxilium\Session::get_current()->getUser()
+                "user" => Auxilium\Session::get_current()->getUser()
             ];
             
             if ($target_node != null) {
@@ -129,7 +129,7 @@ if (isset($uri_components[0])) {
             foreach (array_keys($page_index) as $page_key) {
                 if (!isset($page_index[$page_key]["if"])) {
                     array_push($allowed_page_keys, $page_key);
-                } elseif (\auxilium\AuxiliumScript::evaluate_expression($page_index[$page_key]["if"], $internal_vars)) {
+                } elseif (Auxilium\AuxiliumScript::evaluate_expression($page_index[$page_key]["if"], $internal_vars)) {
                     array_push($allowed_page_keys, $page_key);
                 }
             }
@@ -192,7 +192,7 @@ if (isset($uri_components[0])) {
                     $form_persistent_data["target_node"] = $target_node->getId();
                 }
                 
-                $as_node = \auxilium\Session::get_current()->getUser();
+                $as_node = Auxilium\Session::get_current()->getUser();
                 $export = null;
                 $navigate = null;
                 $navigate_replace = false;
@@ -201,16 +201,16 @@ if (isset($uri_components[0])) {
                     $skip = true;
                     if (!isset($action["if"])) {
                         $skip = false;
-                    } elseif (\auxilium\AuxiliumScript::evaluate_expression($action["if"], $internal_vars)) {
+                    } elseif (Auxilium\AuxiliumScript::evaluate_expression($action["if"], $internal_vars)) {
                         $skip = false;
                     }
                     if (!$skip) {
                         switch ($action["type"]) {
                             case "NEW_NODE":
-                                $schema = isset($action["schema"]) ? \auxilium\AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars) : null;
-                                $mime_type = isset($action["mime_type"]) ? \auxilium\AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars) : null;
-                                $content = isset($action["content"]) ? \auxilium\AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars) : null;
-                                $out_node = \auxilium\GraphDatabaseConnection::new_node($content, $mime_type, $schema, $as_node);
+                                $schema = isset($action["schema"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars) : null;
+                                $mime_type = isset($action["mime_type"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars) : null;
+                                $content = isset($action["content"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars) : null;
+                                $out_node = Auxilium\GraphDatabaseConnection::new_node($content, $mime_type, $schema, $as_node);
                                 if (isset($action["output_variable"])) {
                                     $internal_vars["output_var_".$action["output_variable"]] = $out_node;
                                 }
@@ -219,13 +219,13 @@ if (isset($uri_components[0])) {
                                         "property" => $out_node,
                                         "target" => $action["target"]
                                     ];
-                                    if (is_a($fvars["property"], "\auxilium\Node")) {
+                                    if (is_a($fvars["property"], "\Auxilium\Node")) {
                                         $fvars["property"] = "{".$fvars["property"]->getId()."}";
                                     }
                                     if (substr($fvars["target"], 0, 1) === "\$") {
                                         foreach ($internal_vars as $key => &$prop) {
                                             if (strpos($fvars["target"], "\$".$key) === 0) {
-                                                if (is_a($prop, "\auxilium\Node")) {
+                                                if (is_a($prop, "\Auxilium\Node")) {
                                                     $fvars["target"] = "{".$prop->getId()."}".substr($fvars["target"], strlen($key) + 1);
                                                 } else {
                                                     $fvars["target"] = $prop.substr($fvars["target"], strlen($key) + 1);
@@ -236,27 +236,27 @@ if (isset($uri_components[0])) {
                                     $query = "LINK \$property TO \$target";
                                     if (isset($action["name"])) {
                                         $query = $query." AS \$name";
-                                        $fvars["name"] = \auxilium\AuxiliumScript::evaluate_variable_path($action["name"], $internal_vars);
+                                        $fvars["name"] = Auxilium\AuxiliumScript::evaluate_variable_path($action["name"], $internal_vars);
                                     }
-                                    \auxilium\GraphDatabaseConnection::query($as_node, $query, $fvars);
+                                    Auxilium\GraphDatabaseConnection::query($as_node, $query, $fvars);
                                 }
                                 break;
                             case "LINK":
                                 if (isset($action["property"]) && isset($action["target"])) {
                                     $fvars = [
-                                        "property" => \auxilium\AuxiliumScript::evaluate_variable_path($action["property"], $internal_vars),
+                                        "property" => Auxilium\AuxiliumScript::evaluate_variable_path($action["property"], $internal_vars),
                                         "target" => $action["target"]
                                     ];
                                     if (isset($action["name"])) {
                                         $fvars["name"] = $action["name"];
                                     }
-                                    if (is_a($fvars["property"], "\auxilium\Node")) {
+                                    if (is_a($fvars["property"], "\Auxilium\Node")) {
                                         $fvars["property"] = "{".$fvars["property"]->getId()."}";
                                     }
                                     if (substr($fvars["target"], 0, 1) === "\$") {
                                         foreach ($internal_vars as $key => &$prop) {
                                             if (strpos($fvars["target"], "\$".$key) === 0) {
-                                                if (is_a($prop, "\auxilium\Node")) {
+                                                if (is_a($prop, "\Auxilium\Node")) {
                                                     $fvars["target"] = "{".$prop->getId()."}".substr($fvars["target"], strlen($key) + 1);
                                                 } else {
                                                     $fvars["target"] = $prop.substr($fvars["target"], strlen($key) + 1);
@@ -268,22 +268,22 @@ if (isset($uri_components[0])) {
                                     if (isset($fvars["name"])) {
                                         $query = $query." AS \$name";
                                     }
-                                    \auxilium\GraphDatabaseConnection::query($as_node, $query, $fvars);
+                                    Auxilium\GraphDatabaseConnection::query($as_node, $query, $fvars);
                                 }
                                 break;
                             case "SET":
                                 if (isset($action["output_variable"])) {
-                                    $internal_vars["output_var_".$action["output_variable"]] = isset($action["eval"]) ? \auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? \auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+                                    $internal_vars["output_var_".$action["output_variable"]] = isset($action["eval"]) ? Auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                                 }
                                 break;
                             case "EXPORT":
-                                $export = isset($action["eval"]) ? \auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? \auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+                                $export = isset($action["eval"]) ? Auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                                 break;
                             case "NAVIGATE":
                                 if (isset($action["replace_last_return_url"])) {
                                     $navigate_replace = $action["replace_last_return_url"];
                                 }
-                                $navigate = isset($action["eval"]) ? \auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? \auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+                                $navigate = isset($action["eval"]) ? Auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                                 break;
                             default:
                                 echo "<h3>UNKNOWN ACTION ".$action["type"]."</h3>";
@@ -296,8 +296,8 @@ if (isset($uri_components[0])) {
                 //echo "</pre>";
                 
                 if ($export != null) {
-                    if (is_a($export, "\auxilium\Node")) {
-                        $url_metadata->setProperty("rcn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($export->getId())));
+                    if (is_a($export, "\Auxilium\Node")) {
+                        $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($export->getId())));
                         $url_metadata->setProperty("exp", null);
                     } else {
                         $url_metadata->setProperty("rcn", null);
@@ -372,7 +372,7 @@ if (isset($uri_components[0])) {
                         $skip = true;
                         if (!isset($component["if"])) {
                             $skip = false;
-                        } elseif (\auxilium\AuxiliumScript::evaluate_expression($component["if"], $internal_vars)) {
+                        } elseif (Auxilium\AuxiliumScript::evaluate_expression($component["if"], $internal_vars)) {
                             $skip = false;
                         }
                         if (!$skip) {
@@ -386,8 +386,8 @@ if (isset($uri_components[0])) {
                                 case "LABEL":
                                 case "PARAGRAPH":
                                     if (isset($component["value"])) {
-                                        $var = \auxilium\AuxiliumScript::evaluate_variable_path($component["value"], $internal_vars);
-                                        if (is_a($var, "\auxilium\Node")) {
+                                        $var = Auxilium\AuxiliumScript::evaluate_variable_path($component["value"], $internal_vars);
+                                        if (is_a($var, "\Auxilium\Node")) {
                                             $component["object"] = $var;
                                         } else {
                                             $component["text"] = $var;
@@ -397,8 +397,8 @@ if (isset($uri_components[0])) {
                                 case "DESCRIPTION_LIST":
                                     if (isset($component["dictionary"])) {
                                         foreach ($component["dictionary"] as $dkey => &$dvar) {
-                                            $var = \auxilium\AuxiliumScript::evaluate_variable_path($dvar, $internal_vars);
-                                            if (is_a($var, "\auxilium\Node")) {
+                                            $var = Auxilium\AuxiliumScript::evaluate_variable_path($dvar, $internal_vars);
+                                            if (is_a($var, "\Auxilium\Node")) {
                                                 $dvar = ["object" => $var, "text" => $dvar];
                                             } else {
                                                 $dvar = ["text" => $var];
@@ -426,11 +426,11 @@ if (isset($uri_components[0])) {
                         if ($page["id"] == $target_page) {
                             foreach ($page["components"] as &$component) {
                                 if (isset($component["default_value"])) {
-                                    $component["default_value"] = \auxilium\AuxiliumScript::evaluate_variable_path($component["default_value"], $internal_vars);
+                                    $component["default_value"] = Auxilium\AuxiliumScript::evaluate_variable_path($component["default_value"], $internal_vars);
                                 } elseif (isset($component["options"])) {
                                     foreach ($component["options"] as &$option) {
                                         if (isset($option["value"])) {
-                                            $option["value"] = \auxilium\AuxiliumScript::evaluate_variable_path($option["value"], $internal_vars);
+                                            $option["value"] = Auxilium\AuxiliumScript::evaluate_variable_path($option["value"], $internal_vars);
                                         }
                                     }
                                 }

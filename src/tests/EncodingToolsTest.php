@@ -1,6 +1,6 @@
 <?php
 
-use auxilium\EncodingTools;
+use Auxilium\EncodingTools;
 use PHPUnit\Framework\TestCase;
 
 class EncodingToolsTest extends TestCase

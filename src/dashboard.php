@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 try {
     try {
         $pb->requireLogin();
@@ -11,12 +11,12 @@ try {
                 $pb->setVariable("progressive_load", true);
             }
         }
-        if (in_array("ACT", \auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
+        if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
             $pb->setVariable("is_admin", true);
         }
         $pb->setTemplate("dashboard");
         $pb->render();
-    } catch (\auxilium\DatabaseConnectionException $e) {
+    } catch (Auxilium\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

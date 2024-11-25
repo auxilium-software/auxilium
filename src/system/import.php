@@ -1,7 +1,7 @@
 <?php
 require_once "../environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 $pb->requireLogin();
 $pb->setTemplate("system/import");
 
@@ -37,11 +37,11 @@ if (isset($_POST["submit"])) {
                     break;
                 default:
                     if (substr($key, 0, 1) == "+") {
-                        $props[substr($key, 1)] = \auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
+                        $props[substr($key, 1)] = Auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
                     }
             }
         }
-        $node = \auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
+        $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach ($props as $key => &$value) {
             $node->addProperty($key, $value, null, false);
         }
@@ -73,7 +73,7 @@ if (isset($_POST["submit"])) {
                     break;
                 default:
                     if (substr($key, 0, 1) == "+") {
-                        $props[substr($key, 1)] = \auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
+                        $props[substr($key, 1)] = Auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
                     } elseif (substr($key, 0, 1) == "@") {
                     
                     } else {
@@ -81,7 +81,7 @@ if (isset($_POST["submit"])) {
                     }
             }
         }
-        $node = \auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
+        $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach ($props as $key => &$value) {
             $node->addProperty($key, $value, null, false);
         }
@@ -113,7 +113,7 @@ if (isset($_POST["submit"])) {
                     break;
                 default:
                     if (substr($key, 0, 1) == "+") {
-                        $props[substr($key, 1)] = \auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
+                        $props[substr($key, 1)] = Auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
                     } elseif (substr($key, 0, 1) == "@") {
                     
                     } else {
@@ -121,7 +121,7 @@ if (isset($_POST["submit"])) {
                     }
             }
         }
-        $node = \auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
+        $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach ($props as $key => &$value) {
             $node->addProperty($key, $value, null, false);
         }

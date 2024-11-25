@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 try {
     $pb->requireLogin();
     
@@ -64,14 +64,14 @@ try {
     $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated. 
     //This is not the current state of the url_metadata, rather the state it was in when we received the request
 
-    $url_metadata = \auxilium\URLMetadata::from_jwt($get_params);
+    $url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
     if ($url_metadata == null) {
-        $url_metadata = new \auxilium\URLMetadata();
+        $url_metadata = new Auxilium\URLMetadata();
         $url_metadata->setPath($primary_string_path);
     } else {
         $jwt_validation_passed = $url_metadata->isSecureMatch(); // We want to use this as a CSRF token for a particular user
         if (!$jwt_validation_passed) {
-            $url_metadata = new \auxilium\URLMetadata();
+            $url_metadata = new Auxilium\URLMetadata();
             $url_metadata->setPath($primary_string_path);
         }
     }
@@ -124,7 +124,7 @@ try {
                         //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
                         
                         $data = $_POST["value"];
-                        $new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+                        $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                         
                         foreach ($refs as $ref_name => &$ref_nodes) {
                             foreach ($ref_nodes as &$ref_node) {
@@ -176,8 +176,8 @@ try {
                             //echo $node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                             
                             //exit();
-                            $return_node_id = \auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                            $return_node = \auxilium\Node::from_id($return_node_id);
+                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                            $return_node = Auxilium\Node::from_id($return_node_id);
                             $query_result = $node->addProperty($_POST["name"], $return_node);
                             if ($query_result !== false) {
                                 //var_dump($query_result);
@@ -242,7 +242,7 @@ try {
 
     $pb->render();
 
-} catch (\auxilium\DatabaseConnectionException $e) {
+} catch (Auxilium\DatabaseConnectionException $e) {
     $pb->setDefaultVariables();
     $pb->setTemplate("internal-system-error");
     $technical_details = "Exception Type:\n    ".get_class($e);

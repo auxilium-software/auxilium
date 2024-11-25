@@ -2,10 +2,10 @@
 
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
-$nonce = \auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(16));
+$nonce = Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(16));
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components))[0];
@@ -29,7 +29,7 @@ $token_builder = (new \Lcobucci\JWT\Token\Builder(new \Lcobucci\JWT\Encoding\Jos
 $algorithm = new \Lcobucci\JWT\Signer\Eddsa();
 $signing_key = \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded(INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PRIVATE_KEY);
 
-$target_user_id = \auxilium\Session::get_current()->getUser()->getId();
+$target_user_id = Auxilium\Session::get_current()->getUser()->getId();
 
 if (isset($_GET["for"])) {
     if (preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $_GET["for"])) {
@@ -41,7 +41,7 @@ if (isset($_GET["for"])) {
     }
 }
 
-$target_node = new \auxilium\Node($target_user_id);
+$target_node = new Auxilium\Node($target_user_id);
 if (in_array("ACT", $target_node->getPermissions())) {
     $target_user_id = $target_node->getId();
 } else {

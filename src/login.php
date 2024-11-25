@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 try {
     
     $openid_configs_printable = [];
@@ -15,7 +15,7 @@ try {
     
     $pb->setVariable("openid_configs", $openid_configs_printable);
 
-    $form_data = \auxilium\PersistentFormData::get();
+    $form_data = Auxilium\PersistentFormData::get();
 
     $unverified_user_data = [
         "email_address" => null,
@@ -46,7 +46,7 @@ try {
         "email_address" => $unverified_user_data["email_address"],
     ];
     $sql = "SELECT email_address, password, user_uuid FROM standard_logins WHERE email_address=:email_address";
-    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
     $statement->execute($bind_variables);
     $user_data = $statement->fetch();
     if ($user_data == null) {
@@ -66,7 +66,7 @@ try {
                 "user_uuid" => $user_data["user_uuid"]
             ];
             $sql = "SELECT totp_secret, device_uuid FROM totp_secrets WHERE user_uuid=:user_uuid";
-            $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $totp_secret_data_rows = $statement->fetchAll();
             if (count($totp_secret_data_rows) != 0) { // Check this user actuall has TOTP secrets
@@ -81,7 +81,7 @@ try {
                                 "totp_code" => preg_replace("/\s+/", "", $_POST["totp-code"])
                             ];
                             $sql = "SELECT 1 FROM totp_used_codes WHERE device_uuid=:device_uuid AND totp_code=:totp_code";
-                            $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                             $statement->execute($bind_variables);
                             $used_code_info = $statement->fetch();
             
@@ -89,7 +89,7 @@ try {
                                 $totp_authed = true;
                                 
                                 $sql = "INSERT INTO totp_used_codes (device_uuid, totp_code) VALUES (:device_uuid, :totp_code)";
-                                $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                                 $statement->execute($bind_variables);
                             } else {
                                 $pb->setVariable("form_validation", [
@@ -145,7 +145,7 @@ try {
             $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
             
             $session_info = [
-                "session_uuid" => \auxilium\EncodingTools::generate_new_uuid("sessions"),
+                "session_uuid" => Auxilium\EncodingTools::generate_new_uuid("sessions"),
                 "session_key" => $session_key,
                 "user_uuid" => $user_data["user_uuid"],
                 "ip_address" => $_SERVER["REMOTE_ADDR"],
@@ -153,14 +153,14 @@ try {
                 "active" => 1,
             ];
             $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, ip_address, unique_sub, active) VALUES (:session_uuid, :session_key, :user_uuid, :ip_address, :sub, :active)";
-            $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($session_info);
             setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
             if ($form_data == null) {
                 header("Location: /");
             } else {
                 if (count($form_data["form_stack"]) > 0) {
-                    \auxilium\PersistentFormData::set($form_data);
+                    Auxilium\PersistentFormData::set($form_data);
                     header("Location: " . array_pop($form_data["form_stack"]));
                 } else {
                     header("Location: /");

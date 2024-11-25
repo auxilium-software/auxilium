@@ -1,7 +1,7 @@
 <?php
 require_once "../environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 $pb->requireLogin();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
@@ -15,10 +15,10 @@ if (preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
     http_response_code(400);
     exit();
 }
-$ret_url = \auxilium\EncodingTools::base64_encode_url_safe(explode("?", $_SERVER["REQUEST_URI"])[0]);
+$ret_url = Auxilium\EncodingTools::base64_encode_url_safe(explode("?", $_SERVER["REQUEST_URI"])[0]);
 $pb->setVariable("encoded_return_url", $ret_url);
 
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/".\auxilium\Session::get_current()->getUser()->getUuid()."/".$message_uuid.".json";
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$message_uuid.".json";
 if (!file_exists($message_draft_path)) { // Hmmm , not a draft message then, let's try finding it in the database
     $pb->setVariable("draft_path", $message_draft_path);
     $pb->setTemplate("chats/draft-corrupted");

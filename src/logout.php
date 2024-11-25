@@ -1,7 +1,7 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 
 setcookie("session_key", null, time() - (3600 * 48), "/", null, true, true);
 //$twig_variables["user_info"] = null;

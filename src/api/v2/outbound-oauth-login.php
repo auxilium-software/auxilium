@@ -6,7 +6,7 @@ require_once "../../environment.php";
 //$at->setVariable("req", );
 //$at->output();
 
-$nonce = \auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(16));
+$nonce = Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(16));
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components))[0];
@@ -20,7 +20,7 @@ foreach (INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_candidate_config) {
 }
 
 if ($openid_config == null) {
-    $at = \auxilium\APITools::get_instance();
+    $at = Auxilium\APITools::get_instance();
     $at->setErrorText("Invalid OpenID provider.");
     $at->output();
     exit();

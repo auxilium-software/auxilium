@@ -1,9 +1,9 @@
 <?php
 require_once "environment.php";
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 try {
-    $form_data = \auxilium\PersistentFormData::get();
+    $form_data = Auxilium\PersistentFormData::get();
 
     if ($form_data == null) {
         $form_data = [
@@ -25,7 +25,7 @@ try {
                         "invite_code" => strtolower(str_replace(" ", "", $_POST["invite_code"]))
                     ];
                     $sql = "SELECT invite_rule, invite_code FROM invite_codes WHERE invite_code=:invite_code";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     $returned_data = $statement->fetch();
                     if ($returned_data == null) {
@@ -35,7 +35,7 @@ try {
                             "invite_code" => $returned_data["invite_code"]
                         ];
                         $sql = "DELETE FROM invite_codes WHERE invite_code=:invite_code";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                     }
                 }
@@ -49,7 +49,7 @@ try {
                         "user_uuid" => $form_data["user_uuid"],
                     ];
                     $sql = "SELECT user_uuid, email_address FROM email_verification_codes WHERE verification_code=:verification_code AND user_uuid=:user_uuid";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     $returned_data = $statement->fetch();
                     if ($returned_data == null) {
@@ -61,22 +61,22 @@ try {
                             "password" => $form_data["hashed_password"]
                         ];
                         $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         
-                        $user_node = \auxilium\Node::from_id($returned_data["user_uuid"]);
-                        $email_prop = \auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, \auxilium\User::get_system_node());
-                        $user_node->addProperty("contact_email", $email_prop, \auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
+                        $user_node = Auxilium\Node::from_id($returned_data["user_uuid"]);
+                        $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, Auxilium\User::get_system_node());
+                        $user_node->addProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
                         
                         $bind_variables = [
                             "user_uuid" => $returned_data["user_uuid"]
                         ];
                         $sql = "DELETE FROM email_verification_codes WHERE user_uuid=:user_uuid";
-                        $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         $form_data["form_step"] = null;
                         setcookie("session_key", $form_data["session_key"], time() + (3600 * 48), "/", null, true, true);
-                        \auxilium\PersistentFormData::set($form_data);
+                        Auxilium\PersistentFormData::set($form_data);
                         $next_location = array_pop($form_data["form_stack"]);
                         if ($next_location == null) {
                             header("Location: /dashboard");
@@ -151,7 +151,7 @@ try {
                     "email_address" => strtolower($_POST["email_address"]),
                 ];
                 $sql = "SELECT COUNT(*) FROM standard_logins WHERE email_address=:email_address";
-                $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
 
                 if ($statement->fetchColumn() > 0) {
@@ -163,8 +163,8 @@ try {
                     $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true)); 
                     // NOTE: BCrypt has a max input of 72 chars, so in order to mitigate attacks on sentence based passwords, that are long but lower complexity, we must pre-hash the password and then base64 encode to get down to 44 chars, which is under the limit. These 44 chars still have plenty of entropy thanks to sha256 being a robust hash algorithm.
             
-                    $user_node = \auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", \auxilium\User::get_system_node());
-                    $user_node = new \auxilium\User($user_node->getId());
+                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
+                    $user_node = new Auxilium\User($user_node->getId());
             
                     $hash_options = [
                         "cost" => 12,
@@ -184,29 +184,29 @@ try {
                     //$twig_variables["verification_code"] = $verification_code;
                     //$twig_variables["first_name"] = explode(" ", $data["full_name"])[0];
                     $sql = "INSERT INTO email_verification_codes (user_uuid, verification_code, email_address) VALUES (:user_uuid, :verification_code, :email_address)";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($temporary_data);
                     
-                    $email_builder = new \auxilium\EmailBuilder();
+                    $email_builder = new Auxilium\EmailBuilder();
                     $email_builder->setTemplate("new-account-verification-code");
                     $email_builder->setTemplateProperty("verification_code", $verification_code);
                     $email_builder->setTemplateProperty("recipient_name", explode(" ", $form_values["full_name"])[0]);
                     $email_builder->setSubject("Account creation security code");
                     $email_builder->addRecipient(strtolower($_POST["email_address"]), $form_values["full_name"]);
                     $email = $email_builder->build();
-                    \auxilium\InternetMessageTransport::send($email, "MIME");
+                    Auxilium\InternetMessageTransport::send($email, "MIME");
                     
-                    $language_prop = \auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
+                    $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
                     $user_node->addProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
-                    $full_name_prop = \auxilium\GraphDatabaseConnection::new_node($form_values["full_name"], "text/plain", null, $user_node);
+                    $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($form_values["full_name"], "text/plain", null, $user_node);
                     $user_node->addProperty("name", $full_name_prop, $user_node);
-                    $name_prop = \auxilium\GraphDatabaseConnection::new_node(explode(" ", $form_values["full_name"])[0], "text/plain", null, $user_node);
+                    $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $form_values["full_name"])[0], "text/plain", null, $user_node);
                     $user_node->addProperty("display_name", $name_prop, $user_node); // Create this as default the user's first name - they can change it later if they want
 
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
                     
                     $session_info = [
-                        "session_uuid" => \auxilium\EncodingTools::generate_new_uuid(),
+                        "session_uuid" => Auxilium\EncodingTools::generate_new_uuid(),
                         "session_key" => $session_key,
                         "user_uuid" => $user_node->getId(),
                         "ip_address" => $_SERVER["REMOTE_ADDR"],
@@ -214,7 +214,7 @@ try {
                         "active" => 1,
                     ];
                     $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, unique_sub, ip_address, active) VALUES (:session_uuid, :session_key, :user_uuid, :sub, :ip_address, :active)";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
                     
                     $form_data["user_uuid"] = $user_node->getId();
@@ -256,7 +256,7 @@ try {
         }
         $pb->setVariable("form_values", $form_values);
         $pb->setVariable("form_validation_failures", $form_validation_failures);
-        $pb->setVariable("form_persistence_key", \auxilium\PersistentFormData::set($form_data));
+        $pb->setVariable("form_persistence_key", Auxilium\PersistentFormData::set($form_data));
         switch ($form_data["form_step"]) {
             case "VERIFY_ACCOUNT_EMAIL":
                 $pb->setTemplate("sign-up-form/account-verify-email");
@@ -277,7 +277,7 @@ try {
                 $pb->render();
                 break;
         }
-    } catch (\auxilium\DatabaseConnectionException | \auxilium\MessageSendException $e) {
+    } catch (Auxilium\DatabaseConnectionException | Auxilium\MessageSendException $e) {
         $pb->setDefaultVariables();
         $pb->setTemplate("internal-system-error");
         $technical_details = "Exception Type:\n    ".get_class($e);

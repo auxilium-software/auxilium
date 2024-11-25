@@ -11,13 +11,13 @@ if (isset($_GET["setup_key"])) {
         if (trim($match_key) == trim($_GET["setup_key"])) {
             $setup_key = trim($_GET["setup_key"]);
         } else {
-            $pb = \auxilium\PageBuilder::get_instance();
+            $pb = Auxilium\PageBuilder::get_instance();
             $pb->setTemplate("system/init-locked-out");
             $pb->render();
             exit();
         }
     } else {
-        $pb = \auxilium\PageBuilder::get_instance();
+        $pb = Auxilium\PageBuilder::get_instance();
         $pb->setTemplate("system/init-done");
         $pb->render();
         exit();
@@ -27,13 +27,13 @@ if (isset($_GET["setup_key"])) {
 if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock")) {
     if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key")) {
         if ($setup_key == null) {
-            $pb = \auxilium\PageBuilder::get_instance();
+            $pb = Auxilium\PageBuilder::get_instance();
             $pb->setTemplate("system/init-locked-out");
             $pb->render();
             exit();
         }
     } else {
-        $pb = \auxilium\PageBuilder::get_instance();
+        $pb = Auxilium\PageBuilder::get_instance();
         $pb->setTemplate("system/init-done");
         $pb->render();
         exit();
@@ -44,16 +44,16 @@ if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock")) {
     fclose($lock_file);
     
     $relational_schema = WEB_ROOT_DIRECTORY."system/first-setup/schema.sql";
-    $pdo = \auxilium\RelationalDatabaseConnection::get_pdo();
+    $pdo = Auxilium\RelationalDatabaseConnection::get_pdo();
     $pdo->query(file_get_contents($relational_schema));
     
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE . === /");
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ ON /*");
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ ON {".INSTANCE_UUID."}");
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ,WRITE ON /cases/# ON /cases/#/*");
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ ON /messages/#");
-    \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE . === /");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ ON /*");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ ON {".INSTANCE_UUID."}");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE ON /cases/# ON /cases/#/*");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ ON /messages/#");
+    Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE");
 }
 
 if ($setup_key == null) {
@@ -63,7 +63,7 @@ if ($setup_key == null) {
     fclose($key_file);
 }
 
-$pb = \auxilium\PageBuilder::get_instance();
+$pb = Auxilium\PageBuilder::get_instance();
 $pb->setTemplate("system/init");
 $pb->setVariable("setup_key", $setup_key);
 if (isset($_GET["lang"])) {
@@ -78,12 +78,12 @@ if (isset($_GET["page"])) {
         case "racc":
             $pb->setTemplate("system/init-root-account");
             if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"])) {
-                $user_node = \auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", \auxilium\User::get_system_node());
-                $user_node = new \auxilium\User($user_node->getId());
+                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
+                $user_node = new Auxilium\User($user_node->getId());
                 
                 $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true)); 
-                $user_node = \auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", \auxilium\User::get_system_node());
-                $user_node = new \auxilium\User($user_node->getId());
+                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
+                $user_node = new Auxilium\User($user_node->getId());
         
                 $hash_options = [
                     "cost" => 12,
@@ -96,24 +96,24 @@ if (isset($_GET["page"])) {
                     "password" => $hashed_password
                 ];
                 $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
-                $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 
-                \auxilium\GraphDatabaseConnection::query(\auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {".$user_node->getId()."}");
+                Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {".$user_node->getId()."}");
                 
-                $language_prop = \auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
+                $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
                 $user_node->addProperty("preferred_language", $language_prop, $user_node);
-                $full_name_prop = \auxilium\GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
+                $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
                 $user_node->addProperty("name", $full_name_prop, $user_node);
-                $name_prop = \auxilium\GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
+                $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
                 $user_node->addProperty("display_name", $name_prop, $user_node);
-                $email_name_prop = \auxilium\GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
+                $email_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
                 $user_node->addProperty("contact_email", $email_name_prop, $user_node);
                 
                 
                 
                 if (unlink(LOCAL_STORAGE_DIRECTORY."setup.key")) {
-                    $pb = \auxilium\PageBuilder::get_instance();
+                    $pb = Auxilium\PageBuilder::get_instance();
                     $pb->setTemplate("system/init-done");
                     $pb->render();
                     exit();

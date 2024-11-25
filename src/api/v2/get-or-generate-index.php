@@ -2,7 +2,7 @@
 
 require_once "../../environment.php";
 
-$at = \auxilium\APITools::get_instance();
+$at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
@@ -33,9 +33,9 @@ if (!array_key_exists($index_id, $index_list)) {
     }
 }
 
-$index_store_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."indexes/".\auxilium\Session::get_current()->getUser()->getUuid()."/".$index_id.".json";
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."indexes/".\auxilium\Session::get_current()->getUser()->getUuid()."/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."indexes/".\auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
+$index_store_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."indexes/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$index_id.".json";
+if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."indexes/". Auxilium\Session::get_current()->getUser()->getUuid()."/")) {
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."indexes/". Auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
 }
 $old_index = ["created" => "1970-01-01T00:00:00Z"];
 if (file_exists($index_store_path)) {
@@ -62,11 +62,11 @@ if ($regenerate_index) {
     $new_index["lookup_table"] = [];
     
     foreach ($queries as &$query) {
-        $results = \auxilium\GraphDatabaseConnection::query(\auxilium\Session::get_current()->getUser(), $query)["@rows"];
+        $results = Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $query)["@rows"];
         foreach ($results as &$row) {
             foreach ($row as $column_name => &$cell) {
                 foreach ($cell as $path => $value) {
-                    $value = mb_strtolower((new \auxilium\DataURL($value))->getData());
+                    $value = mb_strtolower((new Auxilium\DataURL($value))->getData());
                     if (!array_key_exists($value, $new_index["lookup_table"])) {
                         $new_index["lookup_table"][$value] = [];
                     }

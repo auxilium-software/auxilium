@@ -41,7 +41,7 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
 
     $trusted_jwks = [];
     
-    $jwt_header = json_decode(\auxilium\EncodingTools::base64_decode_url_safe(explode(".", $id_token)[0]), true);
+    $jwt_header = json_decode(Auxilium\EncodingTools::base64_decode_url_safe(explode(".", $id_token)[0]), true);
     $jwt_alg = $jwt_header["alg"];
     
     $token_valid = false;
@@ -145,7 +145,7 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                     "unique_sub" => $combined_id
                 ];
                 $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE unique_sub=:unique_sub";
-                $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 $returned_data = $statement->fetch();
                 if ($returned_data == null) {
@@ -154,7 +154,7 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                         "unique_sub" => $combined_id
                     ];
                     $sql = "INSERT INTO oauth_logins (unique_sub, user_uuid) VALUES (:unique_sub, :user_uuid)";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     header("Location: /graph/~".$state_claims["sub"]);
                     exit();
@@ -169,7 +169,7 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                     "unique_sub" => $combined_id
                 ];
                 $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE unique_sub=:unique_sub";
-                $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 $returned_data = $statement->fetch();
                 if ($returned_data == null) {
@@ -178,7 +178,7 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // Taken from /login
             
                     $session_info = [
-                        "session_uuid" => \auxilium\EncodingTools::generate_new_uuid("sessions"),
+                        "session_uuid" => Auxilium\EncodingTools::generate_new_uuid("sessions"),
                         "session_key" => $session_key,
                         "user_uuid" => $returned_data["user_uuid"],
                         "unique_sub" => $combined_id,
@@ -186,14 +186,14 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                         "active" => 1,
                     ];
                     $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, ip_address, active, unique_sub) VALUES (:session_uuid, :session_key, :user_uuid, :ip_address, :active, :unique_sub)";
-                    $statement = \auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
                     setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
                     if ($form_data == null) {
                         header("Location: /");
                     } else {
                         if (count($form_data["form_stack"]) > 0) {
-                            \auxilium\PersistentFormData::set($form_data);
+                            Auxilium\PersistentFormData::set($form_data);
                             header("Location: " . array_pop($form_data["form_stack"]));
                         } else {
                             header("Location: /");
