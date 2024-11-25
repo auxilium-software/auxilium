@@ -5,7 +5,7 @@ $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 
 setcookie("session_key", null, time() - (3600 * 48), "/", null, true, true);
 //$twig_variables["user_info"] = null;
-//echo $twig->render($twig_variables["selected_lang"]."/logout.html", $twig_variables);
+//echo $twig->render($twig_variables["selected_lang"]."/logout.html.twig", $twig_variables);
 $pb->setVariable("current_user", null);
-$pb->setTemplate("logout");
+$pb->setTemplate("Pages/logout");
 $pb->render();

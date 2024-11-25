@@ -9,9 +9,9 @@ try {
     if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
         $pb->setVariable("is_admin", true);
     }
-    $pb->setTemplate("all-cases");
+    $pb->setTemplate("Pages/all-cases");
     $pb->render();
 } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
-    $pb->setTemplate("internal-system-error");
+    $pb->setTemplate("ErrorPages/InternalSystemError");
     $pb->render();
 }

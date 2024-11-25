@@ -3,7 +3,7 @@ require_once "environment.php";
 
 $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $pb->requireLogin();
-$pb->setTemplate("query");
+$pb->setTemplate("Pages/query");
 if (isset($_POST["query"])) {
     $query = trim($_POST["query"]);
     $result = Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $query);

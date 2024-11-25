@@ -37,7 +37,7 @@ try {
             "password" => true,
         ];
         $pb->setVariable("form_validation", $form_validation);
-        $pb->setTemplate("login");
+        $pb->setTemplate("Pages/login");
         $pb->render();
         exit();
     }
@@ -55,7 +55,7 @@ try {
             "password" => true,
         ];
         $pb->setVariable("form_validation", $form_validation);
-        $pb->setTemplate("login");
+        $pb->setTemplate("Pages/login");
         $pb->render();
         exit();
     } else {
@@ -101,9 +101,9 @@ try {
                                     "password" => $unverified_user_data["password"],
                                 ];
                                 $pb->setVariable("form_data", $form_data);
-                                $pb->setTemplate("login-totp");
+                                $pb->setTemplate("Pages/login-totp");
                                 $pb->render();
-                                //echo $twig->render($twig_variables["selected_lang"]."/login-totp.html", $twig_variables);
+                                //echo $twig->render($twig_variables["selected_lang"]."/login-totp.html.twig", $twig_variables);
                                 exit();
                             }
                         }
@@ -119,9 +119,9 @@ try {
                             "totp_used" => true,
                         ]);
                         $pb->setVariable("form_data", $form_data);
-                        $pb->setTemplate("login-totp");
+                        $pb->setTemplate("Pages/login-totp");
                         $pb->render();
-                        //echo $twig->render($twig_variables["selected_lang"]."/login-totp.html", $twig_variables);
+                        //echo $twig->render($twig_variables["selected_lang"]."/login-totp.html.twig", $twig_variables);
                         exit();
                     }
                 } else {
@@ -135,8 +135,8 @@ try {
                         "password" => $unverified_user_data["password"],
                     ];
                     $pb->setVariable("form_data", $form_data);
-                    //echo $twig->render($twig_variables["selected_lang"]."/login-totp.html", $twig_variables);
-                    $pb->setTemplate("login-totp");
+                    //echo $twig->render($twig_variables["selected_lang"]."/login-totp.html.twig", $twig_variables);
+                    $pb->setTemplate("Pages/login-totp");
                     $pb->render();
                     exit();
                 }
@@ -173,14 +173,14 @@ try {
                 "password" => false,
             ];
             $pb->setVariable("form_validation", $form_validation);
-            $pb->setTemplate("login");
+            $pb->setTemplate("Pages/login");
             $pb->render();
             exit();
         }
     }
 } catch (\Exception $e) {
     $pb->setDefaultVariables();
-    $pb->setTemplate("internal-system-error");
+    $pb->setTemplate("ErrorPages/InternalSystemError");
     $technical_details = "Exception Type:\n    ".get_class($e);
     $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
     $technical_details .= "\nMessage:\n    ".$e->getMessage();

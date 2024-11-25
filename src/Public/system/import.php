@@ -3,7 +3,7 @@ require_once "../environment.php";
 
 $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $pb->requireLogin();
-$pb->setTemplate("system/import");
+$pb->setTemplate("Pages/system/import");
 
 if (isset($_POST["submit"])) {
     //var_dump($_FILES);

@@ -82,7 +82,7 @@ try {
 
     if ($node == null) {
         http_response_code(404);
-        $pb->setTemplate("node-views/404");
+        $pb->setTemplate("Pages/node-views/404");
         $pb->render();
         exit();
     } else {
@@ -91,11 +91,11 @@ try {
             case "@delete_confirm":
                 if ($jwt_validation_passed) {
                     if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
-                        $pb->setTemplate("delete-views/generic");
+                        $pb->setTemplate("Pages/delete-views/generic");
                     } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
-                        $pb->setTemplate("delete-views/generic");
+                        $pb->setTemplate("Pages/delete-views/generic");
                     } else {
-                        $pb->setTemplate("delete-views/generic");
+                        $pb->setTemplate("Pages/delete-views/generic");
                     }
                 } else {
                     header("Location: /graph/".$primary_string_path);
@@ -139,7 +139,7 @@ try {
                         //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                         //$query_result = $node->addProperty($_POST["name"], $return_node);
                     } else {
-                        $pb->setTemplate("edit-views/text-plain");
+                        $pb->setTemplate("Pages/edit-views/text-plain");
                     }
                 } else {
                     header("Location: /graph/".$primary_string_path);
@@ -193,9 +193,9 @@ try {
                             //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                             //exit();
                             $pb->setVariable("duplicate_property_name", $_POST["name"]);
-                            $pb->setTemplate("node-views/name-new-property");
+                            $pb->setTemplate("Pages/node-views/name-new-property");
                         } else {
-                            $pb->setTemplate("node-views/name-new-property");
+                            $pb->setTemplate("Pages/node-views/name-new-property");
                         }
                     } else {
                         $url_metadata->pushCurrentToReturnStack();
@@ -212,30 +212,30 @@ try {
                         
                         $pb->setVariable("form_list", $form_list);
                         
-                        $pb->setTemplate("node-views/new-property");
+                        $pb->setTemplate("Pages/node-views/new-property");
                     }
                 } else {
-                    $pb->setTemplate("node-views/generic");
+                    $pb->setTemplate("Pages/node-views/generic");
                 }
                 break;
             case "@search":
-                $pb->setTemplate("node-views/search");
+                $pb->setTemplate("Pages/node-views/search");
                 break;
             case "@references":
-                $pb->setTemplate("node-views/references");
+                $pb->setTemplate("Pages/node-views/references");
                 break;
             case "@ref_error":
                 $pb->setVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
             case "@view":
             default:
                 if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
-                    $pb->setTemplate("node-views/user");
+                    $pb->setTemplate("Pages/node-views/user");
                     $pb->setVariable("hidden_props", ["cases", "messages", "documents"]);
                 } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
-                    $pb->setTemplate("node-views/case");
+                    $pb->setTemplate("Pages/node-views/case");
                     $pb->setVariable("hidden_props", ["description", "clients", "messages", "documents"]);
                 } else {
-                    $pb->setTemplate("node-views/generic");
+                    $pb->setTemplate("Pages/node-views/generic");
                 }
         }
     }
@@ -244,7 +244,7 @@ try {
 
 } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
     $pb->setDefaultVariables();
-    $pb->setTemplate("internal-system-error");
+    $pb->setTemplate("ErrorPages/InternalSystemError");
     $technical_details = "Exception Type:\n    ".get_class($e);
     $technical_details .= "\nMessage:\n    ".$e->getMessage();
     $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];

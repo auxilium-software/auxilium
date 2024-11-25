@@ -3,7 +3,7 @@ require_once "environment.php";
 
 $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $pb->requireLogin();
-$pb->setTemplate("console");
+$pb->setTemplate("Pages/console");
 if (isset($_POST["query"])) {
     $query = trim($_POST["query"]);
     try {

@@ -12,13 +12,13 @@ if (isset($_GET["setup_key"])) {
             $setup_key = trim($_GET["setup_key"]);
         } else {
             $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-            $pb->setTemplate("system/init-locked-out");
+            $pb->setTemplate("Pages/system/init-locked-out");
             $pb->render();
             exit();
         }
     } else {
         $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-        $pb->setTemplate("system/init-done");
+        $pb->setTemplate("Pages/system/init-done");
         $pb->render();
         exit();
     }
@@ -28,13 +28,13 @@ if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock")) {
     if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key")) {
         if ($setup_key == null) {
             $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-            $pb->setTemplate("system/init-locked-out");
+            $pb->setTemplate("Pages/system/init-locked-out");
             $pb->render();
             exit();
         }
     } else {
         $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-        $pb->setTemplate("system/init-done");
+        $pb->setTemplate("Pages/system/init-done");
         $pb->render();
         exit();
     }
@@ -64,7 +64,7 @@ if ($setup_key == null) {
 }
 
 $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-$pb->setTemplate("system/init");
+$pb->setTemplate("Pages/system/init");
 $pb->setVariable("setup_key", $setup_key);
 if (isset($_GET["lang"])) {
     $pb->overrideCurrentLanguage($_GET["lang"]);
@@ -73,10 +73,10 @@ if (isset($_GET["lang"])) {
 if (isset($_GET["page"])) {
     switch (strtolower($_GET["page"])) {
         case "cmgmt":
-            $pb->setTemplate("system/init-central-management");
+            $pb->setTemplate("Pages/system/init-central-management");
             break;
         case "racc":
-            $pb->setTemplate("system/init-root-account");
+            $pb->setTemplate("Pages/system/init-root-account");
             if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"])) {
                 $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
                 $user_node = new Auxilium\User($user_node->getId());
@@ -114,7 +114,7 @@ if (isset($_GET["page"])) {
                 
                 if (unlink(LOCAL_STORAGE_DIRECTORY."setup.key")) {
                     $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-                    $pb->setTemplate("system/init-done");
+                    $pb->setTemplate("Pages/system/init-done");
                     $pb->render();
                     exit();
                 } else {

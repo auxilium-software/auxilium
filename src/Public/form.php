@@ -42,7 +42,7 @@ if ($target_node != null) {
 }
 
 if (isset($uri_components[0])) {
-    $pb->setTemplate("invalid");
+    $pb->setTemplate("Pages/invalid");
 
     if (preg_match('/^[a-f0-9-]+$/', $uri_components[0])) { // Make sure nobody is trying anything like path traversal
         if (file_exists(WEB_ROOT_DIRECTORY."/forms/".$uri_components[0].".json")) {
@@ -361,7 +361,7 @@ if (isset($uri_components[0])) {
             }
             
             if ($form_submitted) {
-                $pb->setTemplate("form-submitted");
+                $pb->setTemplate("Pages/form-submitted");
             } else {
                 if ($review_page) {
                     $review_copy = $definition["review"];
@@ -415,7 +415,7 @@ if (isset($uri_components[0])) {
                     $pb->setVariable("variables", $form_persistent_data["variables"]);
                     $pb->setVariable("review_definition", $review_copy);
                 
-                    $pb->setTemplate("form-review");
+                    $pb->setTemplate("Pages/form-review");
                 } else {
                     $form_persistent_data["last_page"] = $target_page;
                     
@@ -441,7 +441,7 @@ if (isset($uri_components[0])) {
                     }
                     
                     $pb->setVariable("variables", $form_persistent_data["variables"]);
-                    $pb->setTemplate("form-page");
+                    $pb->setTemplate("Pages/form-page");
                 }
             }
             
@@ -452,7 +452,7 @@ if (isset($uri_components[0])) {
     
     $pb->render();
 } else {
-    $pb->setTemplate("invalid");
+    $pb->setTemplate("Pages/invalid");
 
     $pb->render();
 }

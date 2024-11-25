@@ -40,7 +40,7 @@ $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 
 if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $target_node_id_uri)) {
     $pb->setDefaultVariables();
-    $pb->setTemplate("request-error");
+    $pb->setTemplate("Pages/request-error");
     $technical_details = "Exception Type:\n    "."Invalid User UUID";
     $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
     $pb->setVariable("technical_details", $technical_details);
@@ -58,7 +58,7 @@ if ($target_node == null) {
     $target_node = Auxilium\URLMetadata::expand_crushed_uuid($target_node);
     if ($target_node != $target_node_id_uri) {
         $pb->setDefaultVariables();
-        $pb->setTemplate("request-error");
+        $pb->setTemplate("Pages/request-error");
         $technical_details = "Exception Type:\n    "."XSS Detected";
         $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
         $pb->setVariable("technical_details", $technical_details);
@@ -135,7 +135,7 @@ switch($uri_components[1]) {
                         Auxilium\InternetMessageTransport::send($email, "MIME");
                         
                         $pb->setVariable("form_validation", $form_validation);
-                        $pb->setTemplate("users/add-basic-login-verify");
+                        $pb->setTemplate("Pages/users/add-basic-login-verify");
                         $pb->render();
                         exit();
                     }   
@@ -153,7 +153,7 @@ switch($uri_components[1]) {
                         $pb->setVariable("encoded_password_hash",  $_POST["encoded_password_hash"]);
                        
                         $pb->setVariable("form_validation", $form_validation);
-                        $pb->setTemplate("users/add-basic-login-verify");
+                        $pb->setTemplate("Pages/users/add-basic-login-verify");
                         $pb->render();
                         exit();
                     } else {
@@ -171,12 +171,12 @@ switch($uri_components[1]) {
                     }
                 }
                 $pb->setVariable("form_validation", $form_validation);
-                $pb->setTemplate("users/add-basic-login");
+                $pb->setTemplate("Pages/users/add-basic-login");
                 $pb->render();
                 exit();
             } else {
                 $pb->setDefaultVariables();
-                $pb->setTemplate("request-error");
+                $pb->setTemplate("Pages/request-error");
                 $technical_details = "Exception Type:\n    "."Malformed request";
                 $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
                 $pb->setVariable("technical_details", $technical_details);
@@ -186,7 +186,7 @@ switch($uri_components[1]) {
             }
         } else {
             $pb->setDefaultVariables();
-            $pb->setTemplate("request-error");
+            $pb->setTemplate("Pages/request-error");
             $technical_details = "Exception Type:\n    "."Missing ACT permission for user";
             $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);
@@ -226,7 +226,7 @@ switch($uri_components[1]) {
                         exit();
                     default:
                         $pb->setDefaultVariables();
-                        $pb->setTemplate("request-error");
+                        $pb->setTemplate("Pages/request-error");
                         $technical_details = "Exception Type:\n    "."Invalid login type";
                         $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
                         $pb->setVariable("technical_details", $technical_details);
@@ -236,7 +236,7 @@ switch($uri_components[1]) {
                 }
             } else {
                 $pb->setDefaultVariables();
-                $pb->setTemplate("request-error");
+                $pb->setTemplate("Pages/request-error");
                 $technical_details = "Exception Type:\n    "."Malformed request";
                 $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
                 $pb->setVariable("technical_details", $technical_details);
@@ -246,7 +246,7 @@ switch($uri_components[1]) {
             }
         } else {
             $pb->setDefaultVariables();
-            $pb->setTemplate("request-error");
+            $pb->setTemplate("Pages/request-error");
             $technical_details = "Exception Type:\n    "."Missing ACT permission for user";
             $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);
@@ -346,12 +346,12 @@ switch($uri_components[1]) {
             }
 
             $pb->setVariable("openid_configs", $openid_configs_printable);
-            $pb->setTemplate("users/login-methods");
+            $pb->setTemplate("Pages/users/login-methods");
             $pb->render();
             exit();
         } else {
             $pb->setDefaultVariables();
-            $pb->setTemplate("request-error");
+            $pb->setTemplate("Pages/request-error");
             $technical_details = "Exception Type:\n    "."Missing ACT permission for user";
             $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);

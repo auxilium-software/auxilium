@@ -14,11 +14,11 @@ try {
         if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
             $pb->setVariable("is_admin", true);
         }
-        $pb->setTemplate("dashboard");
+        $pb->setTemplate("Pages/dashboard");
         $pb->render();
     } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
-        $pb->setTemplate("internal-system-error");
+        $pb->setTemplate("ErrorPages/InternalSystemError");
         $technical_details = "Exception Type:\n    ".get_class($e);
         $technical_details .= "\nMessage:\n    ".$e->getMessage();
         $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
@@ -28,7 +28,7 @@ try {
     }
 } catch (\Exception $e) {
     $pb->setDefaultVariables();
-    $pb->setTemplate("internal-system-error");
+    $pb->setTemplate("ErrorPages/InternalSystemError");
     $technical_details = "Exception Type:\n    ".get_class($e);
     $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
     $technical_details .= "\nStack Trace:\n\n".$e->getTraceAsString();

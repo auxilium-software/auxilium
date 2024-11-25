@@ -46,10 +46,10 @@ switch ($action) {
         exit();
         break;
     case "file":
-        $pb->setTemplate("generic");
+        $pb->setTemplate("Pages/generic");
         break;
     case "text":
-        $pb->setTemplate("new-node-text");
+        $pb->setTemplate("Pages/new-node-text");
         if (isset($_POST["text"])) {
             $data = trim($_POST["text"]);
             $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
@@ -61,7 +61,7 @@ switch ($action) {
         }
         break;
     default:
-        $pb->setTemplate("generic");
+        $pb->setTemplate("Pages/generic");
 }
 
 $pb->render();

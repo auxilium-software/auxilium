@@ -6,11 +6,11 @@ $pb->requireLogin();
 
 if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
     try {
-        $pb->setTemplate("system/index");
+        $pb->setTemplate("Pages/system/index");
         $pb->render();
     } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
         $pb->setDefaultVariables();
-        $pb->setTemplate("internal-system-error");
+        $pb->setTemplate("ErrorPages/InternalSystemError");
         $technical_details = "Exception Type:\n    ".get_class($e);
         $technical_details .= "\nMessage:\n    ".$e->getMessage();
         $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
@@ -20,7 +20,7 @@ if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPe
     }
 } else {
     $pb->setDefaultVariables();
-    $pb->setTemplate("internal-system-error");
+    $pb->setTemplate("ErrorPages/InternalSystemError");
     $technical_details = "Exception Type:\n    InsufficientPermissions";
     $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
     $pb->setVariable("technical_details", $technical_details);

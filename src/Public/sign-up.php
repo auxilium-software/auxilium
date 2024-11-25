@@ -259,27 +259,27 @@ try {
         $pb->setVariable("form_persistence_key", Auxilium\PersistentFormData::set($form_data));
         switch ($form_data["form_step"]) {
             case "VERIFY_ACCOUNT_EMAIL":
-                $pb->setTemplate("sign-up-form/account-verify-email");
+                $pb->setTemplate("Pages/sign-up-form/account-verify-email");
                 $pb->setVariable("email_address", $form_data["email_address"]);
                 $pb->render();
                 break;
             case "CREATE_ACCOUNT":
-                $pb->setTemplate("sign-up-form/account-sign-up");
+                $pb->setTemplate("Pages/sign-up-form/account-sign-up");
                 $pb->render();
                 break;
             case "INVITE_CODE":
-                $pb->setTemplate("sign-up-form/invite-code");
+                $pb->setTemplate("Pages/sign-up-form/invite-code");
                 $pb->render();
                 break;
             case "USER_TYPE":
             default:
-                $pb->setTemplate("sign-up-form/account-type");
+                $pb->setTemplate("Pages/sign-up-form/account-type");
                 $pb->render();
                 break;
         }
     } catch (\Auxilium\Exceptions\DatabaseConnectionException | \Auxilium\Exceptions\MessageSendException $e) {
         $pb->setDefaultVariables();
-        $pb->setTemplate("internal-system-error");
+        $pb->setTemplate("ErrorPages/InternalSystemError");
         $technical_details = "Exception Type:\n    ".get_class($e);
         $technical_details .= "\nMessage:\n    ".$e->getMessage();
         $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
@@ -289,7 +289,7 @@ try {
     }
 } catch (\Exception $e) {
     $pb->setDefaultVariables();
-    $pb->setTemplate("internal-system-error");
+    $pb->setTemplate("ErrorPages/InternalSystemError");
     $technical_details = "Exception Type:\n    ".get_class($e);
     $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
     $technical_details .= "\nMessage:\n".$e->getMessage();
