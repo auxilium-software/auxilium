@@ -1,15 +1,36 @@
 {
+    "name": "auxilium-software/auxilium2",
+    "description": "CRM and Case Management Portal",
+    "type": "project",
+    "license": "Apache-2.0",
+
+    "authors": [
+        {
+            "name": "Alex Baldwin",
+            "email": "alb128@aber.ac.uk",
+            "role": "Developer"
+        },
+        {
+            "name": "Cerys Lewis",
+            "email": "cerys.lewis@aber.ac.uk",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "info@auxiliumsoftware.co.uk"
+    },
+
     "require": {
         "php": "^8.2",
 
         "ext-curl": "*",
-
         "ext-bcmath": "*",
         "ext-gd": "*",
         "ext-openssl": "*",
+        "ext-dom": "*",
+        "ext-sodium": "*",
 
         "phpunit/phpunit": "*",
-        "ext-dom": "*",
         "twig/twig": "^3.0",
         "endroid/qr-code-bundle": "^4.0",
         "fpdf/fpdf": "^1.83",
