@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class ICalendarJournal extends ICalendarComponent {
     public function __construct(array $content = null) {

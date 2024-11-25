@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class URLMetadata {
     private $metadata = [];
@@ -18,8 +18,8 @@ class URLMetadata {
         $components = explode(".", $jwt);
         
         if (count($components) == 3) {
-            $header = json_decode(\auxilium\EncodingTools::base64_decode_url_safe($components[0]), true);
-            $payload = json_decode(\auxilium\EncodingTools::base64_decode_url_safe($components[1]), true);
+            $header = json_decode(\Auxilium\EncodingTools::base64_decode_url_safe($components[0]), true);
+            $payload = json_decode(\Auxilium\EncodingTools::base64_decode_url_safe($components[1]), true);
             
             if (!is_array($header) || !is_array($payload)) {
                 return $mdo;
@@ -40,21 +40,21 @@ class URLMetadata {
             if ($matchHeader["typ"] != $header["typ"]) { $valid = false; }
             
             if ($valid) {
-                $valid = hash_hmac("sha256", $components[0].".".$components[1], base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true) == \auxilium\EncodingTools::base64_decode_url_safe($components[2]);
+                $valid = hash_hmac("sha256", $components[0].".".$components[1], base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true) == \Auxilium\EncodingTools::base64_decode_url_safe($components[2]);
             }
             
             if ($valid) {
                 if (isset($payload["sub"])) { // Restriction on who this is valid for
-                    $mdo->jwtMatchedUser = ($payload["sub"] == \auxilium\EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId())));
+                    $mdo->jwtMatchedUser = ($payload["sub"] == \Auxilium\EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId())));
                 }
             }
             
             if (isset($payload["mda"])) {
                 if (isset($payload["mda"]["tn"])) {
-                    $payload["mda"]["tn"] = \auxilium\EncodingTools::base64_decode_url_safe($payload["mda"]["tn"]);
+                    $payload["mda"]["tn"] = \Auxilium\EncodingTools::base64_decode_url_safe($payload["mda"]["tn"]);
                 }
                 if (isset($payload["mda"]["rc"])) {
-                    $payload["mda"]["rc"] = \auxilium\EncodingTools::base64_decode_url_safe($payload["mda"]["rc"]);
+                    $payload["mda"]["rc"] = \Auxilium\EncodingTools::base64_decode_url_safe($payload["mda"]["rc"]);
                 }
                 $mdo->metadata = $payload["mda"];
             }
@@ -72,9 +72,9 @@ class URLMetadata {
         return $this->jwtValidated && $this->jwtMatchedUser;
     }
 
-    public function setPath(string $path, \auxilium\Node $node = null) {
+    public function setPath(string $path, \Auxilium\Node $node = null) {
         $this->metadata["rp"] = rtrim(ltrim($path, "/"), "/"); // Relative Path
-        if ($node == null) { $node = \auxilium\Node::from_path($this->metadata["rp"]); }
+        if ($node == null) { $node = \Auxilium\Node::from_path($this->metadata["rp"]); }
         $this->metadata["tn"] = $node;
         if ($this->metadata["tn"] != null) {
             $this->metadata["tn"] = URLMetadata::crush_uuid($this->metadata["tn"]->getId());
@@ -185,7 +185,7 @@ class URLMetadata {
         $pthcps = explode("/", $parent["rp"]);
         array_pop($pthcps);
         $parent["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
-        $parent["tn"] = \auxilium\Node::from_path($parent["rp"]);
+        $parent["tn"] = \Auxilium\Node::from_path($parent["rp"]);
         if ($parent["tn"] != null) {
             $parent["tn"] = URLMetadata::crush_uuid($parent["tn"]->getId());
         }
@@ -199,7 +199,7 @@ class URLMetadata {
         $pthcps = explode("/", $childmd["rp"]);
         array_push($pthcps, $child);
         $childmd["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
-        $childmd["tn"] = \auxilium\Node::from_path($childmd["rp"]);
+        $childmd["tn"] = \Auxilium\Node::from_path($childmd["rp"]);
         if ($childmd["tn"] != null) {
             $childmd["tn"] = URLMetadata::crush_uuid($childmd["tn"]->getId());
         }
@@ -218,15 +218,15 @@ class URLMetadata {
             unset($md["rp"]);
         }
         if (isset($md["tn"])) {
-            $md["tn"] = \auxilium\EncodingTools::base64_encode_url_safe($md["tn"]);
+            $md["tn"] = \Auxilium\EncodingTools::base64_encode_url_safe($md["tn"]);
         }
         if (isset($md["rc"])) {
-            $md["rc"] = \auxilium\EncodingTools::base64_encode_url_safe($md["rc"]);
+            $md["rc"] = \Auxilium\EncodingTools::base64_encode_url_safe($md["rc"]);
         }
     
         $subject = null;
         if (Session::get_current()->getUser() != null) {
-            $subject = \auxilium\EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
+            $subject = \Auxilium\EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
         }
         $header = [
             "alg" => "HS256",
@@ -238,9 +238,9 @@ class URLMetadata {
             "mda" => $md
         ];
         // (new \DateTime("now", new \DateTimeZone("UTC")))->format("Y-m-d\\TH:i:s\\Z")
-        $header = \auxilium\EncodingTools::base64_encode_url_safe(json_encode($header));
-        $payload = \auxilium\EncodingTools::base64_encode_url_safe(json_encode($payload));
-        $jwt = $header.".".$payload.".".\auxilium\EncodingTools::base64_encode_url_safe(hash_hmac("sha256", $header.".".$payload, base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true));
+        $header = \Auxilium\EncodingTools::base64_encode_url_safe(json_encode($header));
+        $payload = \Auxilium\EncodingTools::base64_encode_url_safe(json_encode($payload));
+        $jwt = $header.".".$payload.".". \Auxilium\EncodingTools::base64_encode_url_safe(hash_hmac("sha256", $header.".".$payload, base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true));
 
         $this->jwtValidated = true;
         $this->jwtMatchedUser = true;

@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class AuxiliumScript {
     public static function evaluate_variable_path(string $string, array $vars) {
@@ -7,7 +7,7 @@ class AuxiliumScript {
             $pth = explode("/", $string);
             $st = substr(array_shift($pth), 1);
             if (isset($vars[$st])) {
-                if (is_a($vars[$st], "\auxilium\Node")) {
+                if (is_a($vars[$st], "\Auxilium\Node")) {
                     array_unshift($pth, "{".$vars[$st]->getId()."}");
                     $fcn = "@view";
                     if (substr(end($pth), 0, 1) === "@") {
@@ -16,23 +16,23 @@ class AuxiliumScript {
                     $string = implode("/", $pth);
                     switch ($fcn) {
                         case "@created":
-                            $node = \auxilium\GraphDatabaseConnection::node_from_path($string);
+                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
                             return ($node == null) ? null : $node->getTimestamp();
                         case "@schema":
-                            $node = \auxilium\GraphDatabaseConnection::node_from_path($string);
+                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
                             return ($node == null) ? null : $node->getSchemaUrl();
                         case "@creator":
-                            $node = \auxilium\GraphDatabaseConnection::node_from_path($string);
+                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
                             return ($node == null) ? null : $node->getCreator();
                         case "@creator_id":
-                            $node = \auxilium\GraphDatabaseConnection::node_from_path($string);
+                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
                             if ($node != null) {$node = $node->getCreator();}
                             return ($node == null) ? null : $node->getId();
                         case "@id":
-                            $node = \auxilium\GraphDatabaseConnection::node_from_path($string);
+                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
                             return ($node == null) ? null : $node->getId();
                         case "@view":
-                            return \auxilium\GraphDatabaseConnection::node_from_path($string);
+                            return \Auxilium\GraphDatabaseConnection::node_from_path($string);
                     }
                     return null;
                 } else {

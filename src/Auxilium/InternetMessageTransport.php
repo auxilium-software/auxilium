@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class InternetMessageTransport {
     public static function scan_inboxes() {

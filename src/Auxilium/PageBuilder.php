@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class PageBuilder {
     private static $instance = null;

@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 require_once CREDENTIALS_FILE_LOCATION;
 

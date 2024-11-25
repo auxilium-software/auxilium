@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class EmailBuilder {
     private $emailData = null;
@@ -94,7 +94,7 @@ class EmailBuilder {
         $this->emailData["body"] = $content;
 
         $build_content = "MIME-Version: 1.0\r\n";
-        $boundary = \auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(48));
+        $boundary = \Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(48));
         
         $message_parties = [];
         

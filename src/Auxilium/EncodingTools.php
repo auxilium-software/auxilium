@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class EncodingTools {
     public static function base64_encode_url_safe($data) {

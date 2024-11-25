@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class NodeFactory {
     protected $mimeType = null;
@@ -27,9 +27,9 @@ class NodeFactory {
     
     protected function build() {
         if ($this->actor == null) {
-            $this->actor = \auxilium\Session::get_current()->getUser();
+            $this->actor = \Auxilium\Session::get_current()->getUser();
         }
-        return \auxilium\GraphDatabaseConnection::new_node($this->data, $this->mimeType, $this->schema, $this->actor);
+        return \Auxilium\GraphDatabaseConnection::new_node($this->data, $this->mimeType, $this->schema, $this->actor);
     }
 }
 ?>

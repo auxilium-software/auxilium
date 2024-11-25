@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 class ICalendarObject {
     protected $sections = null;
 

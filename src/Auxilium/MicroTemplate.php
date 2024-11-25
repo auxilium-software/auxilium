@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class MicroTemplate {
     protected static $lookup_table = null;

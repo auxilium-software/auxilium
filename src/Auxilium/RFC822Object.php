@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 class RFC822Object extends DataObject {
     protected $message = null;
     protected $attachmentParts = null;
@@ -314,7 +314,7 @@ class RFC822Object extends DataObject {
         $cleanHtml = $purifier->purify($document->saveHTML());
         
         foreach ($imagesToInsert as $cid) {
-            $cleanHtml = str_replace("::auxpckimg:".$cid."::", "<img src='/api/v1/data/".$this->getUuid()."/attachments/".\auxilium\EncodingTools::base64_encode_url_safe($cid)."' style='max-width: 100%; max-height: 100vh;'/>", $cleanHtml);
+            $cleanHtml = str_replace("::auxpckimg:".$cid."::", "<img src='/api/v1/data/".$this->getUuid()."/attachments/". \Auxilium\EncodingTools::base64_encode_url_safe($cid)."' style='max-width: 100%; max-height: 100vh;'/>", $cleanHtml);
         }
         
         return $cleanHtml;

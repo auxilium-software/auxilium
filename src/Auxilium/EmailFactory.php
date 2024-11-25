@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class EmailFactory extends RFC822ObjectFactory {
     private $emailData = null;
@@ -83,7 +83,7 @@ class EmailFactory extends RFC822ObjectFactory {
             $this->emailData["template_properties"]["sender"] = $senderUser;
         }
         $this->emailData["template_properties"]["selected_lang"] = "en";
-        if ($this->recipients[0] instanceof \auxilium\User) {
+        if ($this->recipients[0] instanceof \Auxilium\User) {
             $this->emailData["template_properties"]["recipient"] = $this->recipients[0];
             $this->emailData["template_properties"]["selected_lang"] = $this->recipients[0]->getLanguagePreference();
         }
@@ -196,7 +196,7 @@ class EmailFactory extends RFC822ObjectFactory {
             
             $payload = [
                 "message" => [
-                    "subject" => \auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]),
+                    "subject" => \Auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]),
                     "body" => [
                         "contentType" => "html",
                         "content" => $content
@@ -242,7 +242,7 @@ class EmailFactory extends RFC822ObjectFactory {
             $this->emailData["recipients"] = [];
             foreach($this->recipients as &$user) {
                 if ($user != null) {
-                    if ($user instanceof \auxilium\User) {
+                    if ($user instanceof \Auxilium\User) {
                         array_push($payload["message"]["toRecipients"], [
                                 "emailAddress" => [
                                     "address" => $user->getEmailAddress(),
@@ -357,7 +357,7 @@ class EmailFactory extends RFC822ObjectFactory {
             $this->emailData["recipients"] = [];
             foreach($this->recipients as &$user) {
                 if ($user != null) {
-                    if ($user instanceof \auxilium\User) {
+                    if ($user instanceof \Auxilium\User) {
                         $mail->addAddress($user->getEmailAddress(), $user->getFullName());
                         array_push($this->emailData["recipients"], $user->getUuid());
                     } else {
@@ -368,7 +368,7 @@ class EmailFactory extends RFC822ObjectFactory {
             
             // Content
             $mail->isHTML(true);                       // Set email format to HTML
-            $mail->Subject = \auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]);
+            $mail->Subject = \Auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]);
             $mail->Body = $content;
 
             if (!$mail->send()) {

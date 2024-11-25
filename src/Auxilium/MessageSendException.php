@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class MessageSendException extends \Exception {
     public function __construct($reason = null, $code = 0, Throwable $previous = null) {

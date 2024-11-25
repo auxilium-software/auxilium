@@ -1,5 +1,5 @@
 <?php
-namespace auxilium;
+namespace Auxilium;
 
 class Node {
     private $rawContent = null;
@@ -181,9 +181,9 @@ class Node {
     public function getContent(User $actor = null) {
         if ($this->getRawContent($actor) != null) {
             if (substr($this->getRawContent($actor), 0, 5) === "data:") {
-                return new \auxilium\DataURL($this->getRawContent($actor));
+                return new \Auxilium\DataURL($this->getRawContent($actor));
             } elseif (substr($this->getRawContent($actor), 0, 7) === "auxlfs:") {
-                return new \auxilium\AuxiliumLFSObject($this->getRawContent($actor));
+                return new \Auxilium\AuxiliumLFSObject($this->getRawContent($actor));
             }
         }
         return null;
