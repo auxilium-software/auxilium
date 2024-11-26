@@ -25,12 +25,12 @@ try {
     switch ($_SERVER['REQUEST_METHOD']) {
         case "DELETE":
             $query = "DELETE {".$node_id."}";
-            Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $query);
+            Auxilium\GraphDatabaseConnection::query(\Auxilium\SessionHandling\Session::get_current()->getUser(), $query);
             $at->output();
             break;
         case "GET":
         default:
-            $node_info = Auxilium\GraphDatabaseConnection::get_raw_node_info(Auxilium\Session::get_current()->getUser(), $node_id);
+            $node_info = Auxilium\GraphDatabaseConnection::get_raw_node_info(\Auxilium\SessionHandling\Session::get_current()->getUser(), $node_id);
             $at->setVariable("result", $node_info);
             $at->setVariable("request", $node_id);
             $at->output();

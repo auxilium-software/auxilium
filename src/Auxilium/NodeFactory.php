@@ -27,7 +27,7 @@ class NodeFactory {
     
     protected function build() {
         if ($this->actor == null) {
-            $this->actor = \Auxilium\Session::get_current()->getUser();
+            $this->actor = SessionHandling\Session::get_current()->getUser();
         }
         return \Auxilium\GraphDatabaseConnection::new_node($this->data, $this->mimeType, $this->schema, $this->actor);
     }

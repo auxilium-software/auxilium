@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\SessionHandling\Session;
+
 class Node {
     private $rawContent = null;
     private $rawContentFetched = false;

@@ -7,7 +7,7 @@ $pb->setTemplate("Pages/console");
 if (isset($_POST["query"])) {
     $query = trim($_POST["query"]);
     try {
-        $result = Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $query);
+        $result = Auxilium\GraphDatabaseConnection::query(\Auxilium\SessionHandling\Session::get_current()->getUser(), $query);
         if (isset($_POST["return_format"])) {
             if (strtoupper($_POST["return_format"]) == "RAW") {
                 header("Content-Type: application/json; charset=utf-8");

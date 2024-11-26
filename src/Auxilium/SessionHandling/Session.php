@@ -1,5 +1,8 @@
 <?php
-namespace Auxilium;
+namespace Auxilium\SessionHandling;
+
+use Auxilium\RelationalDatabaseConnection;
+use Auxilium\User;
 
 class Session {
     private static $current = null;

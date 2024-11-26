@@ -3,7 +3,7 @@ namespace Auxilium\EmailHandling;
 
 use Auxilium\Exceptions\MessageSendException;
 use Auxilium\MicroTemplate;
-use Auxilium\Session;
+use Auxilium\SessionHandling\Session;
 use Auxilium\User;
 
 class EmailFactory extends RFC822ObjectFactory {

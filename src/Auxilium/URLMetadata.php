@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\SessionHandling\Session;
+
 class URLMetadata {
     private $metadata = [];
     private $jwtValidated = false;

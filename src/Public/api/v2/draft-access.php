@@ -30,9 +30,9 @@ if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
     $at->setErrorText("Malformed uuid");
     $at->output();
 }
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$draft_id.".json";
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/", 0700, true);
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."/".$draft_id.".json";
+if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."/")) {
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."/", 0700, true);
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" || $_SERVER["REQUEST_METHOD"] === "PUT") {
@@ -57,20 +57,20 @@ if ($action == "access") {
     $at->output();
 } elseif ($action == "send") {
     $draft_content = json_decode(file_get_contents($message_draft_path), true);
-    $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". Auxilium\Session::get_current()->getUser()->getUuid()."/".$draft_id.".eml";
+    $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."/".$draft_id.".eml";
     $build_content = "X-Auxilium-Message-Version: 2.0\r\n";
     $build_content .= "MIME-Version: 1.0\r\n";
-    $build_content .= "Message-ID: $draft_id.". Auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
+    $build_content .= "Message-ID: $draft_id.". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
     $boundary = Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(48));
     
     $message_parties = [];
     
-    array_push($message_parties, Auxilium\Session::get_current()->getUser());
-    $from_user_name = Auxilium\Session::get_current()->getUser()->getDisplayName();
+    array_push($message_parties, \Auxilium\SessionHandling\Session::get_current()->getUser());
+    $from_user_name = \Auxilium\SessionHandling\Session::get_current()->getUser()->getDisplayName();
     if ($from_user_name != null) {
-        $build_content .= "From: \"". Auxilium\EncodingTools::rfc2047_encode($from_user_name)."\" <auxiliuminbox+". Auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME.">\r\n";
+        $build_content .= "From: \"". Auxilium\EncodingTools::rfc2047_encode($from_user_name)."\" <auxiliuminbox+". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME.">\r\n";
     } else {
-        $build_content .= "From: auxiliuminbox+". Auxilium\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
+        $build_content .= "From: auxiliuminbox+". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."@".INSTANCE_BRANDING_DOMAIN_NAME."\r\n";
     }
     
     $build_content .= "To: ";

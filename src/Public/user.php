@@ -257,7 +257,7 @@ switch($uri_components[1]) {
         break;
     case "login-methods":
         if (in_array("ACT", $target_node->getPermissions())) {
-            if ($target_node->getId() == Auxilium\Session::get_current()->getUser()->getId()) {
+            if ($target_node->getId() == \Auxilium\SessionHandling\Session::get_current()->getUser()->getId()) {
                 $pb->setVariable("is_own_account", true);
             }
             

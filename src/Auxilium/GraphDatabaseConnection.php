@@ -3,6 +3,7 @@ namespace Auxilium;
 
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\DeegraphException;
+use Auxilium\SessionHandling\Session;
 
 require_once CREDENTIALS_FILE_LOCATION;
 

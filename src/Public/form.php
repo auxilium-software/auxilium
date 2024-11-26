@@ -95,7 +95,7 @@ if (isset($uri_components[0])) {
             }
             
             $internal_vars = [
-                "user" => Auxilium\Session::get_current()->getUser()
+                "user" => \Auxilium\SessionHandling\Session::get_current()->getUser()
             ];
             
             if ($target_node != null) {
@@ -192,7 +192,7 @@ if (isset($uri_components[0])) {
                     $form_persistent_data["target_node"] = $target_node->getId();
                 }
                 
-                $as_node = Auxilium\Session::get_current()->getUser();
+                $as_node = \Auxilium\SessionHandling\Session::get_current()->getUser();
                 $export = null;
                 $navigate = null;
                 $navigate_replace = false;

@@ -49,13 +49,13 @@ if (isset($_POST["page"])) {
 try {
     if (count($queries) > 1) {
         for ($i = 0; $i < count($queries); $i++) {
-            $results[$i] = Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $queries[$i]);
+            $results[$i] = Auxilium\GraphDatabaseConnection::query(\Auxilium\SessionHandling\Session::get_current()->getUser(), $queries[$i]);
         }
         $at->setVariable("results", $results);
         $at->setVariable("queries", $queries);
         $at->output();
     } elseif (count($queries) > 0) {
-        $results[0] = Auxilium\GraphDatabaseConnection::query(Auxilium\Session::get_current()->getUser(), $queries[0]);
+        $results[0] = Auxilium\GraphDatabaseConnection::query(\Auxilium\SessionHandling\Session::get_current()->getUser(), $queries[0]);
         if ($paginate) {
             if (array_key_exists("@rows", $results[0])) {
                 $rows = $results[0]["@rows"];

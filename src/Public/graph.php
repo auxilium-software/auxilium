@@ -34,7 +34,7 @@ try {
             }
         }
         if (count($uri_components) == 0) {
-            header("Location: /graph/~". Auxilium\Session::get_current()->getUser()->getId());
+            header("Location: /graph/~". \Auxilium\SessionHandling\Session::get_current()->getUser()->getId());
             exit();
         }
 
@@ -109,7 +109,7 @@ try {
                     $primary_node_path_nodes[$np] = Auxilium\Node::from_path($absolute_path);
                     if ($primary_node_path_nodes[$np] != null) {
                         if ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
-                            if ($primary_node_path_nodes[$np]->is(Auxilium\Session::get_current()->getUser())) {
+                            if ($primary_node_path_nodes[$np]->is(\Auxilium\SessionHandling\Session::get_current()->getUser())) {
                                 $primary_node_path_names[$np] = "::auxpckstr:ui_heading/my_account::";
                                 $pb->setVariable("is_own_account", true);
                             } else {
@@ -351,7 +351,7 @@ try {
                             $returned_data = $statement->fetch();
                         }
                         
-                        if ($node->getId() == Auxilium\Session::get_current()->getUser()->getId()) {
+                        if ($node->getId() == \Auxilium\SessionHandling\Session::get_current()->getUser()->getId()) {
                             $pb->setVariable("is_own_account", true);
                         }
                         

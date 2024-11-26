@@ -29,7 +29,7 @@ $token_builder = (new \Lcobucci\JWT\Token\Builder(new \Lcobucci\JWT\Encoding\Jos
 $algorithm = new \Lcobucci\JWT\Signer\Eddsa();
 $signing_key = \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded(INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PRIVATE_KEY);
 
-$target_user_id = Auxilium\Session::get_current()->getUser()->getId();
+$target_user_id = \Auxilium\SessionHandling\Session::get_current()->getUser()->getId();
 
 if (isset($_GET["for"])) {
     if (preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $_GET["for"])) {

@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\SessionHandling\Session;
+
 class APITools {
     private static $instance = null;
     private $returnData;

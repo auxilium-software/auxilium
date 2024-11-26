@@ -1,6 +1,8 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\SessionHandling\Session;
+
 class AuxiliumLFSObject {
     private $data = null;
     private $dataHash = null;
