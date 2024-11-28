@@ -3,6 +3,7 @@
 namespace Auxilium\TwigHandling\Extensions;
 
 use Auxilium\MicroTemplate;
+use Auxilium\SessionHandling\CookieHandling;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -35,6 +36,13 @@ class CommonFunctions extends AbstractExtension
         $template_variables = []
     )
     {
-        return strval(new MicroTemplate("ui_templates/".$path, $this->twigVariables["selected_lang"], $template_variables, false));
+        return strval(
+            new MicroTemplate(
+                "ui_templates/".$path,
+                // $this->twigVariables["selected_lang"],
+                CookieHandling::GetCookieValue("lang"),
+                $template_variables,
+                false)
+        );
     }
 }

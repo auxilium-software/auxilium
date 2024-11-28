@@ -4,6 +4,7 @@ namespace Auxilium\TwigHandling\Extensions;
 
 use Auxilium\EncodingTools;
 use Auxilium\MicroTemplate;
+use Auxilium\SessionHandling\CookieHandling;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -28,16 +29,16 @@ class CommonFilters extends AbstractExtension
 
     public function uiprop($string): string
     {
-        return MicroTemplate::data_type_to_human_name($string, $_COOKIE["lang"]);
+        return MicroTemplate::data_type_to_human_name($string, CookieHandling::GetCookieValue("lang"));
     }
     public function uitxt($string): string
     {
-        return MicroTemplate::ui_text($string, $_COOKIE["lang"]);
+        return MicroTemplate::ui_text($string, CookieHandling::GetCookieValue("lang"));
     }
     public function uitxtrt($string): string
     {
-        // return MicroTemplate::ui_text_root($string, $_COOKIE["lang"], $this->twigVariables);
-        return MicroTemplate::ui_text_root($string, $_COOKIE["lang"], [
+        // return MicroTemplate::ui_text_root($string, CookieHandling::GetCookieValue("lang"), $this->twigVariables);
+        return MicroTemplate::ui_text_root($string, CookieHandling::GetCookieValue("lang"), [
 
         ]);
     }
@@ -55,11 +56,11 @@ class CommonFilters extends AbstractExtension
     }
     public function uihdg($string): string
     {
-        return MicroTemplate::ui_heading($string, $_COOKIE["lang"]);
+        return MicroTemplate::ui_heading($string, CookieHandling::GetCookieValue("lang"));
     }
     public function unpack_string($string): string
     {
-        return MicroTemplate::from_packed_template($string, $_COOKIE["lang"]);
+        return MicroTemplate::from_packed_template($string, CookieHandling::GetCookieValue("lang"));
     }
     public function b64_url_safe($string): string
     {
