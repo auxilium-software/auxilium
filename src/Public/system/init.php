@@ -1,49 +1,66 @@
 <?php
-require_once "../environment.php";
+
+use Auxilium\TwigHandling\PageBuilder2;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../environment.php';
 
 $setup_key = null;
 
-if (isset($_GET["setup_key"])) {
-    if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key")) {
+if (isset($_GET["setup_key"]))
+{
+    if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key"))
+    {
         $key_file = fopen(LOCAL_STORAGE_DIRECTORY."setup.key", "r") or die("Unable to read keyfile!");
         $file_size = filesize(LOCAL_STORAGE_DIRECTORY."setup.key");
         $match_key = fread($key_file, $file_size);
-        if (trim($match_key) == trim($_GET["setup_key"])) {
+        if (trim($match_key) == trim($_GET["setup_key"]))
+        {
             $setup_key = trim($_GET["setup_key"]);
-        } else {
-            $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-            $pb->setTemplate("Pages/system/init-locked-out");
-            $pb->render();
-            exit();
+        }
+        else
+        {
+            \Auxilium\TwigHandling\PageBuilder2::Render(
+                template: "Pages/system/init-locked-out.html.twig",
+                variables: []
+            );
         }
     } else {
-        $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-        $pb->setTemplate("Pages/system/init-done");
-        $pb->render();
-        exit();
+        \Auxilium\TwigHandling\PageBuilder2::Render(
+            template: "Pages/system/init-step-3-done.html.twig",
+            variables: []
+        );
     }
 }
 
-if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock")) {
-    if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key")) {
-        if ($setup_key == null) {
-            $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-            $pb->setTemplate("Pages/system/init-locked-out");
-            $pb->render();
-            exit();
+
+if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock"))
+{
+    if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.key"))
+    {
+        if ($setup_key == null)
+        {
+            \Auxilium\TwigHandling\PageBuilder2::Render(
+                template: "Pages/system/init-locked-out.html.twig",
+                variables: []
+            );
         }
-    } else {
-        $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-        $pb->setTemplate("Pages/system/init-done");
-        $pb->render();
-        exit();
     }
-} else {
+    else
+    {
+        \Auxilium\TwigHandling\PageBuilder2::Render(
+            template: "Pages/system/init-step-3-done.html.twig",
+            variables: []
+        );
+    }
+}
+else
+{
     $lock_file = fopen(LOCAL_STORAGE_DIRECTORY."setup.lock", "w") or die("Unable to write lockfile!");
     fwrite($lock_file, date("c", time()));
     fclose($lock_file);
     
-    $relational_schema = WEB_ROOT_DIRECTORY."system/first-setup/schema.sql";
+    $relational_schema = WEB_ROOT_DIRECTORY."Public/system/first-setup/schema.sql";
     $pdo = Auxilium\RelationalDatabaseConnection::get_pdo();
     $pdo->query(file_get_contents($relational_schema));
     
@@ -56,28 +73,36 @@ if (file_exists(LOCAL_STORAGE_DIRECTORY."setup.lock")) {
     Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE");
 }
 
-if ($setup_key == null) {
+if ($setup_key == null)
+{
     $setup_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '=');
     $key_file = fopen(LOCAL_STORAGE_DIRECTORY."setup.key", "w") or die("Unable to write keyfile!");
     fwrite($key_file, $setup_key);
     fclose($key_file);
 }
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-$pb->setTemplate("Pages/system/init");
-$pb->setVariable("setup_key", $setup_key);
-if (isset($_GET["lang"])) {
+/*
+if (isset($_GET["lang"]))
+{
     $pb->overrideCurrentLanguage($_GET["lang"]);
     $pb->setVariable("lang", $_GET["lang"]);
 }
-if (isset($_GET["page"])) {
-    switch (strtolower($_GET["page"])) {
+*/
+if (isset($_GET["page"]))
+{
+    switch (strtolower($_GET["page"]))
+    {
         case "cmgmt":
-            $pb->setTemplate("Pages/system/init-central-management");
-            break;
+            PageBuilder2::Render(
+                template: "Pages/system/init-step-1-central-management.html.twig",
+                variables: [
+                    "setup_key"=>$setup_key,
+                    "lang" => $_GET["lang"],
+                ]
+            );
         case "racc":
-            $pb->setTemplate("Pages/system/init-root-account");
-            if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"])) {
+            if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
+            {
                 $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
                 $user_node = new Auxilium\User($user_node->getId());
                 
@@ -112,17 +137,28 @@ if (isset($_GET["page"])) {
                 
                 
                 
-                if (unlink(LOCAL_STORAGE_DIRECTORY."setup.key")) {
-                    $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-                    $pb->setTemplate("Pages/system/init-done");
-                    $pb->render();
-                    exit();
-                } else {
+                if (unlink(LOCAL_STORAGE_DIRECTORY."setup.key"))
+                {
+                    PageBuilder2::Render(
+                        template: "Pages/system/init-done.html.twig",
+                        variables: [
+                            "setup_key"=>$setup_key,
+                            "lang" => $_GET["lang"],
+                        ]
+                    );
+                }
+                else
+                {
                     echo "ERROR DELETING KEY";
                     exit();
                 }
             }
-            break;
+            PageBuilder2::Render(
+                template: "Pages/system/init-step-2-root-account.html.twig",
+                variables: [
+                    "setup_key"=>$setup_key,
+                    "lang" => $_GET["lang"],
+                ]
+            );
     }
 }
-$pb->render();
