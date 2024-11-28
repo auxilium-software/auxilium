@@ -1,7 +1,10 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphServerConnection;
 use Auxilium\SessionHandling\Session;
+use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
+use DeegraphConnection;
 
 class Node {
     private $rawContent = null;
@@ -53,7 +56,11 @@ class Node {
     public function getUuid() {
         return $this->nodeId;
     }
-    
+
+
+
+
+
     public function addProperty(string $key, Node $node, User $actor = null, bool $force = false) {
         if ($actor == null) {
             $actor = Session::get_current()->getUser();
@@ -131,6 +138,15 @@ class Node {
         if ($this->cachedProperties != null) {
             return $this->cachedProperties;
         }
+
+        $this->cachedProperties = QueryBuilder::Directory()
+            ->RelativePath(relativePath: "{" . $this->getId() . "}")
+            ->Build()
+            ->RunQuery(DeegraphServerConnection::GetConnection())
+            ->Map;
+        return $this->cachedProperties;
+
+        /*
         $outputMap = [];
         $query = "DIRECTORY {".$this->getId()."}";
         $response = GraphDatabaseConnection::query($actor, $query);
@@ -143,6 +159,7 @@ class Node {
         } else {
             return null;
         }
+        */
     }
     
     public function getReferences(User $actor = null) {

@@ -41,7 +41,9 @@
         "webklex/php-imap": "^3.2",
         "lcobucci/jwt": "^4.3",
         "web-token/jwt-core": "^2.2",
-        "aws/aws-sdk-php": "^3.277"
+        "aws/aws-sdk-php": "^3.277",
+
+        "darksparrow/deegraph-interactions": "dev-dev"
     },
     "config": {
         "allow-plugins": {
