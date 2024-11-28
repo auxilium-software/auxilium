@@ -1,10 +1,7 @@
 <?php
 namespace Auxilium\TwigHandling;
 
-use Auxilium\EncodingTools;
-use Auxilium\Exceptions\DatabaseConnectionException;
-use Auxilium\MicroTemplate;
-use Auxilium\Session;
+use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\Extensions\CommonFilters;
 use Auxilium\TwigHandling\Extensions\CommonFunctions;
 
@@ -186,23 +183,7 @@ class PageBuilder {
             exit();
         } catch (\Twig\Error\RuntimeError $e) {
             $e = $e->getPrevious();
-            if ($e instanceof DatabaseConnectionException) {
-                http_response_code(500);
-                $this->setDefaultVariables();
-                $this->twigVariables["technical_details"] = "Exception Type:\n    ".get_class($e);
-                $this->twigVariables["technical_details"] .= "\nMessage:\n    ".$e->getMessage();
-                $this->twigVariables["technical_details"] .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-                echo $twig->render("InternalSystemError.html.twig", $this->twigVariables);
-                exit();
-            } else {
-                echo "<pre>";
-                echo get_class($e)."\n";
-                echo htmlentities($e->getMessage())."\n";
-                echo htmlentities(json_encode($e->getTrace(), JSON_PRETTY_PRINT))."\n";
-                echo htmlentities(json_encode(get_class_methods($e), JSON_PRETTY_PRINT));
-                echo "</pre>";
-                exit();
-            }
+            PageBuilder2::RenderInternalSystemError($e);
         }
     }
 }
