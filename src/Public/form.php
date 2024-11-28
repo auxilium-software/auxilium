@@ -1,5 +1,6 @@
 <?php
-require_once "environment.php";
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../environment.php';
 
 $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 
@@ -45,7 +46,7 @@ if (isset($uri_components[0])) {
     $pb->setTemplate("Pages/invalid");
 
     if (preg_match('/^[a-f0-9-]+$/', $uri_components[0])) { // Make sure nobody is trying anything like path traversal
-        if (file_exists(WEB_ROOT_DIRECTORY."/forms/".$uri_components[0].".json")) {
+        if (file_exists(WEB_ROOT_DIRECTORY."/Configuration/FormDefinitions/".$uri_components[0].".json")) {
             $fpid = null;
             
             if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."forms-in-progress")) {
@@ -81,7 +82,7 @@ if (isset($uri_components[0])) {
                 $form_persistent_data = json_decode($form_persistent_data, true);
             }
         
-            $definition = file_get_contents(WEB_ROOT_DIRECTORY."/forms/".$uri_components[0].".json");
+            $definition = file_get_contents(WEB_ROOT_DIRECTORY."/Configuration/FormDefinitions/".$uri_components[0].".json");
             $definition = json_decode($definition, true);
             
             if (!isset($form_persistent_data["variables"])) {
