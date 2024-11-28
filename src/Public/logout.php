@@ -1,11 +1,15 @@
 <?php
-require_once "environment.php";
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+use Auxilium\TwigHandling\PageBuilder;
 
-setcookie("session_key", null, time() - (3600 * 48), "/", null, true, true);
-//$twig_variables["user_info"] = null;
-//echo $twig->render($twig_variables["selected_lang"]."/logout.html.twig", $twig_variables);
-$pb->setVariable("current_user", null);
-$pb->setTemplate("Pages/logout");
-$pb->render();
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../environment.php';
+
+
+// setcookie("session_key", null, time() - (3600 * 48), "/", null, true, true);
+
+setcookie("session_key", "", time() - (3600 * 48), "/", "", true, true);
+
+\Auxilium\TwigHandling\PageBuilder2::AutoRender([
+    "current_user" => null,
+]);

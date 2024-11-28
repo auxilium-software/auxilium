@@ -1,41 +1,34 @@
 <?php
-require_once "environment.php";
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
-try {
-    try {
-        $pb->requireLogin();
-        $pb->setVariable("progressive_load", false);
-        if(isset($_COOKIE["progressiveload"])) {
-            if ($_COOKIE["progressiveload"] == "true") {
-                $pb->setVariable("progressive_load", true);
-            }
-        }
-        if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
-            $pb->setVariable("is_admin", true);
-        }
-        $pb->setTemplate("Pages/dashboard");
-        $pb->render();
-    } catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
-        $pb->setDefaultVariables();
-        $pb->setTemplate("ErrorPages/InternalSystemError");
-        $technical_details = "Exception Type:\n    ".get_class($e);
-        $technical_details .= "\nMessage:\n    ".$e->getMessage();
-        $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-        $pb->setVariable("technical_details", $technical_details);
-        http_response_code(500);
-        $pb->render();
+use Auxilium\SessionHandling\CookieHandling;
+use Auxilium\SessionHandling\Security;
+use Auxilium\TwigHandling\PageBuilder2;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../environment.php';
+
+
+try
+{
+    try
+    {
+        Security::RequireLogin();
+        PageBuilder2::AutoRender(variables: [
+            "progressive_load" => CookieHandling::GetBooleanCookie("progressive_load", false),
+            "is_admin" => (
+                in_array(
+                    "ACT",
+                    Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()
+                )
+            ),
+        ]);
     }
-} catch (\Exception $e) {
-    $pb->setDefaultVariables();
-    $pb->setTemplate("ErrorPages/InternalSystemError");
-    $technical_details = "Exception Type:\n    ".get_class($e);
-    $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-    $technical_details .= "\nStack Trace:\n\n".$e->getTraceAsString();
-    if ($e->getInnerTrace() != null) {
-        $technical_details .= "\nInner Trace:\n\n".implode("\n", $e->getInnerTrace());
+    catch (\Auxilium\Exceptions\DatabaseConnectionException $e)
+    {
+        PageBuilder2::RenderInternalSystemError($e);
     }
-    $pb->setVariable("technical_details", $technical_details);
-    http_response_code(500);
-    $pb->render();
+}
+catch (\Exception $e)
+{
+    PageBuilder2::RenderInternalSystemError($e);
 }
