@@ -133,6 +133,7 @@ class Node {
         } else {
             return null;
         }
+        */
     }
     
     public function getProperties(User $actor = null) {
