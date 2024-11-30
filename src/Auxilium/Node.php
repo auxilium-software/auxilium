@@ -98,8 +98,12 @@ class Node {
         if ($actor == null) {
             $actor = Session::get_current()->getUser();
         }
+
+        $query = QueryBuilder::Delete()
+            ->RelativePath("{".$this->getId()."}")
+            ->Build();
         
-        $query = "DELETE {".$this->getId()."}";
+        // $query = "DELETE {".$this->getId()."}";
         return GraphDatabaseConnection::query($actor, $query);
     }
     
