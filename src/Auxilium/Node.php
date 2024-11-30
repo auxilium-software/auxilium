@@ -139,11 +139,14 @@ class Node {
             return $this->cachedProperties;
         }
 
-        $this->cachedProperties = QueryBuilder::Directory()
-            ->RelativePath(relativePath: "{" . $this->getId() . "}")
-            ->Build()
-            ->RunQuery(DeegraphServerConnection::GetConnection())
-            ->Map;
+        foreach(QueryBuilder::Directory()
+                    ->RelativePath(relativePath: "{" . $this->getId() . "}")
+                    ->Build()
+                    ->RunQuery(DeegraphServerConnection::GetConnection())
+                    ->Map as $key=>$value)
+        {
+            $this->cachedProperties[] = Node::from_id($value);
+        }
         return $this->cachedProperties;
 
         /*
@@ -169,6 +172,25 @@ class Node {
         if ($this->cachedReferences != null) {
             return $this->cachedReferences;
         }
+
+
+        $response = QueryBuilder::References()
+            ->RelativePath(relativePath: "{" . $this->getId() . "}")
+            ->Build()
+            ->RunQuery(DeegraphServerConnection::GetConnection());
+
+        foreach ($response->Map as $key => $value)
+        {
+            $arr = [];
+            foreach ($value as $refNodeId)
+            {
+                $arr[] = Node::from_id($refNodeId);
+            }
+            $this->cachedReferences[$key] = $arr;
+        }
+        return $this->cachedReferences;
+
+        /*
         $outputMap = [];
         $query = "REFERENCES {".$this->getId()."}";
         $response = GraphDatabaseConnection::query($actor, $query);
