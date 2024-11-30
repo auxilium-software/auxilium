@@ -1,7 +1,10 @@
 <?php
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphServerConnection;
 use Auxilium\SessionHandling\Session;
+use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
+use DeegraphConnection;
 
 class Node {
     private $rawContent = null;
@@ -53,7 +56,11 @@ class Node {
     public function getUuid() {
         return $this->nodeId;
     }
-    
+
+
+
+
+
     public function addProperty(string $key, Node $node, User $actor = null, bool $force = false) {
         if ($actor == null) {
             $actor = Session::get_current()->getUser();
@@ -91,8 +98,12 @@ class Node {
         if ($actor == null) {
             $actor = Session::get_current()->getUser();
         }
+
+        $query = QueryBuilder::Delete()
+            ->RelativePath("{".$this->getId()."}")
+            ->Build();
         
-        $query = "DELETE {".$this->getId()."}";
+        // $query = "DELETE {".$this->getId()."}";
         return GraphDatabaseConnection::query($actor, $query);
     }
     
@@ -131,6 +142,18 @@ class Node {
         if ($this->cachedProperties != null) {
             return $this->cachedProperties;
         }
+
+        foreach(QueryBuilder::Directory()
+                    ->RelativePath(relativePath: "{" . $this->getId() . "}")
+                    ->Build()
+                    ->RunQuery(DeegraphServerConnection::GetConnection())
+                    ->Map as $key=>$value)
+        {
+            $this->cachedProperties[] = Node::from_id($value);
+        }
+        return $this->cachedProperties;
+
+        /*
         $outputMap = [];
         $query = "DIRECTORY {".$this->getId()."}";
         $response = GraphDatabaseConnection::query($actor, $query);
@@ -143,6 +166,7 @@ class Node {
         } else {
             return null;
         }
+        */
     }
     
     public function getReferences(User $actor = null) {
@@ -152,6 +176,25 @@ class Node {
         if ($this->cachedReferences != null) {
             return $this->cachedReferences;
         }
+
+
+        $response = QueryBuilder::References()
+            ->RelativePath(relativePath: "{" . $this->getId() . "}")
+            ->Build()
+            ->RunQuery(DeegraphServerConnection::GetConnection());
+
+        foreach ($response->Map as $key => $value)
+        {
+            $arr = [];
+            foreach ($value as $refNodeId)
+            {
+                $arr[] = Node::from_id($refNodeId);
+            }
+            $this->cachedReferences[$key] = $arr;
+        }
+        return $this->cachedReferences;
+
+        /*
         $outputMap = [];
         $query = "REFERENCES {".$this->getId()."}";
         $response = GraphDatabaseConnection::query($actor, $query);
