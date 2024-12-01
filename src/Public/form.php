@@ -1,8 +1,12 @@
 <?php
+
+use Auxilium\SessionHandling\Session;
+use Auxilium\TwigHandling\PageBuilder;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));
@@ -118,7 +122,7 @@ if(isset($uri_components[0]))
             }
 
             $internal_vars = [
-                "user" => \Auxilium\SessionHandling\Session::get_current()->getUser()
+                "user" => Session::get_current()->getUser()
             ];
 
             if($target_node != null)
@@ -247,7 +251,7 @@ if(isset($uri_components[0]))
                     $form_persistent_data["target_node"] = $target_node->getId();
                 }
 
-                $as_node = \Auxilium\SessionHandling\Session::get_current()->getUser();
+                $as_node = Session::get_current()->getUser();
                 $export = null;
                 $navigate = null;
                 $navigate_replace = false;

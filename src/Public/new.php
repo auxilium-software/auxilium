@@ -1,12 +1,13 @@
 <?php
 
 use Auxilium\Schemas\CollectionSchema;
+use Auxilium\TwigHandling\PageBuilder;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 $pb->requireLogin();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);

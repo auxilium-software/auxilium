@@ -1,15 +1,18 @@
 <?php
 
+use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Schemas\CaseSchema;
 use Auxilium\Schemas\MessageSchema;
 use Auxilium\Schemas\OrganisationSchema;
 use Auxilium\Schemas\UserSchema;
+use Auxilium\SessionHandling\Session;
+use Auxilium\TwigHandling\PageBuilder;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 try
 {
     try
@@ -52,7 +55,7 @@ try
         }
         if(count($uri_components) == 0)
         {
-            header("Location: /graph/~" . \Auxilium\SessionHandling\Session::get_current()->getUser()->getId());
+            header("Location: /graph/~" . Session::get_current()->getUser()->getId());
             exit();
         }
 
@@ -151,7 +154,7 @@ try
                     {
                         if($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                         {
-                            if($primary_node_path_nodes[$np]->is(\Auxilium\SessionHandling\Session::get_current()->getUser()))
+                            if($primary_node_path_nodes[$np]->is(Session::get_current()->getUser()))
                             {
                                 $primary_node_path_names[$np] = "::auxpckstr:ui_heading/my_account::";
                                 $pb->setVariable("is_own_account", true);
@@ -441,8 +444,8 @@ try
                         if($user_data != null)
                         {
                             array_push($login_methods, [
-                                "type" => "classic"
-                            ]
+                                    "type" => "classic"
+                                ]
                             );
                         }
 
@@ -456,14 +459,14 @@ try
                         while($returned_data != null)
                         {
                             array_push($login_methods, [
-                                "type" => "oauth",
-                                "vendor" => explode("/", $returned_data["unique_sub"])[0]
-                            ]
+                                    "type" => "oauth",
+                                    "vendor" => explode("/", $returned_data["unique_sub"])[0]
+                                ]
                             );
                             $returned_data = $statement->fetch();
                         }
 
-                        if($node->getId() == \Auxilium\SessionHandling\Session::get_current()->getUser()->getId())
+                        if($node->getId() == Session::get_current()->getUser()->getId())
                         {
                             $pb->setVariable("is_own_account", true);
                         }
@@ -498,7 +501,7 @@ try
 
         $pb->render();
 
-    } catch(\Auxilium\Exceptions\DatabaseConnectionException $e)
+    } catch(DatabaseConnectionException $e)
     {
         $pb->setDefaultVariables();
         $pb->setTemplate("ErrorPages/InternalSystemError");
@@ -509,7 +512,7 @@ try
         http_response_code(500);
         $pb->render();
     }
-} catch(\Exception $e)
+} catch(Exception $e)
 {
     $pb->setDefaultVariables();
     $pb->setTemplate("ErrorPages/InternalSystemError");

@@ -1,12 +1,16 @@
 <?php
 
+use Auxilium\EmailHandling\EmailBuilder;
+use Auxilium\Exceptions\DatabaseConnectionException;
+use Auxilium\Exceptions\MessageSendException;
 use Auxilium\Schemas\UserSchema;
+use Auxilium\TwigHandling\PageBuilder;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 try
 {
     $form_data = Auxilium\PersistentFormData::get();
@@ -231,7 +235,7 @@ try
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($temporary_data);
 
-                    $email_builder = new \Auxilium\EmailHandling\EmailBuilder();
+                    $email_builder = new EmailBuilder();
                     $email_builder->setTemplate("new-account-verification-code");
                     $email_builder->setTemplateProperty("verification_code", $verification_code);
                     $email_builder->setTemplateProperty("recipient_name", explode(" ", $form_values["full_name"])[0]);
@@ -338,7 +342,7 @@ try
                 $pb->render();
                 break;
         }
-    } catch(\Auxilium\Exceptions\DatabaseConnectionException|\Auxilium\Exceptions\MessageSendException $e)
+    } catch(DatabaseConnectionException|MessageSendException $e)
     {
         $pb->setDefaultVariables();
         $pb->setTemplate("ErrorPages/InternalSystemError");
@@ -349,7 +353,7 @@ try
         http_response_code(500);
         $pb->render();
     }
-} catch(\Exception $e)
+} catch(Exception $e)
 {
     $pb->setDefaultVariables();
     $pb->setTemplate("ErrorPages/InternalSystemError");

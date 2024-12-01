@@ -1,6 +1,9 @@
 <?php
+
+use Auxilium\TwigHandling\PageBuilder;
+
 require_once "../environment.php";
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 $pb->setVariable("error_code", 500);
 $pb->setTemplate("ErrorPages/HTTPError");
 $pb->render();

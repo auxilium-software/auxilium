@@ -22,7 +22,7 @@ if(isset($_GET["setup_key"]))
         }
         else
         {
-            \Auxilium\TwigHandling\PageBuilder2::Render(
+            PageBuilder2::Render(
                 template : "Pages/system/init-locked-out.html.twig",
                 variables: []
             );
@@ -30,7 +30,7 @@ if(isset($_GET["setup_key"]))
     }
     else
     {
-        \Auxilium\TwigHandling\PageBuilder2::Render(
+        PageBuilder2::Render(
             template : "Pages/system/init-step-3-done.html.twig",
             variables: []
         );
@@ -44,7 +44,7 @@ if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.lock"))
     {
         if($setup_key == null)
         {
-            \Auxilium\TwigHandling\PageBuilder2::Render(
+            PageBuilder2::Render(
                 template : "Pages/system/init-locked-out.html.twig",
                 variables: []
             );
@@ -52,7 +52,7 @@ if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.lock"))
     }
     else
     {
-        \Auxilium\TwigHandling\PageBuilder2::Render(
+        PageBuilder2::Render(
             template : "Pages/system/init-step-3-done.html.twig",
             variables: []
         );

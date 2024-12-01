@@ -1,5 +1,6 @@
 <?php
 
+use auxilium\TotpUtility;
 use Auxilium\TwigHandling\PageBuilder2;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -13,9 +14,9 @@ try
     foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config)
     {
         array_push($openid_configs_printable, [
-            "unique_name" => $openid_config["unique_name"],
-            "display_name" => $openid_config["brand_name"],
-        ]
+                "unique_name" => $openid_config["unique_name"],
+                "display_name" => $openid_config["brand_name"],
+            ]
         );
     }
 
@@ -40,12 +41,12 @@ try
     if(($unverified_user_data["email_address"] == null) && ($unverified_user_data["password"] == null))
     {
         PageBuilder2::AutoRender([
-            "openid_configs" => $openid_configs_printable,
-            "form_validation" => [
-                "email_address" => true,
-                "password" => true,
-            ],
-        ]
+                "openid_configs" => $openid_configs_printable,
+                "form_validation" => [
+                    "email_address" => true,
+                    "password" => true,
+                ],
+            ]
         );
     }
 
@@ -59,12 +60,12 @@ try
     if($user_data == null)
     {
         PageBuilder2::AutoRender([
-            "openid_configs" => $openid_configs_printable,
-            "form_validation" => [
-                "email_address" => false,
-                "password" => true,
-            ],
-        ]
+                "openid_configs" => $openid_configs_printable,
+                "form_validation" => [
+                    "email_address" => false,
+                    "password" => true,
+                ],
+            ]
         );
     }
     else
@@ -88,7 +89,7 @@ try
 
                     foreach($totp_secret_data_rows as &$secret_data)
                     {
-                        if(\auxilium\TotpUtility::verifyTotpKey($secret_data["totp_secret"], $_POST["totp-code"]))
+                        if(TotpUtility::verifyTotpKey($secret_data["totp_secret"], $_POST["totp-code"]))
                         {
 
                             $bind_variables = [
@@ -203,16 +204,16 @@ try
         else
         {
             PageBuilder2::AutoRender([
-                "openid_configs" => $openid_configs_printable,
-                "form_validation" => [
-                    "email_address" => true,
-                    "password" => false,
-                ],
-            ]
+                    "openid_configs" => $openid_configs_printable,
+                    "form_validation" => [
+                        "email_address" => true,
+                        "password" => false,
+                    ],
+                ]
             );
         }
     }
-} catch(\Exception $e)
+} catch(Exception $e)
 {
     $technical_details = "Exception Type:\n    " . get_class($e);
     $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];

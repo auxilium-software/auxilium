@@ -37,10 +37,10 @@ if($bytes_written === FALSE)
 {
     http_response_code(500);
     echo json_encode([
-        "status" => "ERROR",
-        "error_message" => "Failed to write new message to RAM disk",
-        "error_code" => http_response_code()
-    ]
+            "status" => "ERROR",
+            "error_message" => "Failed to write new message to RAM disk",
+            "error_code" => http_response_code()
+        ]
     );
     exit();
 }

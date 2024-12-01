@@ -1,8 +1,13 @@
 <?php
+
+use Auxilium\EmailHandling\EmailBuilder;
+use Auxilium\SessionHandling\Session;
+use Auxilium\TwigHandling\PageBuilder;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));
@@ -148,7 +153,7 @@ switch($uri_components[1])
                             $user_name = $target_node->getProperty("name");
                         }
 
-                        $email_builder = new \Auxilium\EmailHandling\EmailBuilder();
+                        $email_builder = new EmailBuilder();
                         $email_builder->setTemplate("new-login-verification-code");
                         $email_builder->setTemplateProperty("verification_code", $verification_code);
                         $email_builder->setTemplateProperty("recipient_name", $user_name);
@@ -297,7 +302,7 @@ switch($uri_components[1])
     case "login-methods":
         if(in_array("ACT", $target_node->getPermissions()))
         {
-            if($target_node->getId() == \Auxilium\SessionHandling\Session::get_current()->getUser()->getId())
+            if($target_node->getId() == Session::get_current()->getUser()->getId())
             {
                 $pb->setVariable("is_own_account", true);
             }
@@ -350,11 +355,11 @@ switch($uri_components[1])
                     $sessions = $sub_map[$unique_sub];
                 }
                 array_push($login_methods, [
-                    "type" => "classic",
-                    "is_current" => ($current_sub == $unique_sub),
-                    "sub" => Auxilium\EncodingTools::base64_encode_url_safe($unique_sub),
-                    "sessions" => $sessions
-                ]
+                        "type" => "classic",
+                        "is_current" => ($current_sub == $unique_sub),
+                        "sub" => Auxilium\EncodingTools::base64_encode_url_safe($unique_sub),
+                        "sessions" => $sessions
+                    ]
                 );
             }
 
@@ -373,12 +378,12 @@ switch($uri_components[1])
                     $sessions = $sub_map[$returned_data["unique_sub"]];
                 }
                 array_push($login_methods, [
-                    "type" => "oauth",
-                    "vendor" => explode("/", $returned_data["unique_sub"])[0],
-                    "sub" => Auxilium\EncodingTools::base64_encode_url_safe($returned_data["unique_sub"]),
-                    "is_current" => ($current_sub == $returned_data["unique_sub"]),
-                    "sessions" => $sessions
-                ]
+                        "type" => "oauth",
+                        "vendor" => explode("/", $returned_data["unique_sub"])[0],
+                        "sub" => Auxilium\EncodingTools::base64_encode_url_safe($returned_data["unique_sub"]),
+                        "is_current" => ($current_sub == $returned_data["unique_sub"]),
+                        "sessions" => $sessions
+                    ]
                 );
                 $returned_data = $statement->fetch();
             }
@@ -391,9 +396,9 @@ switch($uri_components[1])
             foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config)
             {
                 array_push($openid_configs_printable, [
-                    "unique_name" => $openid_config["unique_name"],
-                    "display_name" => $openid_config["brand_name"],
-                ]
+                        "unique_name" => $openid_config["unique_name"],
+                        "display_name" => $openid_config["brand_name"],
+                    ]
                 );
             }
 

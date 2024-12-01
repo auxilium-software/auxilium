@@ -1,8 +1,12 @@
 <?php
+
+use Auxilium\Exceptions\DatabaseConnectionException;
+use Auxilium\TwigHandling\PageBuilder;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 $pb->requireLogin();
 
 if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()))
@@ -11,7 +15,7 @@ if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPer
     {
         $pb->setTemplate("Pages/system/index");
         $pb->render();
-    } catch(\Auxilium\Exceptions\DatabaseConnectionException $e)
+    } catch(DatabaseConnectionException $e)
     {
         $pb->setDefaultVariables();
         $pb->setTemplate("ErrorPages/InternalSystemError");

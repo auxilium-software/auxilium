@@ -45,6 +45,7 @@
 .welcome-box > h1:nth-child(1) {
     animation-delay: 0s;
 }
+
 .welcome-box > h1:nth-child(2) {
     animation-delay: 3s;
 }
@@ -60,13 +61,13 @@ body, h1, h2, h3 {
     --foreground-color-outlines: #dbdbdb;
     --error-color: #cc2200;
     --error-color-contrast: #ffffff;
-    
+
     --outline-width: 0.15rem;
-    
+
     --form-max-width-small: 128mm;
     --form-max-width-small-fieldset: 122mm;
     /* --form-max-width-small-fieldset: 116mm; */
-    
+
     --padding-level-one: 5mm;
     --button-padding: 3mm;
 }

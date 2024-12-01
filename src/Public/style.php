@@ -1,8 +1,11 @@
 <?php
+
+use Auxilium\TwigHandling\PageBuilder;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 
 $style_options = [];
 
