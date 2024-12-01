@@ -1,6 +1,8 @@
 <?php
 
+use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
+use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../environment.php';

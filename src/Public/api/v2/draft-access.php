@@ -1,5 +1,9 @@
 <?php
 
+use Auxilium\Schemas\CollectionSchema;
+use Auxilium\Schemas\MessageSchema;
+use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
+
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../environment.php';
 

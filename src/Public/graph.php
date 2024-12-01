@@ -1,4 +1,11 @@
 <?php
+
+use Auxilium\Schemas\CaseSchema;
+use Auxilium\Schemas\MessageSchema;
+use Auxilium\Schemas\OrganisationSchema;
+use Auxilium\Schemas\UserSchema;
+use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../environment.php';
 
