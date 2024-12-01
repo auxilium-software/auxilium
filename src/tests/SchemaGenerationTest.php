@@ -17,53 +17,47 @@ use PHPUnit\Framework\TestCase;
 
 class SchemaGenerationTest extends TestCase
 {
+    private function compare(string $schemaClassName): void
+    {
+        $useAssoc = true;
+
+        $actualSchemaRawJSON = file_get_contents(URLHandling::GetURLForSchema($schemaClassName));
+        $actualSchemaAssocArray = json_decode($actualSchemaRawJSON, $useAssoc);
+
+        $generatedSchema = SchemaBuilder::GenerateSchema($schemaClassName);
+        $generatedSchema = json_decode(json_encode($generatedSchema), $useAssoc);
+
+        self::assertEquals(
+            expected: $actualSchemaAssocArray,
+            actual: $generatedSchema,
+        );
+    }
     public function testCaseSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(CaseSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(CaseSchema::class),
-        );
+        $this->compare(CaseSchema::class);
     }
     public function testCollectionSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(CollectionSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(CollectionSchema::class),
-        );
+        $this->compare(CollectionSchema::class);
     }
     public function testDocumentSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(DocumentSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(DocumentSchema::class),
-        );
+        $this->compare(DocumentSchema::class);
     }
     public function testEnumSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(EnumSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(EnumSchema::class),
-        );
+        $this->compare(EnumSchema::class);
     }
     public function testMessageSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(MessageSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(MessageSchema::class),
-        );
+        $this->compare(MessageSchema::class);
     }
     public function testOrganisationSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(OrganisationSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(OrganisationSchema::class),
-        );
+        $this->compare(OrganisationSchema::class);
     }
     public function testUserSchema()
     {
-        self::assertEquals(
-            expected: json_decode(file_get_contents(URLHandling::GetURLForSchema(UserSchema::class)), true),
-            actual: SchemaBuilder::GenerateSchema(UserSchema::class),
-        );
+        $this->compare(UserSchema::class);
     }
 }

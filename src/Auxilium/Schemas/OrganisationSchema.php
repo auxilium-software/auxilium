@@ -3,7 +3,6 @@
 
 namespace Auxilium\Schemas;
 
-use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentChildField;
 use Darksparrow\AuxiliumSchemaBuilder\Enumerators\SchemaFieldExistence;
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocument;
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentField;
@@ -13,23 +12,22 @@ use Darksparrow\AuxiliumSchemaBuilder\Interfaces\SchemaDocumentInterface;
     Name: "organisation",
     MaxSize: 0,
     Comment: "The organisation object itself SHOULD not have a value",
-    MimeType: "message/rfc822",
 )]
-class OrganisationSchema implements SchemaDocumentInterface
+class OrganisationSchema
 {
     #[SchemaDocumentField(
         Name: "name",
         Existence: SchemaFieldExistence::MUST,
         Comment: "This MUST be the organisation's name",
         MaxSize: 2048,
-        MimeType: "test/plain",
+        MimeType: "text/plain",
         Children: [
             new SchemaDocumentField(
                 Name: "trading_as",
                 Existence: SchemaFieldExistence::SHOULD,
+                Comment: "This SHOULD be the organisation's short trading name, or the abbreviation they would usually go by",
                 MaxSize: 256,
-                MIMEType: "text/plain",
-                Comment: 	"This SHOULD be the organisation's short trading name, or the abbreviation they would usually go by",
+                MimeType: "text/plain",
             )
         ]
     )]
@@ -44,7 +42,8 @@ class OrganisationSchema implements SchemaDocumentInterface
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "departments",
             Comment: null,
             ValidSchemas: [
                 OrganisationSchema::class,
@@ -62,7 +61,8 @@ class OrganisationSchema implements SchemaDocumentInterface
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "cases",
             Comment: null,
             ValidSchemas: [
                 CaseSchema::class,
@@ -75,12 +75,13 @@ class OrganisationSchema implements SchemaDocumentInterface
     #[SchemaDocumentField(
         Name: "staff",
         Existence: SchemaFieldExistence::SHOULD,
-        Comment: 	"This SHOULD be an 'array node' of all the staff that cannot be categorised into departments, or in the case of small organisations with no departments, all staff",
+        Comment: "This SHOULD be an 'array node' of all the staff that cannot be categorised into departments, or in the case of small organisations with no departments, all staff",
         ValidSchemas: [
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "staff",
             Comment: null,
             ValidSchemas: [
                 "https://schemas.auxiliumsoftware.co.uk/v1/user.json",
@@ -90,6 +91,7 @@ class OrganisationSchema implements SchemaDocumentInterface
     public array $Staff;
 
 
+    /*
     public function __construct(array $data)
     {
         $this->Name = $data["name"];
@@ -97,4 +99,5 @@ class OrganisationSchema implements SchemaDocumentInterface
         $this->Cases = $data["cases"];
         $this->Staff = $data["staff"];
     }
+    */
 }

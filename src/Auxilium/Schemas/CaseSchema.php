@@ -3,14 +3,13 @@
 namespace Auxilium\Schemas;
 
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocument;
-use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentChildField;
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentField;
 use Darksparrow\AuxiliumSchemaBuilder\Enumerators\SchemaFieldExistence;
-use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 #[SchemaDocument(
     Name: "case",
-    Comment: "The case object itself SHOULD not have a value"
+    MaxSize: 0,
+    Comment: "The case object itself SHOULD not have a value",
 )]
 class CaseSchema
 {
@@ -31,7 +30,8 @@ class CaseSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "clients",
             Comment: "",
             ValidSchemas: [
                 UserSchema::class,
@@ -48,7 +48,8 @@ class CaseSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "workers",
             Comment: "",
             ValidSchemas: [
                 UserSchema::class,
@@ -66,7 +67,8 @@ class CaseSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "documents",
             Comment: "",
             ValidSchemas: [
                 DocumentSchema::class,
@@ -83,10 +85,11 @@ class CaseSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "messages",
             Comment: "",
             ValidSchemas: [
-                CollectionSchema::class,
+                MessageSchema::class,
             ]
         ),
     )]

@@ -3,7 +3,6 @@
 namespace Auxilium\Schemas;
 
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocument;
-use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentChildField;
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentField;
 use Darksparrow\AuxiliumSchemaBuilder\Enumerators\SchemaFieldExistence;
 
@@ -45,14 +44,15 @@ class UserSchema
 
 
     #[SchemaDocumentField(
-        Name: "contact_email",
+        Name: "auxiliary_emails",
         Existence: SchemaFieldExistence::MAY,
         Comment: "This SHOULD be used for unverified user input instead of the 'contact_email' field",
         ValidSchemas: [
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "auxiliary_emails",
             MaxSize: 512,
             MimeType: "text/plain",
         )
@@ -78,10 +78,11 @@ class UserSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "auxiliary_phone_numbers",
+            Comment: "This SHOULD include country code, and SHOULD NOT include spaces",
             MaxSize: 64,
             MimeType: "text/plain",
-            Comment: "This SHOULD include country code, and SHOULD NOT include spaces",
         )
     )]
     public array $AuxiliaryPhoneNumbers;
@@ -104,9 +105,10 @@ class UserSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
-            MimeType: "text/plain",
+        Child: new SchemaDocumentField(
+            Name: "auxiliary_addresses",
             Comment: "This MAY be a full address, or a shortened address only suitable for local mail",
+            MimeType: "text/plain",
         )
     )]
     public array $AuxiliaryAddresses;
@@ -120,7 +122,8 @@ class UserSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "documents",
             ValidSchemas: [
                 DocumentSchema::class,
             ]
@@ -137,7 +140,8 @@ class UserSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "cases",
             ValidSchemas: [
                 CaseSchema::class,
             ]
@@ -154,7 +158,8 @@ class UserSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "messages",
             ValidSchemas: [
                 MessageSchema::class,
             ]

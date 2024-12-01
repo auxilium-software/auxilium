@@ -3,7 +3,6 @@
 namespace Auxilium\Schemas;
 
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocument;
-use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentChildField;
 use Darksparrow\AuxiliumSchemaBuilder\Attributes\SchemaDocumentField;
 use Darksparrow\AuxiliumSchemaBuilder\Enumerators\SchemaFieldExistence;
 
@@ -31,7 +30,8 @@ class MessageSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "recipients",
             Comment: "All direct recipients should be addressed",
             ValidSchemas: [
                 UserSchema::class,
@@ -48,7 +48,8 @@ class MessageSchema
             CollectionSchema::class,
         ],
         MaxSize: 0,
-        Child: new SchemaDocumentChildField(
+        Child: new SchemaDocumentField(
+            Name: "indirect_recipients",
             Comment: "All direct recipients should be addressed",
             ValidSchemas: [
                 UserSchema::class,
