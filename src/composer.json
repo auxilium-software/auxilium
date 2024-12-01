@@ -17,7 +17,7 @@
         "bigfish/pdf417": "^0.3.0",
         "zbateson/mail-mime-parser": "^2.2",
         "phpmailer/phpmailer": "^6.6",
-        "webklex/php-imap": "^3.2",
+        "webklex/php-imap": "^5.5",
         "lcobucci/jwt": "^4.3",
         "web-token/jwt-core": "^2.2",
         "aws/aws-sdk-php": "^3.277"
