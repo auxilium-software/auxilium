@@ -316,7 +316,8 @@ try
 
     $pb->render();
 
-} catch(DatabaseConnectionException $e)
+}
+catch(DatabaseConnectionException $e)
 {
     $pb->setDefaultVariables();
     $pb->setTemplate("ErrorPages/InternalSystemError");

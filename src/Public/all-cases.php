@@ -18,7 +18,8 @@ try
     }
     $pb->setTemplate("Pages/all-cases");
     $pb->render();
-} catch(DatabaseConnectionException $e)
+}
+catch(DatabaseConnectionException $e)
 {
     $pb->setTemplate("ErrorPages/InternalSystemError");
     $pb->render();

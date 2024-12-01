@@ -52,7 +52,8 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
             new IssuedBy(INSTANCE_DOMAIN_NAME)
         );
         $state_claims = $state_jwt->claims()->all();
-    } catch(RequiredConstraintsViolated $e)
+    }
+    catch(RequiredConstraintsViolated $e)
     {
         throw new Exception("State JWT has been tampered with.");
     }
@@ -133,7 +134,8 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                 );
                 $token_valid = true;
                 break;
-            } catch(RequiredConstraintsViolated $e)
+            }
+            catch(RequiredConstraintsViolated $e)
             {
                 continue;
             }

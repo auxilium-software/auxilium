@@ -35,7 +35,8 @@ class Session
                 { // This *is* a valid session
                     $this->currentUser = new User($sessionInfo["user_uuid"]);
                 }
-            } catch(Exception $e)
+            }
+            catch(Exception $e)
             { // Something has gone very wrong with this session key, time to trash it
                 $this->currentUser = null;
                 setcookie("session_key", "", time() - (3600 * 48), "/", "", true, true); // Delete cookie by setting expiry to the past.

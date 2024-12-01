@@ -83,7 +83,8 @@ foreach($jobs as &$job_name)
                     //$success = \auxilium\InternetMessageTransport::ingest_s3_object($job_payload["key"]);
                     break;
             }
-        } catch(Exception $e)
+        }
+        catch(Exception $e)
         {
             $success = false;
             $exception = $e;

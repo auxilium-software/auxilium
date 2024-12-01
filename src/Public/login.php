@@ -213,7 +213,8 @@ try
             );
         }
     }
-} catch(Exception $e)
+}
+catch(Exception $e)
 {
     $technical_details = "Exception Type:\n    " . get_class($e);
     $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];

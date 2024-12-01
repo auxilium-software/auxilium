@@ -15,7 +15,8 @@ if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPer
     {
         $pb->setTemplate("Pages/system/index");
         $pb->render();
-    } catch(DatabaseConnectionException $e)
+    }
+    catch(DatabaseConnectionException $e)
     {
         $pb->setDefaultVariables();
         $pb->setTemplate("ErrorPages/InternalSystemError");

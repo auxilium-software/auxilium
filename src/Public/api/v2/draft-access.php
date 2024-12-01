@@ -220,7 +220,8 @@ elseif($action == "send")
                         $message_party->getProperty("messages")->addProperty("#", $message_node);
                     }
                     array_push($notified_parties, $message_party->getId());
-                } catch(Exception $e)
+                }
+                catch(Exception $e)
                 {
                     array_push($attach_failures, $message_party->getId());
                 }

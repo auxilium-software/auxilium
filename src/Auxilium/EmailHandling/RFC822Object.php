@@ -190,7 +190,8 @@ class RFC822Object extends DataObject
                         }
                         array_push($output, $user);
                     }
-                } catch(PDOException $e)
+                }
+                catch(PDOException $e)
                 {
                     array_push($output, $emailAddress);
                 } // Not the end of the world if this doesn't work, just move on and return the email as a string
@@ -222,7 +223,8 @@ class RFC822Object extends DataObject
             try
             {
                 array_push($recipientsEmails, $recipient->getEmailAddress());
-            } catch(ReadPermissionException $e)
+            }
+            catch(ReadPermissionException $e)
             {
             }
         }

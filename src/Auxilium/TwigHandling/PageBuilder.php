@@ -22,7 +22,8 @@ class PageBuilder
         try
         {
             $this->twigVariables["current_user"] = Session::get_current()->getUser();
-        } catch(Exception $e)
+        }
+        catch(Exception $e)
         {
             $this->twigVariables["current_user"] = null;
         }
@@ -216,7 +217,8 @@ class PageBuilder
         {
             echo $twig->render($this->template, $this->twigVariables);
             exit();
-        } catch(RuntimeError $e)
+        }
+        catch(RuntimeError $e)
         {
             $e = $e->getPrevious();
             PageBuilder2::RenderInternalSystemError($e);

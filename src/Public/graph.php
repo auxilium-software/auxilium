@@ -501,7 +501,8 @@ try
 
         $pb->render();
 
-    } catch(DatabaseConnectionException $e)
+    }
+    catch(DatabaseConnectionException $e)
     {
         $pb->setDefaultVariables();
         $pb->setTemplate("ErrorPages/InternalSystemError");
@@ -512,7 +513,8 @@ try
         http_response_code(500);
         $pb->render();
     }
-} catch(Exception $e)
+}
+catch(Exception $e)
 {
     $pb->setDefaultVariables();
     $pb->setTemplate("ErrorPages/InternalSystemError");

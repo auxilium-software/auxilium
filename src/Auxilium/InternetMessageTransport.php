@@ -56,7 +56,8 @@ class InternetMessageTransport
                     file_put_contents($job_path, json_encode($job, JSON_PRETTY_PRINT));
                 }
                 return true;
-            } catch(Exception $e)
+            }
+            catch(Exception $e)
             {
                 echo "<pre>" . htmlentities($e->getMessage()) . "</pre>";
                 //die();

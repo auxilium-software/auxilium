@@ -37,7 +37,8 @@ if(isset($_POST["query"]))
         }
         $pb->setVariable("result", json_encode($result, JSON_PRETTY_PRINT));
         $pb->setVariable("query", $query);
-    } catch(DeegraphException $e)
+    }
+    catch(DeegraphException $e)
     {
         if(strtoupper($_POST["return_format"]) == "RAW")
         {
