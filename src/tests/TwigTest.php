@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../environment.php';
+
 use PHPUnit\Framework\TestCase;
 
 class TwigTest extends TestCase
