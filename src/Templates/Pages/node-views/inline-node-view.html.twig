@@ -20,7 +20,7 @@
             {% set inline_node = element %}
             <dt>{{ key | uiprop | ndtitle }}{% if inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %} <a class="format-list-bulleted-icon inline-icon" href="{{ inline_node_path | raw }}" title="View collection"></a>{% endif %}</dt>
             <dd>
-                {{ include("node-views/inline-node-view.html") }}
+                {{ include("/Pages/node-views/inline-node-view.html") }}
             </dd>
             {% set inline_node_level = inline_node_level - 1 %}
             {% set inline_node = old_inline_nodes[inline_node_level] %}
@@ -48,7 +48,7 @@
             {% set inline_node_path = inline_node_path ~ "/" ~ (key | url_encode) %}
             <li>
                 {% set inline_node = element %}
-                {{ include("node-views/inline-node-view.html") }}
+                {{ include("/Pages/node-views/inline-node-view.html") }}
                 {% if not hide_edit_button %}<a class="playlist-remove-icon inline-icon" title="Remove item from list" href="{{ inline_node_path | raw }}/@unlink?{{ url_metadata.copy().setProperty("uln", inline_node.id).setPath(old_inline_node_paths[inline_node_level - 1] | slice(7)) }}"></a>{% endif %}
             </li>
             {% set inline_node_level = inline_node_level - 1 %}

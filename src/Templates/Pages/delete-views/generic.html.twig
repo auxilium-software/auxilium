@@ -3,7 +3,7 @@
 
 <div>
     <div class="inner-content">
-        {% include "node-views/node-view-breadcrumbs.html" %}
+        {% include "/Pages/node-views/node-view-breadcrumbs.html.twig" %}
     
         {% if progressive_load %}
             <h1 href="/graph/{{ parent_node_path }}" id="dynamic_node_name_title"><script>document.getElementById("dynamic_node_name_title").appendChild((new PathNameView("{{ deegraph_path }}")).render())</script></h1>

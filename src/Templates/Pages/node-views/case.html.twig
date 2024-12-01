@@ -1,4 +1,4 @@
-{% extends "node-views/generic.html.twig.twig" %}
+{% extends "/Pages/node-views/generic.html.twig" %}
 
 
 {% block primary_content %}
@@ -12,7 +12,7 @@
         {% for prop_name, prop in node.properties.todo.properties %}
             {% set inline_node = prop %}
             {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/todo/" ~ (prop_name | url_encode) %}
-            <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
+            <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
         {% else %}
             <li><em>List empty</em></li>
         {% endfor %}
@@ -28,7 +28,7 @@
         {% if node.properties.description %}
             {% set inline_node = node.properties.description %}
             {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/description" %}
-            {{ include("node-views/inline-node-view.html.twig") }}
+            {{ include("/Pages/node-views/inline-node-view.html.twig") }}
         {% else %}
             <em>Description missing</em>
         {% endif %}
@@ -46,7 +46,7 @@
         {% for prop_name, prop in node.properties.documents.properties %}
             {% set inline_node = prop %}
             {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/documents/" ~ (prop_name | url_encode) %}
-            <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
+            <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
         {% else %}
             <li><em>No documents on case file</em></li>
         {% endfor %}
@@ -64,7 +64,7 @@
         {% for prop_name, prop in node.properties.timeline.properties %}
             {% set inline_node = prop %}
             {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/timeline/" ~ (prop_name | url_encode) %}
-            <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
+            <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
         {% else %}
             <li><em>Timeline empty</em></li>
         {% endfor %}
@@ -86,7 +86,7 @@
             {% for prop_name, prop in node.properties.clients.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/clients/" ~ (prop_name | url_encode) %}
-                <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
             {% else %}
                 <li><em>Client list empty</em></li>
             {% endfor %}
@@ -105,7 +105,7 @@
             {% for prop_name, prop in node.properties.workers.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/workers/" ~ (prop_name | url_encode) %}
-                <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
             {% else %}
                 <li><em>No assigned case workers</em></li>
             {% endfor %}
@@ -135,7 +135,7 @@
             {% else %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/messages/" ~ (prop_name | url_encode) %}
-                <li>{{ include("node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
             {% endif %}
         {% else %}
             <li><em>{{ "node_page_text/case/no_messages" | uitxtrt | ndsentence }}</em></li>
