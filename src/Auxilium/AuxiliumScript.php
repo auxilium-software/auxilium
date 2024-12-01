@@ -9,7 +9,7 @@ class AuxiliumScript
         $string = trim($string);
         if(substr($string, 0, 1) === "\$")
         {
-            return \Auxilium\AuxiliumScript::evaluate_variable_path($string, $vars);
+            return AuxiliumScript::evaluate_variable_path($string, $vars);
         }
         elseif(substr($string, 0, 1) === "\"")
         {
@@ -85,14 +85,14 @@ class AuxiliumScript
                 case "false":
                     return false;
                 case "not":
-                    return !\Auxilium\AuxiliumScript::evaluate_expression($args[0], $vars);
+                    return !AuxiliumScript::evaluate_expression($args[0], $vars);
                 case "exists":
-                    $expr = \Auxilium\AuxiliumScript::evaluate_expression($args[0], $vars);
+                    $expr = AuxiliumScript::evaluate_expression($args[0], $vars);
                     return !($expr == null || (is_string($expr) ? strlen($expr) == 0 : false));
                 case "or":
                     for($i = 0; $i < count($args); $i++)
                     {
-                        if(\Auxilium\AuxiliumScript::evaluate_expression($args[$i], $vars) == true)
+                        if(AuxiliumScript::evaluate_expression($args[$i], $vars) == true)
                         {
                             return true;
                         }
@@ -101,7 +101,7 @@ class AuxiliumScript
                 case "and":
                     for($i = 0; $i < count($args); $i++)
                     {
-                        if(\Auxilium\AuxiliumScript::evaluate_expression($args[$i], $vars) == false)
+                        if(AuxiliumScript::evaluate_expression($args[$i], $vars) == false)
                         {
                             return false;
                         }
@@ -109,10 +109,10 @@ class AuxiliumScript
                     return true;
                 case "eq":
                 case "equals":
-                    $evali0 = \Auxilium\AuxiliumScript::evaluate_expression($args[0], $vars);
+                    $evali0 = AuxiliumScript::evaluate_expression($args[0], $vars);
                     for($i = 1; $i < count($args); $i++)
                     {
-                        $evalin = \Auxilium\AuxiliumScript::evaluate_expression($args[$i], $vars);
+                        $evalin = AuxiliumScript::evaluate_expression($args[$i], $vars);
                         if($evali0 != $evalin)
                         {
                             return false;
@@ -123,7 +123,7 @@ class AuxiliumScript
                     $evald_args = [];
                     for($i = 0; $i < count($args); $i++)
                     {
-                        array_push($evald_args, \Auxilium\AuxiliumScript::evaluate_expression($args[$i], $vars));
+                        array_push($evald_args, AuxiliumScript::evaluate_expression($args[$i], $vars));
                     }
                     return implode("", $evald_args);
                 default:
