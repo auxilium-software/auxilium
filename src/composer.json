@@ -11,7 +11,7 @@
         "phpunit/phpunit": "*",
         "ext-dom": "*",
         "twig/twig": "^3.0",
-        "endroid/qr-code-bundle": "^4.0",
+        "endroid/qr-code-bundle": "^6.0",
         "fpdf/fpdf": "^1.83",
         "ezyang/htmlpurifier": "^4.14",
         "bigfish/pdf417": "^0.3.0",
