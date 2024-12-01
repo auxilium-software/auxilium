@@ -1,55 +1,32 @@
 <?php
+
 namespace Auxilium;
 
 use Auxilium\SessionHandling\Session;
 
-class APITools {
+class APITools
+{
     private static $instance = null;
     private $returnData;
 
-    private function __construct() {
+    private function __construct()
+    {
         $this->returnData = [
             "response_code" => http_response_code()
         ];
     }
-    
-    public static function get_instance() {
+
+    public static function get_instance()
+    {
         if (self::$instance == null) {
             self::$instance = new APITools();
         }
-        
+
         return self::$instance;
     }
-    
-    public function isInIpRange($range, $ip) {
-        list($range, $netmask) = explode('/', $range, 2);
-        $rangeDecimal = ip2long($range);
-        $ipDecimal = ip2long($ip);
-        $wildcardDecimal = pow(2, (32 - $netmask)) - 1;
-        $netmaskDecimal = ~$wildcardDecimal;
-        if (($ipDecimal & $netmaskDecimal) == ($rangeDecimal & $netmaskDecimal)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    public function isInInternalIpRange($ip) {
-        foreach (INSTANCE_CREDENTIAL_LOCAL_IP_RANGES as &$ipr) {
-            if ($this->isInIpRange($ipr, $ip)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public function clearReturnData() {
-        $this->returnData = [
-            "response_code" => http_response_code()
-        ];
-    }
-    
-    public function requireLogin() {
+    public function requireLogin()
+    {
         if (!Session::get_current()->sessionAuthenticated()) {
             $this->clearReturnData();
             $this->setStatus("UNAUTHORIZED");
@@ -58,13 +35,60 @@ class APITools {
             $this->output();
         }
     }
-    
-    public function requireInternalIpRange() {
+
+    public function clearReturnData()
+    {
+        $this->returnData = [
+            "response_code" => http_response_code()
+        ];
+    }
+
+    public function setStatus($value)
+    {
+        $this->setVariable("status", $value);
+    }
+
+    public function setVariable($key, $value = null)
+    {
+        $this->returnData[$key] = $value;
+    }
+
+    public function setErrorText($value)
+    {
+        $this->setVariable("error_message", $value);
+        if (http_response_code() == 200) {
+            http_response_code(400);
+        }
+    }
+
+    public function setResponseCode($responseCode = 200)
+    {
+        http_response_code($responseCode);
+    }
+
+    public function output()
+    {
+        header("Content-Type: application/json; charset=utf-8");
+        $this->returnData["response_code"] = http_response_code();
+        if (!isset($this->returnData["status"])) {
+            if (http_response_code() == 200) {
+                $this->returnData["status"] = "OK";
+            } else {
+                $this->returnData["status"] = "ERROR";
+            }
+        }
+        echo json_encode($this->returnData, JSON_PRETTY_PRINT);
+        echo "\n";
+        exit();
+    }
+
+    public function requireInternalIpRange()
+    {
         $internalAPIConnection = false;
         if ($this->isInInternalIpRange($_SERVER["REMOTE_ADDR"])) {
             $internalAPIConnection = true;
         }
-        
+
         if (!$internalAPIConnection) {
             header("Content-Type: application/json; charset=utf-8");
             http_response_code(401);
@@ -78,9 +102,34 @@ class APITools {
         }
     }
 
-    public function requireInternalApiKey() {
+    public function isInInternalIpRange($ip)
+    {
+        foreach (INSTANCE_CREDENTIAL_LOCAL_IP_RANGES as &$ipr) {
+            if ($this->isInIpRange($ipr, $ip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function isInIpRange($range, $ip)
+    {
+        list($range, $netmask) = explode('/', $range, 2);
+        $rangeDecimal = ip2long($range);
+        $ipDecimal = ip2long($ip);
+        $wildcardDecimal = pow(2, (32 - $netmask)) - 1;
+        $netmaskDecimal = ~$wildcardDecimal;
+        if (($ipDecimal & $netmaskDecimal) == ($rangeDecimal & $netmaskDecimal)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function requireInternalApiKey()
+    {
         $internalAPIConnection = false;
-        
+
         if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             if (str_starts_with($_SERVER['HTTP_AUTHORIZATION'], "Digest ")) {
                 $authDigest = substr($_SERVER['HTTP_AUTHORIZATION'], strlen("Digest "));
@@ -102,42 +151,9 @@ class APITools {
             exit();
         }
     }
-    
-    public function setVariable($key, $value = null) {
-        $this->returnData[$key] = $value;
-    }
-    
-    public function getVariable($key) {
+
+    public function getVariable($key)
+    {
         return $this->returnData[$key];
-    }
-    
-    public function setStatus($value) {
-        $this->setVariable("status", $value);
-    }
-    
-    public function setErrorText($value) {
-        $this->setVariable("error_message", $value);
-        if (http_response_code() == 200) {
-            http_response_code(400);
-        }
-    }
-    
-    public function setResponseCode($responseCode = 200) {
-        http_response_code($responseCode);
-    }
-    
-    public function output() {
-        header("Content-Type: application/json; charset=utf-8");
-        $this->returnData["response_code"] = http_response_code();
-        if (!isset($this->returnData["status"])) {
-            if (http_response_code() == 200) {
-                $this->returnData["status"] = "OK";
-            } else {
-                $this->returnData["status"] = "ERROR";
-            }
-        }
-        echo json_encode($this->returnData, JSON_PRETTY_PRINT);
-        echo "\n";
-        exit();
     }
 }

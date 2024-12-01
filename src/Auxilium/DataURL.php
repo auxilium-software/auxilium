@@ -1,11 +1,14 @@
 <?php
+
 namespace Auxilium;
 
-class DataURL {
+class DataURL
+{
     private $data = null;
     private $mimeType = null;
-    
-    public function __construct(string $stringRepresentation) {
+
+    public function __construct(string $stringRepresentation)
+    {
         $stringRepresentation = trim($stringRepresentation);
         if (mb_strpos($stringRepresentation, "data:") === 0) {
             $stringRepresentation = mb_substr($stringRepresentation, 5);
@@ -22,27 +25,31 @@ class DataURL {
             }
         }
     }
-    
-    public function getData() {
+
+    public function getData()
+    {
         return $this->data;
     }
-    
-    public function getSize() {
+
+    public function getSize()
+    {
         return strlen($this->data);
     }
-    
-    public function getMimeType() {
+
+    public function getMimeType()
+    {
         return $this->mimeType;
     }
-    
-    public function __toString() {
+
+    public function __toString()
+    {
         switch ($this->mimeType) {
             case "text/plain":
             case "application/json":
-                return "data:".$this->mimeType.",".urlencode($this->data);
+                return "data:" . $this->mimeType . "," . urlencode($this->data);
                 break;
             default:
-                return "data:".$this->mimeType.";base64,".base64_encode($this->data);
+                return "data:" . $this->mimeType . ";base64," . base64_encode($this->data);
         }
     }
 }

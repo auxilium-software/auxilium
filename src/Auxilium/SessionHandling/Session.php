@@ -1,16 +1,20 @@
 <?php
+
 namespace Auxilium\SessionHandling;
 
 use Auxilium\RelationalDatabaseConnection;
 use Auxilium\User;
+use Exception;
 
-class Session {
+class Session
+{
     private static $current = null;
     private $currentUser;
-    
-    private function __construct() {
+
+    private function __construct()
+    {
         $this->currentUser = null;
-        if(isset($_COOKIE["session_key"])) {
+        if (isset($_COOKIE["session_key"])) {
             try {
                 $ts = date("Y-m-d G:i:s", time() - (3600 * 48)); // 48 hr Sessions
                 $bindVariables = [
@@ -26,30 +30,34 @@ class Session {
                 } else { // This *is* a valid session
                     $this->currentUser = new User($sessionInfo["user_uuid"]);
                 }
-            } catch (\Exception $e) { // Something has gone very wrong with this session key, time to trash it
+            } catch (Exception $e) { // Something has gone very wrong with this session key, time to trash it
                 $this->currentUser = null;
                 setcookie("session_key", "", time() - (3600 * 48), "/", "", true, true); // Delete cookie by setting expiry to the past.
             }
         }
     }
-    
-    public static function get_current() {
+
+    public static function get_current()
+    {
         if (self::$current == null) {
             self::$current = new Session();
         }
-        
+
         return self::$current;
     }
-    
-    public function getUser() {
+
+    public function getUser()
+    {
         return $this->currentUser;
     }
-    
-    public function forceSetCurrentUser($user) {
+
+    public function forceSetCurrentUser($user)
+    {
         return $this->currentUser = $user;
     }
-    
-    public function sessionAuthenticated() {
+
+    public function sessionAuthenticated()
+    {
         return !($this->currentUser == null);
     }
 }

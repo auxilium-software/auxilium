@@ -1,8 +1,13 @@
 <?php
+
 namespace Auxilium;
 
-class PersistentFormData {
-    public static function get() {
+use PDO;
+
+class PersistentFormData
+{
+    public static function get()
+    {
         $formPersistenceKey = null;
         if (isset($_GET["fpk"])) {
             if (strlen($_GET["fpk"]) >= 85) {
@@ -19,15 +24,16 @@ class PersistentFormData {
         $sql = "SELECT persistence_data FROM form_persistence_data WHERE form_key=:form_key";
         $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
         $statement->execute($bindVariables);
-        $returnedData = $statement->fetch(\PDO::FETCH_ASSOC);
+        $returnedData = $statement->fetch(PDO::FETCH_ASSOC);
         if ($returnedData === FALSE) {
             return [];
         } else {
             return json_decode($returnedData["persistence_data"], true);
         }
     }
-    
-    public static function set($data) {
+
+    public static function set($data)
+    {
         $formPersistenceKey = null;
         if (isset($_GET["fpk"])) {
             $formPersistenceKey = $_GET["fpk"];

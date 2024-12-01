@@ -1,13 +1,28 @@
 <?php
+
 namespace Auxilium;
 
-class Schema {
+use Exception;
+
+class Schema
+{
+    private static $cache = [];
     private $url = null;
     private $extends = null;
     private $data = null;
-    private static $cache = [];
-    
-    public static function from_url(?string $url) {
+
+    private function __construct(string $url)
+    {
+        $url = trim($url);
+        if (mb_strpos($url, "https://") === 0) {
+            $this->url = $url;
+        } else {
+            throw new Exception("Only https:// schemas are accepted in Auxilium, '" . $url . "' is invalid");
+        }
+    }
+
+    public static function from_url(?string $url)
+    {
         $url = trim($url);
         if ($url == null || strlen($url) == 0) {
             return null;
@@ -17,17 +32,9 @@ class Schema {
         }
         return self::$cache[$url];
     }
-    
-    private function __construct(string $url) {
-        $url = trim($url);
-        if (mb_strpos($url, "https://") === 0) {
-            $this->url = $url;
-        } else {
-            throw new \Exception("Only https:// schemas are accepted in Auxilium, '".$url."' is invalid");
-        }
-    }
-    
-    public function getRawDefinition() {
+
+    public function getRawDefinition()
+    {
         if ($this->data == null) {
             $curl_handle = curl_init();
             curl_setopt($curl_handle, CURLOPT_URL, $this->url);
@@ -44,8 +51,9 @@ class Schema {
         }
         return $this->data;
     }
-    
-    public function __toString() {
+
+    public function __toString()
+    {
         return $this->url;
     }
 }

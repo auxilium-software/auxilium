@@ -1,53 +1,11 @@
 <?php
+
 namespace Auxilium;
 
-class AuxiliumScript {
-    public static function evaluate_variable_path(string $string, array $vars) {
-        if (substr($string, 0, 1) === "\$") {
-            $pth = explode("/", $string);
-            $st = substr(array_shift($pth), 1);
-            if (isset($vars[$st])) {
-                if (is_a($vars[$st], "\Auxilium\Node")) {
-                    array_unshift($pth, "{".$vars[$st]->getId()."}");
-                    $fcn = "@view";
-                    if (substr(end($pth), 0, 1) === "@") {
-                        $fcn = array_pop($pth);
-                    }
-                    $string = implode("/", $pth);
-                    switch ($fcn) {
-                        case "@created":
-                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getTimestamp();
-                        case "@schema":
-                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getSchemaUrl();
-                        case "@creator":
-                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getCreator();
-                        case "@creator_id":
-                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
-                            if ($node != null) {$node = $node->getCreator();}
-                            return ($node == null) ? null : $node->getId();
-                        case "@id":
-                            $node = \Auxilium\GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getId();
-                        case "@view":
-                            return \Auxilium\GraphDatabaseConnection::node_from_path($string);
-                    }
-                    return null;
-                } else {
-                    $string = $vars[$st];
-                }
-            } else {
-                return null;
-            }
-        } elseif (substr($string, 0, 2) === "\\\$") {
-            $string = substr($string, 1);
-        }
-        return $string;
-    }
-
-    public static function evaluate_expression(string $string, array $vars) {
+class AuxiliumScript
+{
+    public static function evaluate_expression(string $string, array $vars)
+    {
         $string = trim($string);
         if (substr($string, 0, 1) === "\$") {
             return \auxilium\AuxiliumScript::evaluate_variable_path($string, $vars);
@@ -141,5 +99,53 @@ class AuxiliumScript {
                     return null;
             }
         }
+    }
+
+    public static function evaluate_variable_path(string $string, array $vars)
+    {
+        if (substr($string, 0, 1) === "\$") {
+            $pth = explode("/", $string);
+            $st = substr(array_shift($pth), 1);
+            if (isset($vars[$st])) {
+                if (is_a($vars[$st], "\Auxilium\Node")) {
+                    array_unshift($pth, "{" . $vars[$st]->getId() . "}");
+                    $fcn = "@view";
+                    if (substr(end($pth), 0, 1) === "@") {
+                        $fcn = array_pop($pth);
+                    }
+                    $string = implode("/", $pth);
+                    switch ($fcn) {
+                        case "@created":
+                            $node = GraphDatabaseConnection::node_from_path($string);
+                            return ($node == null) ? null : $node->getTimestamp();
+                        case "@schema":
+                            $node = GraphDatabaseConnection::node_from_path($string);
+                            return ($node == null) ? null : $node->getSchemaUrl();
+                        case "@creator":
+                            $node = GraphDatabaseConnection::node_from_path($string);
+                            return ($node == null) ? null : $node->getCreator();
+                        case "@creator_id":
+                            $node = GraphDatabaseConnection::node_from_path($string);
+                            if ($node != null) {
+                                $node = $node->getCreator();
+                            }
+                            return ($node == null) ? null : $node->getId();
+                        case "@id":
+                            $node = GraphDatabaseConnection::node_from_path($string);
+                            return ($node == null) ? null : $node->getId();
+                        case "@view":
+                            return GraphDatabaseConnection::node_from_path($string);
+                    }
+                    return null;
+                } else {
+                    $string = $vars[$st];
+                }
+            } else {
+                return null;
+            }
+        } elseif (substr($string, 0, 2) === "\\\$") {
+            $string = substr($string, 1);
+        }
+        return $string;
     }
 }

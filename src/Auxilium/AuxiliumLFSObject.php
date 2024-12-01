@@ -1,9 +1,11 @@
 <?php
+
 namespace Auxilium;
 
 use Auxilium\SessionHandling\Session;
 
-class AuxiliumLFSObject {
+class AuxiliumLFSObject
+{
     private $data = null;
     private $dataHash = null;
     private $mimeType = null;
@@ -11,8 +13,9 @@ class AuxiliumLFSObject {
     private $length = null;
     private $domain = null;
     private $readPermission = [];
-    
-    public function __construct(string $stringRepresentation) {
+
+    public function __construct(string $stringRepresentation)
+    {
         $stringRepresentation = trim($stringRepresentation);
         if (mb_strpos($stringRepresentation, "auxlfs://") === 0) {
             $stringRepresentation = mb_substr($stringRepresentation, 9);
@@ -44,8 +47,83 @@ class AuxiliumLFSObject {
             }
         }
     }
-    
-    public function canRead(User $actor = null) {
+
+    public function isWriteable(User $actor = null)
+    {
+        if ($this->exists()) {
+            return false;
+        }
+        if ($actor == null) {
+            $actor = Session::get_current()->getUser();
+        }
+        $actorId = ($actor == null) ? null : $actor->getId();
+        if ($this->getId() == null) {
+            return false;
+        } else {
+            $query = "SELECT {" . $this->getId() . "}/@creator/@id";
+            $response = GraphDatabaseConnection::query($actor, $query);
+            if (isset($response["@rows"])) {
+                if (count($response["@rows"]) > 0) {
+                    if ($response["@rows"][0]["{" . $this->getId() . "}/@creator/@id"]["{" . $this->getId() . "}/@creator/@id"] == "{" . $actorId . "}") {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public function exists()
+    {
+        if (file_exists(LOCAL_STORAGE_DIRECTORY . $this->getId())) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getId()
+    {
+        return $this->uuid;
+    }
+
+    public function __toString()
+    {
+        return "auxlfs://" . $this->domain . "/" . $this->uuid . "+" . $this->getHash() . "+" . urlencode($this->getMimeType()) . "+" . $this->getSize();
+    }
+
+    public function getHash()
+    {
+        return $this->dataHash;
+    }
+
+    public function getMimeType()
+    {
+        return ($this->mimeType == null) ? "application/octet-stream" : $this->mimeType;
+    }
+
+    public function getSize()
+    {
+        if ($this->length == null) {
+            $this->length = strlen($this->getData());
+        }
+        return $this->length;
+    }
+
+    public function getData(User $actor = null)
+    {
+        if ($this->canRead($actor)) {
+            if ($this->data == null) {
+                if ($this->exists()) {
+                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . $this->getId());
+                }
+            }
+            return $this->data;
+        }
+        return null;
+    }
+
+    public function canRead(User $actor = null)
+    {
         if ($actor == null) {
             $actor = Session::get_current()->getUser();
         }
@@ -54,12 +132,12 @@ class AuxiliumLFSObject {
             if ($this->getId() == null) {
                 $this->readPermission[$actorId] = false;
             } else {
-                $query = "SELECT {".$this->getId()."}";
+                $query = "SELECT {" . $this->getId() . "}";
                 $response = GraphDatabaseConnection::query($actor, $query);
                 $this->readPermission[$actorId] = false;
                 if (isset($response["@rows"])) {
                     if (count($response["@rows"]) > 0) {
-                        $query = "PERMS ON {".$this->getId()."}";
+                        $query = "PERMS ON {" . $this->getId() . "}";
                         $response = GraphDatabaseConnection::query($actor, $query);
                         if (isset($response["@permissions"])) {
                             foreach ($response["@permissions"] as $value) {
@@ -73,71 +151,5 @@ class AuxiliumLFSObject {
             }
         }
         return $this->readPermission[$actorId];
-    }
-    
-    public function isWriteable(User $actor = null) {
-        if ($this->exists()) {
-            return false;
-        }
-        if ($actor == null) {
-            $actor = Session::get_current()->getUser();
-        }
-        $actorId = ($actor == null) ? null : $actor->getId();
-        if ($this->getId() == null) {
-            return false;
-        } else {
-            $query = "SELECT {".$this->getId()."}/@creator/@id";
-            $response = GraphDatabaseConnection::query($actor, $query);
-            if (isset($response["@rows"])) {
-                if (count($response["@rows"]) > 0) {
-                    if ($response["@rows"][0]["{".$this->getId()."}/@creator/@id"]["{".$this->getId()."}/@creator/@id"] == "{".$actorId."}") {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-    
-    public function exists() {
-        if (file_exists(LOCAL_STORAGE_DIRECTORY.$this->getId())) {
-            return true;
-        }
-        return false;
-    }
-    
-    public function getData(User $actor = null) {
-        if ($this->canRead($actor)) {
-            if ($this->data == null) {
-                if ($this->exists()) {
-                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY.$this->getId());
-                }
-            }
-            return $this->data;
-        }
-        return null;
-    }
-    
-    public function getHash() {
-        return $this->dataHash;
-    }
-    
-    public function getId() {
-        return $this->uuid;
-    }
-    
-    public function getSize() {
-        if ($this->length == null) {
-            $this->length = strlen($this->getData());
-        }
-        return $this->length;
-    }
-    
-    public function getMimeType() {
-        return ($this->mimeType == null) ? "application/octet-stream" : $this->mimeType;
-    }
-    
-    public function __toString() {
-        return "auxlfs://".$this->domain."/".$this->uuid."+".$this->getHash()."+".urlencode($this->getMimeType())."+".$this->getSize();
     }
 }

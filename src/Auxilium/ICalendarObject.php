@@ -1,9 +1,14 @@
 <?php
+
 namespace Auxilium;
-class ICalendarObject {
+use DateTime;
+
+class ICalendarObject
+{
     protected $sections = null;
 
-    public function __construct($content = null) {
+    public function __construct($content = null)
+    {
         if ($content = null) {
             $this->sections = [];
         } else {
@@ -70,28 +75,38 @@ class ICalendarObject {
             }
         }
     }
-    
-    public static function fold(string $raw) {
+
+    public static function fold(string $raw)
+    {
         return chunk_split($raw, 75, "\r\n ");
     }
-    
-    public static function stringify_datetime(\DateTime $date) {
+
+    public static function stringify_datetime(DateTime $date)
+    {
         return $date->format("Ymd\THis\Z")
     }
-    
-    public static function escape(string $raw) {
-        $search  = array(",", ";", "\N", "\R", "\n", "\r", "\\");
+
+    public static function escape(string $raw)
+    {
+        $search = array(",", ";", "\N", "\R", "\n", "\r", "\\");
         $replace = array("\\,", "\\;", "\\N", "\\R", "\\n", "\\r", "\\\\");
         return str_replace($search, $replace, $raw);
     }
-    
-    public static function unescape(string $raw) {
-        $search  = array("\\,", "\\;", "\\N", "\\R", "\\n", "\\r", "\\\\");
+
+    public static function unescape(string $raw)
+    {
+        $search = array("\\,", "\\;", "\\N", "\\R", "\\n", "\\r", "\\\\");
         $replace = array(",", ";", "\N", "\R", "\n", "\r", "\\");
         return str_replace($search, $replace, $raw);
     }
-    
-    public function stringify() {
+
+    public function __toString()
+    {
+        return $this->stringify();
+    }
+
+    public function stringify()
+    {
         $stringified = "BEGIN:VCALENDAR\r\n";
         $stringified .= "VERSION:2.0\r\n";
         foreach ($this->sections as &$section) {
@@ -99,9 +114,5 @@ class ICalendarObject {
         }
         $stringified .= "END:VCALENDAR\r\n";
         return $stringified;
-    }
-    
-    public function __toString() {
-        return $this->stringify();
     }
 }

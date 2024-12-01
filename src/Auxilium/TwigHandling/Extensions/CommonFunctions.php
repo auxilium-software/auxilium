@@ -28,7 +28,7 @@ class CommonFunctions extends AbstractExtension
     {
         $rid = openssl_random_pseudo_bytes(16);
         $rid = bin2hex($rid);
-        return "<span id=\"dynamic_property_list_element_$rid\"></span><script>document.getElementById(\"dynamic_property_list_element_$rid\").appendChild((new PropertyList(\"$path\", ".($compact?"true":"false").", ".json_encode($hidden_props).", ".json_encode($sort).", ".($recursive?"true":"false").")).render())</script>";
+        return "<span id=\"dynamic_property_list_element_$rid\"></span><script>document.getElementById(\"dynamic_property_list_element_$rid\").appendChild((new PropertyList(\"$path\", " . ($compact ? "true" : "false") . ", " . json_encode($hidden_props) . ", " . json_encode($sort) . ", " . ($recursive ? "true" : "false") . ")).render())</script>";
     }
 
     public function ui_template(
@@ -38,11 +38,12 @@ class CommonFunctions extends AbstractExtension
     {
         return strval(
             new MicroTemplate(
-                "ui_templates/".$path,
+                "ui_templates/" . $path,
                 // $this->twigVariables["selected_lang"],
                 CookieHandling::GetCookieValue("lang"),
                 $template_variables,
-                false)
+                false
+            )
         );
     }
 }

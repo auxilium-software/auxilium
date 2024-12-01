@@ -1,21 +1,27 @@
 <?php
+
 namespace Auxilium\Exceptions;
 
 use Auxilium\Throwable;
+use Exception;
 
-class DeegraphException extends \Exception {
+class DeegraphException extends Exception
+{
     protected $trace = null;
 
-    public function __construct($reason = null, $code = 0, Throwable $previous = null, array $trace = null) {
+    public function __construct($reason = null, $code = 0, Throwable $previous = null, array $trace = null)
+    {
         $this->trace = $trace;
         parent::__construct($reason == null ? "Unknown database issue" : $reason, $code, $previous);
     }
-    
-    public function getInnerTrace() {
+
+    public function getInnerTrace()
+    {
         return $this->trace;
     }
-    
-    public function __toString() {
+
+    public function __toString()
+    {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
 }

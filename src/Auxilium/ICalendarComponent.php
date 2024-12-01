@@ -1,9 +1,12 @@
 <?php
-namespace Auxilium;
-class ICalendarComponent {
-    $properties = null;
 
-    public function __construct(array $content = null) {
+namespace Auxilium;
+class ICalendarComponent
+{
+$properties = null;
+
+    public function __construct(array $content = null)
+    {
         if ($content == null) {
             $properties = [];
         } else {
@@ -26,12 +29,14 @@ class ICalendarComponent {
             }
         }
     }
-    
-    public function unsetProperty($key) {
+
+    public function unsetProperty($key)
+    {
         $this->setProperty($key, null);
     }
-    
-    public function setProperty($key, $value = null, $attribs = []) {
+
+    public function setProperty($key, $value = null, $attribs = [])
+    {
         $key = strtoupper($key);
         if ($value == null) {
             unset($this->properties[$key]);
@@ -45,20 +50,22 @@ class ICalendarComponent {
             }
         }
     }
-    
-    public function stringify() {
+
+    public function __toString()
+    {
+        return $this->stringify();
+    }
+
+    public function stringify()
+    {
         $stringified = "";
         foreach ($this->properties as $key => $value) {
             $attribs = [];
             foreach ($value["attributes"] as $attribKey => $attribValue) {
-                array_push($attribs, strtoupper($attribKey)."=".$attribValue);
+                array_push($attribs, strtoupper($attribKey) . "=" . $attribValue);
             }
-            $stringified .= ICalendarObject::fold(strtoupper($key).implode(";", $attribs).":".ICalendarObject::escape($value["value"])."\r\n");
+            $stringified .= ICalendarObject::fold(strtoupper($key) . implode(";", $attribs) . ":" . ICalendarObject::escape($value["value"]) . "\r\n");
         }
         return $stringified;
-    }
-    
-    public function __toString() {
-        return $this->stringify();
     }
 }
