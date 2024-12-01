@@ -7,15 +7,18 @@ $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));
 $get_params = "";
-if (count($last_uri_component) > 1) {
+if(count($last_uri_component) > 1)
+{
     $get_params = $last_uri_component[1];
 }
 $uri_components[count($uri_components) - 1] = $last_uri_component[0];
 
 array_shift($uri_components);
 $method = array_shift($uri_components);
-if (count($uri_components) > 0) {
-    if (mb_strlen(end($uri_components)) == 0) {
+if(count($uri_components) > 0)
+{
+    if(mb_strlen(end($uri_components)) == 0)
+    {
         array_pop($uri_components);
     }
 }
@@ -26,12 +29,16 @@ $jwt_validation_passed = false; // This is used to make sure that a user has cli
 $target_node_id_uri = $uri_components[0];
 
 $url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
-if ($url_metadata == null) {
+if($url_metadata == null)
+{
     $url_metadata = new Auxilium\URLMetadata();
-    $url_metadata->setPath("{".$target_node_id_uri."}");
-} else {
+    $url_metadata->setPath("{" . $target_node_id_uri . "}");
+}
+else
+{
     $jwt_validation_passed = $url_metadata->isValid();
-    if (!$jwt_validation_passed) {
+    if(!$jwt_validation_passed)
+    {
         $url_metadata = new Auxilium\URLMetadata();
     }
 }
@@ -39,29 +46,35 @@ $pb->setVariable("url_metadata", $url_metadata);
 $pb->setVariable("root_url_metadata", new Auxilium\URLMetadata());
 $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 
-if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $target_node_id_uri)) {
+if(!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $target_node_id_uri))
+{
     $pb->setDefaultVariables();
     $pb->setTemplate("Pages/request-error");
-    $technical_details = "Exception Type:\n    "."Invalid User UUID";
-    $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+    $technical_details = "Exception Type:\n    " . "Invalid User UUID";
+    $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
     $pb->setVariable("technical_details", $technical_details);
     http_response_code(400);
     $pb->render();
 }
 
 $target_node = null;
-if ($jwt_validation_passed) { // Only accept the JWT tn if it's valid
+if($jwt_validation_passed)
+{ // Only accept the JWT tn if it's valid
     $target_node = $url_metadata->getProperty("tn");
 }
-if ($target_node == null) {
+if($target_node == null)
+{
     $target_node = $target_node_id_uri;
-} else {
+}
+else
+{
     $target_node = Auxilium\URLMetadata::expand_crushed_uuid($target_node);
-    if ($target_node != $target_node_id_uri) {
+    if($target_node != $target_node_id_uri)
+    {
         $pb->setDefaultVariables();
         $pb->setTemplate("Pages/request-error");
-        $technical_details = "Exception Type:\n    "."XSS Detected";
-        $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+        $technical_details = "Exception Type:\n    " . "XSS Detected";
+        $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
         $pb->setVariable("technical_details", $technical_details);
         http_response_code(400);
         $pb->render();
@@ -72,15 +85,19 @@ $target_node = Auxilium\Node::from_id($target_node);
 
 $pb->setVariable("user_uuid", $target_node->getId());
 
-switch($uri_components[1]) {
+switch($uri_components[1])
+{
     case "add-basic-login":
-        if (in_array("ACT", $target_node->getPermissions())) {
-            if ((count($uri_components) > 1) && $jwt_validation_passed) {
+        if(in_array("ACT", $target_node->getPermissions()))
+        {
+            if((count($uri_components) > 1) && $jwt_validation_passed)
+            {
                 $form_validation = [
                     "email_address" => true,
                     "password" => true
                 ];
-                if (isset($_POST["password"]) && isset($_POST["email_address"])) {
+                if(isset($_POST["password"]) && isset($_POST["email_address"]))
+                {
                     $bind_variables = [
                         "email_address" => strtolower($_POST["email_address"]),
                     ];
@@ -88,20 +105,23 @@ switch($uri_components[1]) {
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
 
-                    if ($statement->fetchColumn() > 0) {
+                    if($statement->fetchColumn() > 0)
+                    {
                         $form_validation["email_address"] = false;
-                    } else {
-                        $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true)); 
+                    }
+                    else
+                    {
+                        $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
                         $hash_options = [
                             "cost" => 12,
                         ];
                         $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
-                        
-                        $word_list = json_decode(file_get_contents(WEB_ROOT_DIRECTORY."byte-word-list.json"), true);
-                        
+
+                        $word_list = json_decode(file_get_contents(WEB_ROOT_DIRECTORY . "byte-word-list.json"), true);
+
                         $garbage_data = openssl_random_pseudo_bytes(4);
-                        
-                        $verification_code = $word_list[ord($garbage_data[0])]." ".$word_list[ord($garbage_data[1])]." ".$word_list[ord($garbage_data[2])]." ".$word_list[ord($garbage_data[3])];
+
+                        $verification_code = $word_list[ord($garbage_data[0])] . " " . $word_list[ord($garbage_data[1])] . " " . $word_list[ord($garbage_data[2])] . " " . $word_list[ord($garbage_data[3])];
                         $temporary_data = [
                             "user_uuid" => $target_node->getId(),
                             "email_address" => strtolower($_POST["email_address"]),
@@ -110,22 +130,24 @@ switch($uri_components[1]) {
                         $sql = "INSERT INTO email_verification_codes (user_uuid, verification_code, email_address) VALUES (:user_uuid, :verification_code, :email_address)";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($temporary_data);
-                    
+
                         $pb->setVariable("encoded_password_hash", base64_encode($hashed_password));
-                        
+
                         $form_validation = [
                             "verification_code" => true
                         ];
 
                         $user_name = "";
 
-                        if ($target_node->getProperty("display_name") != null) {
+                        if($target_node->getProperty("display_name") != null)
+                        {
                             $user_name = $target_node->getProperty("display_name");
                         }
-                        if ($target_node->getProperty("name") != null) {
+                        if($target_node->getProperty("name") != null)
+                        {
                             $user_name = $target_node->getProperty("name");
                         }
-                        
+
                         $email_builder = new \Auxilium\EmailHandling\EmailBuilder();
                         $email_builder->setTemplate("new-login-verification-code");
                         $email_builder->setTemplateProperty("verification_code", $verification_code);
@@ -134,13 +156,15 @@ switch($uri_components[1]) {
                         $email_builder->addRecipient(strtolower($_POST["email_address"]), $user_name);
                         $email = $email_builder->build();
                         Auxilium\InternetMessageTransport::send($email, "MIME");
-                        
+
                         $pb->setVariable("form_validation", $form_validation);
                         $pb->setTemplate("Pages/users/add-basic-login-verify");
                         $pb->render();
                         exit();
-                    }   
-                } elseif (isset($_POST["email_address_verification_code"]) && isset($_POST["encoded_password_hash"])) {
+                    }
+                }
+                elseif(isset($_POST["email_address_verification_code"]) && isset($_POST["encoded_password_hash"]))
+                {
                     $bind_variables = [
                         "verification_code" => strtolower(str_replace(" ", "", $_POST["email_address_verification_code"])),
                         "user_uuid" => $target_node->getId(),
@@ -149,15 +173,18 @@ switch($uri_components[1]) {
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     $returned_data = $statement->fetch();
-                    if ($returned_data == null) {
+                    if($returned_data == null)
+                    {
                         $form_validation["verification_code"] = false;
-                        $pb->setVariable("encoded_password_hash",  $_POST["encoded_password_hash"]);
-                       
+                        $pb->setVariable("encoded_password_hash", $_POST["encoded_password_hash"]);
+
                         $pb->setVariable("form_validation", $form_validation);
                         $pb->setTemplate("Pages/users/add-basic-login-verify");
                         $pb->render();
                         exit();
-                    } else {
+                    }
+                    else
+                    {
                         $bind_variables = [
                             "user_uuid" => $target_node->getId(),
                             "email_address" => $returned_data["email_address"],
@@ -166,8 +193,8 @@ switch($uri_components[1]) {
                         $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        
-                        header("Location: /users/".$target_node->getId()."/login-methods");
+
+                        header("Location: /users/" . $target_node->getId() . "/login-methods");
                         exit();
                     }
                 }
@@ -175,21 +202,25 @@ switch($uri_components[1]) {
                 $pb->setTemplate("Pages/users/add-basic-login");
                 $pb->render();
                 exit();
-            } else {
+            }
+            else
+            {
                 $pb->setDefaultVariables();
                 $pb->setTemplate("Pages/request-error");
-                $technical_details = "Exception Type:\n    "."Malformed request";
-                $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+                $technical_details = "Exception Type:\n    " . "Malformed request";
+                $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
                 $pb->setVariable("technical_details", $technical_details);
                 http_response_code(400);
                 $pb->render();
                 exit();
             }
-        } else {
+        }
+        else
+        {
             $pb->setDefaultVariables();
             $pb->setTemplate("Pages/request-error");
-            $technical_details = "Exception Type:\n    "."Missing ACT permission for user";
-            $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+            $technical_details = "Exception Type:\n    " . "Missing ACT permission for user";
+            $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);
             http_response_code(403);
             $pb->render();
@@ -197,9 +228,12 @@ switch($uri_components[1]) {
         }
         break;
     case "remove-login-method":
-        if (in_array("ACT", $target_node->getPermissions())) {
-            if ((count($uri_components) > 2) && $jwt_validation_passed) {
-                switch($uri_components[2]) {
+        if(in_array("ACT", $target_node->getPermissions()))
+        {
+            if((count($uri_components) > 2) && $jwt_validation_passed)
+            {
+                switch($uri_components[2])
+                {
                     case "oauth":
                         $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
                         $bind_variables = [
@@ -209,7 +243,7 @@ switch($uri_components[1]) {
                         $sql = "DELETE FROM oauth_logins WHERE user_uuid=:user_uuid AND unique_sub=:unique_sub";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        header("Location: /users/".$target_node->getId()."/login-methods");
+                        header("Location: /users/" . $target_node->getId() . "/login-methods");
                         exit();
                     case "standard":
                         $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
@@ -223,33 +257,37 @@ switch($uri_components[1]) {
                         $sql = "DELETE FROM standard_logins WHERE user_uuid=:user_uuid AND email_address=:email_address";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        header("Location: /users/".$target_node->getId()."/login-methods");
+                        header("Location: /users/" . $target_node->getId() . "/login-methods");
                         exit();
                     default:
                         $pb->setDefaultVariables();
                         $pb->setTemplate("Pages/request-error");
-                        $technical_details = "Exception Type:\n    "."Invalid login type";
-                        $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+                        $technical_details = "Exception Type:\n    " . "Invalid login type";
+                        $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
                         $pb->setVariable("technical_details", $technical_details);
                         http_response_code(400);
                         $pb->render();
                         exit();
                 }
-            } else {
+            }
+            else
+            {
                 $pb->setDefaultVariables();
                 $pb->setTemplate("Pages/request-error");
-                $technical_details = "Exception Type:\n    "."Malformed request";
-                $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+                $technical_details = "Exception Type:\n    " . "Malformed request";
+                $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
                 $pb->setVariable("technical_details", $technical_details);
                 http_response_code(400);
                 $pb->render();
                 exit();
             }
-        } else {
+        }
+        else
+        {
             $pb->setDefaultVariables();
             $pb->setTemplate("Pages/request-error");
-            $technical_details = "Exception Type:\n    "."Missing ACT permission for user";
-            $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+            $technical_details = "Exception Type:\n    " . "Missing ACT permission for user";
+            $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);
             http_response_code(403);
             $pb->render();
@@ -257,14 +295,16 @@ switch($uri_components[1]) {
         }
         break;
     case "login-methods":
-        if (in_array("ACT", $target_node->getPermissions())) {
-            if ($target_node->getId() == \Auxilium\SessionHandling\Session::get_current()->getUser()->getId()) {
+        if(in_array("ACT", $target_node->getPermissions()))
+        {
+            if($target_node->getId() == \Auxilium\SessionHandling\Session::get_current()->getUser()->getId())
+            {
                 $pb->setVariable("is_own_account", true);
             }
-            
+
             $current_sub = null;
             $sub_map = [];
-                
+
             $bind_variables = [
                 "user_uuid" => $target_node->getId()
             ];
@@ -272,8 +312,9 @@ switch($uri_components[1]) {
             $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $session_rows = $statement->fetchAll();
-            
-            foreach ($session_rows as &$session_row) {
+
+            foreach($session_rows as &$session_row)
+            {
                 $session_definition = [
                     "ip_address" => $session_row["ip_address"],
                     "session_uuid" => $session_row["session_uuid"],
@@ -281,15 +322,17 @@ switch($uri_components[1]) {
                     "active" => $session_row["active"],
                     "start_timestamp" => $session_row["start_timestamp"]
                 ];
-                if ($session_row["session_key"] == $_COOKIE["session_key"]) {
+                if($session_row["session_key"] == $_COOKIE["session_key"])
+                {
                     $current_sub = $session_row["unique_sub"];
                 }
-                if (!array_key_exists($session_row["unique_sub"], $sub_map)) {
+                if(!array_key_exists($session_row["unique_sub"], $sub_map))
+                {
                     $sub_map[$session_row["unique_sub"]] = [];
                 }
                 array_push($sub_map[$session_row["unique_sub"]], $session_definition);
             }
-        
+
             $login_methods = [];
             $bind_variables = [
                 "user_uuid" => $target_node->getId(),
@@ -298,10 +341,12 @@ switch($uri_components[1]) {
             $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $user_data = $statement->fetch();
-            if ($user_data != null) {
-                $unique_sub = "auxilium/".$user_data["email_address"];
+            if($user_data != null)
+            {
+                $unique_sub = "auxilium/" . $user_data["email_address"];
                 $sessions = [];
-                if (array_key_exists($unique_sub, $sub_map)) {
+                if(array_key_exists($unique_sub, $sub_map))
+                {
                     $sessions = $sub_map[$unique_sub];
                 }
                 array_push($login_methods, [
@@ -309,9 +354,10 @@ switch($uri_components[1]) {
                     "is_current" => ($current_sub == $unique_sub),
                     "sub" => Auxilium\EncodingTools::base64_encode_url_safe($unique_sub),
                     "sessions" => $sessions
-                ]);
+                ]
+                );
             }
-            
+
             $bind_variables = [
                 "user_uuid" => $target_node->getId()
             ];
@@ -319,9 +365,11 @@ switch($uri_components[1]) {
             $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $returned_data = $statement->fetch();
-            while ($returned_data != null) {
+            while($returned_data != null)
+            {
                 $sessions = [];
-                if (array_key_exists($returned_data["unique_sub"], $sub_map)) {
+                if(array_key_exists($returned_data["unique_sub"], $sub_map))
+                {
                     $sessions = $sub_map[$returned_data["unique_sub"]];
                 }
                 array_push($login_methods, [
@@ -330,31 +378,36 @@ switch($uri_components[1]) {
                     "sub" => Auxilium\EncodingTools::base64_encode_url_safe($returned_data["unique_sub"]),
                     "is_current" => ($current_sub == $returned_data["unique_sub"]),
                     "sessions" => $sessions
-                ]);
+                ]
+                );
                 $returned_data = $statement->fetch();
             }
-            
+
             $pb->setVariable("login_methods", $login_methods);
-        
+
             $openid_configs_printable = [];
-            
-                
-            foreach (INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config) {
+
+
+            foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config)
+            {
                 array_push($openid_configs_printable, [
                     "unique_name" => $openid_config["unique_name"],
                     "display_name" => $openid_config["brand_name"],
-                ]);
+                ]
+                );
             }
 
             $pb->setVariable("openid_configs", $openid_configs_printable);
             $pb->setTemplate("Pages/users/login-methods");
             $pb->render();
             exit();
-        } else {
+        }
+        else
+        {
             $pb->setDefaultVariables();
             $pb->setTemplate("Pages/request-error");
-            $technical_details = "Exception Type:\n    "."Missing ACT permission for user";
-            $technical_details .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+            $technical_details = "Exception Type:\n    " . "Missing ACT permission for user";
+            $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);
             http_response_code(403);
             $pb->render();

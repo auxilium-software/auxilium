@@ -10,27 +10,31 @@ $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 $pb->requireLogin();
 $pb->setTemplate("Pages/system/import");
 
-if (isset($_POST["submit"])) {
+if(isset($_POST["submit"]))
+{
     //var_dump($_FILES);
     ini_set("max_execution_time", "300");
-    
+
     $raw_json = file_get_contents($_FILES["dump"]["tmp_name"], true);
     $dump_object = json_decode($raw_json, true);
     echo "<span>Users: " . count($dump_object["users"]) . "</span><br />";
     echo "<span>Structural Nodes: " . count($dump_object["nodes"]) . "</span><br />";
     echo "<span>Cases: " . count($dump_object["cases"]) . "</span><br />";
-    
+
     $import_id_deegraph_id_map = [];
-    
-    foreach ($dump_object["nodes"] as &$structural_node) {
+
+    foreach($dump_object["nodes"] as &$structural_node)
+    {
         $import_id = null;
         $data = null;
         $original_creation_date = null;
         $schema = null;
         $props = [];
         //var_dump($structural_node);
-        foreach ($structural_node as $key => &$value) {
-            switch ($key) {
+        foreach($structural_node as $key => &$value)
+        {
+            switch($key)
+            {
                 case "@import_id":
                     $import_id = $value;
                     break;
@@ -41,32 +45,38 @@ if (isset($_POST["submit"])) {
                     $schema = $value;
                     break;
                 default:
-                    if (substr($key, 0, 1) == "+") {
+                    if(substr($key, 0, 1) == "+")
+                    {
                         $props[substr($key, 1)] = Auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
                     }
             }
         }
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
-        foreach ($props as $key => &$value) {
+        foreach($props as $key => &$value)
+        {
             $node->addProperty($key, $value, null, false);
         }
-        echo "SN:".$node->getId();
-        if ($import_id != null) {
+        echo "SN:" . $node->getId();
+        if($import_id != null)
+        {
             $import_id_deegraph_id_map[$import_id] = $node;
-            echo "; II:".$import_id;
+            echo "; II:" . $import_id;
         }
         echo "<br />";
     }
-    
-    foreach ($dump_object["users"] as &$structural_node) {
+
+    foreach($dump_object["users"] as &$structural_node)
+    {
         $import_id = null;
         $data = null;
         $original_creation_date = null;
         $schema = URLHandling::GetURLForSchema(UserSchema::class);
         $props = [];
         //var_dump($structural_node);
-        foreach ($structural_node as $key => &$value) {
-            switch ($key) {
+        foreach($structural_node as $key => &$value)
+        {
+            switch($key)
+            {
                 case "@import_id":
                     $import_id = $value;
                     break;
@@ -77,36 +87,46 @@ if (isset($_POST["submit"])) {
                     $schema = $value;
                     break;
                 default:
-                    if (substr($key, 0, 1) == "+") {
+                    if(substr($key, 0, 1) == "+")
+                    {
                         $props[substr($key, 1)] = Auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
-                    } elseif (substr($key, 0, 1) == "@") {
-                    
-                    } else {
+                    }
+                    elseif(substr($key, 0, 1) == "@")
+                    {
+
+                    }
+                    else
+                    {
                         $props[$key] = $import_id_deegraph_id_map[$value];
                     }
             }
         }
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
-        foreach ($props as $key => &$value) {
+        foreach($props as $key => &$value)
+        {
             $node->addProperty($key, $value, null, false);
         }
-        echo "UN:".$node->getId();
-        if ($import_id != null) {
+        echo "UN:" . $node->getId();
+        if($import_id != null)
+        {
             $import_id_deegraph_id_map[$import_id] = $node;
-            echo "; II:".$import_id;
+            echo "; II:" . $import_id;
         }
         echo "<br />";
     }
-    
-    foreach ($dump_object["cases"] as &$structural_node) {
+
+    foreach($dump_object["cases"] as &$structural_node)
+    {
         $import_id = null;
         $data = null;
         $original_creation_date = null;
         $schema = URLHandling::GetURLForSchema(CaseSchema::class);
         $props = [];
         //var_dump($structural_node);
-        foreach ($structural_node as $key => &$value) {
-            switch ($key) {
+        foreach($structural_node as $key => &$value)
+        {
+            switch($key)
+            {
                 case "@import_id":
                     $import_id = $value;
                     break;
@@ -117,27 +137,34 @@ if (isset($_POST["submit"])) {
                     $schema = $value;
                     break;
                 default:
-                    if (substr($key, 0, 1) == "+") {
+                    if(substr($key, 0, 1) == "+")
+                    {
                         $props[substr($key, 1)] = Auxilium\GraphDatabaseConnection::new_node($value, "text/plain");
-                    } elseif (substr($key, 0, 1) == "@") {
-                    
-                    } else {
+                    }
+                    elseif(substr($key, 0, 1) == "@")
+                    {
+
+                    }
+                    else
+                    {
                         $props[$key] = $import_id_deegraph_id_map[$value];
                     }
             }
         }
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
-        foreach ($props as $key => &$value) {
+        foreach($props as $key => &$value)
+        {
             $node->addProperty($key, $value, null, false);
         }
-        echo "CN:".$node->getId();
-        if ($import_id != null) {
+        echo "CN:" . $node->getId();
+        if($import_id != null)
+        {
             $import_id_deegraph_id_map[$import_id] = $node;
-            echo "; II:".$import_id;
+            echo "; II:" . $import_id;
         }
         echo "<br />";
     }
-    
+
     die();
     /*$query = trim($_POST["query"]);
     $result = \auxilium\GraphDatabaseConnection::query(\auxilium\Session::get_current()->getUser(), $query);

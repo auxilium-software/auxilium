@@ -1,5 +1,7 @@
 <?php
 
+use ZBateson\MailMimeParser\Message;
+
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../environment.php';
 
@@ -13,56 +15,70 @@ $mime_type = null;
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));
 $get_params = "";
-if (count($last_uri_component) > 1) {
+if(count($last_uri_component) > 1)
+{
     $get_params = $last_uri_component[1];
 }
 $uri_components[count($uri_components) - 1] = $last_uri_component[0];
 
-if (count($uri_components) > 4) {
-    $spl = explode("+",$uri_components[4]);
+if(count($uri_components) > 4)
+{
+    $spl = explode("+", $uri_components[4]);
     $file_id = strtolower($spl[0]);
-    if (count($spl) > 1) {
+    if(count($spl) > 1)
+    {
         $file_hash = $spl[1];
     }
-    if (count($spl) > 2) {
+    if(count($spl) > 2)
+    {
         $mime_type = str_replace(":", "/", urldecode($spl[2]));
     }
 }
 
-if ($mime_type == null) {
+if($mime_type == null)
+{
     $mime_type = "application/octet-stream";
 }
 
 $desired_components = explode(",", strtolower($get_params));
 
-$lfsobj = new Auxilium\AuxiliumLFSObject("auxlfs://".INSTANCE_CREDENTIAL_DDS_HOST."/".$file_id."+".$file_hash."+".urlencode($mime_type));
+$lfsobj = new Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
 
-if (!$lfsobj->canRead()) {
+if(!$lfsobj->canRead())
+{
     $at->setErrorText("Missing read permission");
     $at->output();
     exit();
 }
 
 $message_headers = [];
-$full_message = \ZBateson\MailMimeParser\Message::from($lfsobj->getData(), false);
+$full_message = Message::from($lfsobj->getData(), false);
 
-foreach ($full_message->getAllHeaders() as $header) {
+foreach($full_message->getAllHeaders() as $header)
+{
     $parts = $header->getParts();
-    if (count($parts) > 1) {
+    if(count($parts) > 1)
+    {
         $res = [];
-        foreach ($parts as &$part) {
+        foreach($parts as &$part)
+        {
             array_push($res, $part->getValue());
         }
         $message_headers[strtolower($header->getName())] = $res;
-    } else {
-        if (count($parts) > 0) {
+    }
+    else
+    {
+        if(count($parts) > 0)
+        {
             $message_headers[strtolower($header->getName())] = $parts[0]->getValue();
         }
     }
 }
 
-foreach($desired_components as &$desired_component) {
-    switch(trim($desired_component)) {
+foreach($desired_components as &$desired_component)
+{
+    switch(trim($desired_component))
+    {
         case "subject":
         case "from":
         case "to":
@@ -75,7 +91,8 @@ foreach($desired_components as &$desired_component) {
             $at->setVariable($desired_component, isset($message_headers[$desired_component]) ? $message_headers[$desired_component] : null);
             break;
         case "*":
-            foreach($message_headers as $header_name=>&$header) {
+            foreach($message_headers as $header_name => &$header)
+            {
                 $at->setVariable($header_name, $header);
             }
             break;

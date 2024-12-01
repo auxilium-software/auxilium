@@ -17,51 +17,62 @@ $completed_jobs = 0;
 $attempted_jobs = 0;
 $total_jobs = 0;
 
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."last-job-run")) {
-    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."last-job-run", time());
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "last-job-run"))
+{
+    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "last-job-run", time());
 }
-$last_run = intval(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."last-job-run"));
+$last_run = intval(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "last-job-run"));
 $this_run = time();
 $run_diff = $this_run - $last_run;
-file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."last-job-run", $this_run);
+file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "last-job-run", $this_run);
 
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/", 0700, true);
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/"))
+{
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/", 0700, true);
 }
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/done/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/done/", 0700, true);
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/done/"))
+{
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/done/", 0700, true);
 }
-if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/failed/")) {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/failed/", 0700, true);
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/failed/"))
+{
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/failed/", 0700, true);
 }
 
-if ($run_diff > REFRESH_RATE) {
-    $job_name = "cron-".$this_run;
+if($run_diff > REFRESH_RATE)
+{
+    $job_name = "cron-" . $this_run;
     $job_payload = [
         "type" => "SCAN_INBOXES",
         "tries" => 0,
         "max_tries" => 1
     ];
-    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/".$job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
 }
 
-$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs");
-foreach ($jobs as &$job_name) {
-    if (!in_array($job_name,[".", "..", "done", "failed"])) {
+$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs");
+foreach($jobs as &$job_name)
+{
+    if(!in_array($job_name, [".", "..", "done", "failed"]))
+    {
         $total_jobs++;
     }
 }
 
-foreach ($jobs as &$job_name) {
-    if (!in_array($job_name,[".", "..", "done", "failed"])) {
-        $job_payload = json_decode(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/".$job_name), true);
+foreach($jobs as &$job_name)
+{
+    if(!in_array($job_name, [".", "..", "done", "failed"]))
+    {
+        $job_payload = json_decode(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name), true);
         $success = false;
         $error_message = null;
         $exception = null;
         $job_payload["tries"]++;
-        
-        try {
-            switch ($job_payload["type"]) {
+
+        try
+        {
+            switch($job_payload["type"])
+            {
                 case "SEND_EMAIL":
                     $success = Auxilium\InternetMessageTransport::send_now($job_payload["content"]);
                     break;
@@ -72,44 +83,57 @@ foreach ($jobs as &$job_name) {
                     //$success = \auxilium\InternetMessageTransport::ingest_s3_object($job_payload["key"]);
                     break;
             }
-        } catch (Exception $e) {
+        } catch(Exception $e)
+        {
             $success = false;
             $exception = $e;
         }
 
-        if ($success !== true) {
+        if($success !== true)
+        {
             $error_message = [
                 "try" => ($job_payload["tries"] - 1)
             ];
-            if ($exception != null) {
+            if($exception != null)
+            {
                 $error_message["exception"] = $exception->getMessage();
             }
-            if ($success !== false) {
+            if($success !== false)
+            {
                 $error_message["return_object"] = $success;
             }
             $success = false;
         }
 
 
-        if ($error_message != null) {
-            if (!array_key_exists("errors", $job_payload)) {
+        if($error_message != null)
+        {
+            if(!array_key_exists("errors", $job_payload))
+            {
                 $job_payload["errors"] = [];
             }
             array_push($job_payload["errors"], $error_message);
         }
-        
-        if ($success) {
-            unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/".$job_name);
-            file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/done/".$job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
-        } else {
-            if ($job_payload["tries"] < $job_payload["max_tries"]) {
-                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/".$job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
-            } else {
-                unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/".$job_name);
-                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs/failed/".$job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+
+        if($success)
+        {
+            unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name);
+            file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/done/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+        }
+        else
+        {
+            if($job_payload["tries"] < $job_payload["max_tries"])
+            {
+                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+            }
+            else
+            {
+                unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name);
+                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
             }
         }
-        if ((hrtime(true) - $time_pre) > EXEC_TIME_LIMIT) {
+        if((hrtime(true) - $time_pre) > EXEC_TIME_LIMIT)
+        {
             break;
         }
     }

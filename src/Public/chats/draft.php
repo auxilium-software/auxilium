@@ -1,15 +1,22 @@
 <?php
+
+use Auxilium\SessionHandling\Session;
+use Auxilium\TwigHandling\PageBuilder;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../environment.php';
 
-$pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
+$pb = PageBuilder::get_instance();
 $pb->requireLogin();
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $message_uuid = null;
-if (preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", explode("?", $uri_components[3])[0])) {
+if(preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", explode("?", $uri_components[3])[0]))
+{
     $message_uuid = explode("?", $uri_components[3])[0];
-} else {
+}
+else
+{
     $pb->setVariable("draft_path", $message_draft_path);
     $pb->setTemplate("Pages/chats/draft-corrupted");
     $pb->render();
@@ -19,8 +26,9 @@ if (preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 $ret_url = Auxilium\EncodingTools::base64_encode_url_safe(explode("?", $_SERVER["REQUEST_URI"])[0]);
 $pb->setVariable("encoded_return_url", $ret_url);
 
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."message-drafts/". \Auxilium\SessionHandling\Session::get_current()->getUser()->getUuid()."/".$message_uuid.".json";
-if (!file_exists($message_draft_path)) { // Hmmm , not a draft message then, let's try finding it in the database
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getUuid() . "/" . $message_uuid . ".json";
+if(!file_exists($message_draft_path))
+{ // Hmmm , not a draft message then, let's try finding it in the database
     $pb->setVariable("draft_path", $message_draft_path);
     $pb->setTemplate("Pages/chats/draft-corrupted");
     $pb->render();

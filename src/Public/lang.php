@@ -15,8 +15,10 @@ if ($_COOKIE["cookie-consent"] != "true") {
 }
 */
 
-if(isset($_GET["switch"])) {
-    switch ($_GET["switch"]) {
+if(isset($_GET["switch"]))
+{
+    switch($_GET["switch"])
+    {
         case "cy":
             setcookie("lang", "cy", time() + (3600 * 24 * 30));
             break;
@@ -27,9 +29,11 @@ if(isset($_GET["switch"])) {
     }
 }
 
-if (isset($_SERVER["HTTP_REFERER"])) {
-    if (!str_contains($_SERVER["HTTP_REFERER"], "/lang")) {
-        header("Location: ".$_SERVER["HTTP_REFERER"]);
+if(isset($_SERVER["HTTP_REFERER"]))
+{
+    if(!str_contains($_SERVER["HTTP_REFERER"], "/lang"))
+    {
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
         exit();
     }
 }

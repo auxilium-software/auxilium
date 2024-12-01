@@ -6,23 +6,31 @@ $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 
 $style_options = [];
 
-function toggle_style($style_name) {
+function toggle_style($style_name)
+{
     global $style_options;
-    if(isset($_COOKIE["style"])) {
-        if(isset($_COOKIE["style"])) {
+    if(isset($_COOKIE["style"]))
+    {
+        if(isset($_COOKIE["style"]))
+        {
             $style_options = explode(" ", $_COOKIE["style"]);
         }
     }
     $index = array_search($style_name, $style_options);
-    if ($index !== false) {
+    if($index !== false)
+    {
         unset($style_options[$index]);
-    } else {
+    }
+    else
+    {
         array_push($style_options, $style_name);
     }
 }
 
-if (isset($_GET["switch"])) {
-    switch ($_GET["switch"]) {
+if(isset($_GET["switch"]))
+{
+    switch($_GET["switch"])
+    {
         case "dark-mode":
             toggle_style("dark-mode");
             break;
@@ -39,9 +47,11 @@ if (isset($_GET["switch"])) {
 }
 
 
-if (isset($_SERVER["HTTP_REFERER"])) {
-    if (!str_contains($_SERVER["HTTP_REFERER"], "/style")) {
-        header("Location: ".$_SERVER["HTTP_REFERER"]);
+if(isset($_SERVER["HTTP_REFERER"]))
+{
+    if(!str_contains($_SERVER["HTTP_REFERER"], "/style"))
+    {
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
         exit();
     }
 }

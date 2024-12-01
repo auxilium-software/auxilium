@@ -10,9 +10,11 @@ $c_time = time();
 $job_names = [];
 $total_jobs = 0;
 
-$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE."jobs");
-foreach ($jobs as &$job_name) {
-    if (!in_array($job_name, [".", "..", "done", "failed"])) {
+$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs");
+foreach($jobs as &$job_name)
+{
+    if(!in_array($job_name, [".", "..", "done", "failed"]))
+    {
         $total_jobs++;
         $job_name = substr($job_name, 0, -5);
         $time = unpack("Jtime", hex2bin(substr($job_name, 0, 16)))["time"];

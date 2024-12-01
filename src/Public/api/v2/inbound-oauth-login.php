@@ -1,68 +1,91 @@
 <?php
 
+use Jose\Component\Core\Util\RSAKey;
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\Signer\Eddsa;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
+use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../environment.php';
 
-if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
+if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
+{
     $state_claims = null;
-    
-    if (!(isset($_POST["state"]) || isset($_GET["state"]))) {
-        throw new \Exception("State JWT is missing.");
+
+    if(!(isset($_POST["state"]) || isset($_GET["state"])))
+    {
+        throw new Exception("State JWT is missing.");
     }
-    
+
     $id_token = null;
     $state = null;
-    
-    if (isset($_GET["id_token"])) {
+
+    if(isset($_GET["id_token"]))
+    {
         $id_token = $_GET["id_token"];
     }
-    if (isset($_POST["id_token"])) {
+    if(isset($_POST["id_token"]))
+    {
         $id_token = $_POST["id_token"];
     }
-    if (isset($_GET["state"])) {
+    if(isset($_GET["state"]))
+    {
         $state = $_GET["state"];
     }
-    if (isset($_POST["state"])) {
+    if(isset($_POST["state"]))
+    {
         $state = $_POST["state"];
     }
-    
 
-    
-    try {
+
+    try
+    {
         $state_jwt = (new Lcobucci\JWT\JwtFacade())->parse(
             $state,
-            new \Lcobucci\JWT\Validation\Constraint\SignedWith(new \Lcobucci\JWT\Signer\Eddsa(), \Lcobucci\JWT\Signer\Key\InMemory::base64Encoded(INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PUBLIC_KEY)),
-            new \Lcobucci\JWT\Validation\Constraint\StrictValidAt(\Lcobucci\Clock\SystemClock::fromUTC()),
-            new \Lcobucci\JWT\Validation\Constraint\IssuedBy(INSTANCE_DOMAIN_NAME)
+            new SignedWith(new Eddsa(), InMemory::base64Encoded(INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PUBLIC_KEY)),
+            new StrictValidAt(SystemClock::fromUTC()),
+            new IssuedBy(INSTANCE_DOMAIN_NAME)
         );
         $state_claims = $state_jwt->claims()->all();
-    } catch (\Lcobucci\JWT\Validation\RequiredConstraintsViolated $e) {
-        throw new \Exception("State JWT has been tampered with.");
+    } catch(RequiredConstraintsViolated $e)
+    {
+        throw new Exception("State JWT has been tampered with.");
     }
 
     $trusted_jwks = [];
-    
+
     $jwt_header = json_decode(Auxilium\EncodingTools::base64_decode_url_safe(explode(".", $id_token)[0]), true);
     $jwt_alg = $jwt_header["alg"];
-    
+
     $token_valid = false;
     $openid_token = null;
     $token_validator = null;
 
-    foreach (INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config) {
+    foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config)
+    {
         // cache jwks for INSTANCE_CREDENTIAL_OPENID_CACHE_TIME
-        $jwk_cache_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE."jwk-cache-".$openid_config["unique_name"].".json";
+        $jwk_cache_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jwk-cache-" . $openid_config["unique_name"] . ".json";
         $jwk_cache = null;
         $refresh_jwk = false;
-        if (file_exists($jwk_cache_path)) {
+        if(file_exists($jwk_cache_path))
+        {
             $jwk_cache = json_decode(file_get_contents($jwk_cache_path), true);
-            if ($jwk_cache["created"] < (time() - INSTANCE_CREDENTIAL_OPENID_CACHE_TIME)) {
+            if($jwk_cache["created"] < (time() - INSTANCE_CREDENTIAL_OPENID_CACHE_TIME))
+            {
                 $refresh_jwk = true;
             }
-        } else {
+        }
+        else
+        {
             $refresh_jwk = true;
         }
-        if ($refresh_jwk) {
+        if($refresh_jwk)
+        {
             $inner_content = json_decode(file_get_contents($openid_config["jwk_discovery"]), true);
             $jwk_cache = [
                 "keys" => $inner_content["keys"]
@@ -70,14 +93,17 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
             $jwk_cache["created"] = time();
             file_put_contents($jwk_cache_path, json_encode($jwk_cache));
         }
-        foreach ($jwk_cache["keys"] as &$trusted_jwk) {
+        foreach($jwk_cache["keys"] as &$trusted_jwk)
+        {
             $jwk = new Jose\Component\Core\JWK($trusted_jwk);
             $signer = null;
-            switch ($jwk->get("kty")) {
+            switch($jwk->get("kty"))
+            {
                 case "RSA":
-                    switch ($jwt_alg) {
+                    switch($jwt_alg)
+                    {
                         case "RS256":
-                            $signer = new \Lcobucci\JWT\Signer\Rsa\Sha256();
+                            $signer = new Sha256();
                             break;
                         default:
                             break;
@@ -86,48 +112,55 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                 default:
                     break;
             }
-            if ($signer == null) {
+            if($signer == null)
+            {
                 continue; // We don't support this algorithm, exit.
             }
             //echo json_encode($jwk->all(), JSON_PRETTY_PRINT);
-            $pem_key_content = \Jose\Component\Core\Util\RSAKey::createFromJWK($jwk)->toPEM();
+            $pem_key_content = RSAKey::createFromJWK($jwk)->toPEM();
             //echo $pem_key_content;
             //die();
-            $key = \Lcobucci\JWT\Signer\Key\InMemory::plainText($pem_key_content);
-            
+            $key = InMemory::plainText($pem_key_content);
+
             //echo $pem_key_content;
-            
-            try {
+
+            try
+            {
                 $openid_token = (new Lcobucci\JWT\JwtFacade())->parse(
                     $id_token,
-                    new \Lcobucci\JWT\Validation\Constraint\SignedWith($signer, $key),
-                    new \Lcobucci\JWT\Validation\Constraint\StrictValidAt(\Lcobucci\Clock\SystemClock::fromUTC())
+                    new SignedWith($signer, $key),
+                    new StrictValidAt(SystemClock::fromUTC())
                 );
                 $token_valid = true;
                 break;
-            } catch (\Lcobucci\JWT\Validation\RequiredConstraintsViolated $e) {
+            } catch(RequiredConstraintsViolated $e)
+            {
                 continue;
             }
         }
-        
-        if ($token_valid) {
+
+        if($token_valid)
+        {
             $token_validator = $openid_config["unique_name"];
             break;
         }
     }
-    
+
     $openid_claims = null;
-    
-    if ($token_valid) {
+
+    if($token_valid)
+    {
         $openid_claims = $openid_token->claims()->all();
-        if ($openid_claims["nonce"] !== $state_claims["nonce"]) {
+        if($openid_claims["nonce"] !== $state_claims["nonce"])
+        {
             $token_valid = false;
-            throw new \Exception("State JWT nonce does not match OpenID nonce.");
+            throw new Exception("State JWT nonce does not match OpenID nonce.");
         }
     }
-    
-    if ($token_valid) {
-        $combined_id = $token_validator."/".$openid_claims["sub"];
+
+    if($token_valid)
+    {
+        $combined_id = $token_validator . "/" . $openid_claims["sub"];
         echo "<pre>";
         echo "openid_unique_name => ";
         echo $combined_id;
@@ -138,8 +171,9 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
         echo "state_jwt_claims => \n";
         echo json_encode($state_claims, JSON_PRETTY_PRINT);
         echo "</pre>";
-        
-        switch ($state_claims["intent"]) {
+
+        switch($state_claims["intent"])
+        {
             case "REGISTER_OAUTH":
                 //echo $combined_id." => ".$state_claims["sub"];
                 $bind_variables = [
@@ -149,7 +183,8 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                 $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 $returned_data = $statement->fetch();
-                if ($returned_data == null) {
+                if($returned_data == null)
+                {
                     $bind_variables = [
                         "user_uuid" => $state_claims["sub"],
                         "unique_sub" => $combined_id
@@ -157,10 +192,12 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                     $sql = "INSERT INTO oauth_logins (unique_sub, user_uuid) VALUES (:unique_sub, :user_uuid)";
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
-                    header("Location: /graph/~".$state_claims["sub"]);
+                    header("Location: /graph/~" . $state_claims["sub"]);
                     exit();
-                } else {
-                    header("Location: /users/".$state_claims["sub"]."/add-login-method?error=ALREADY_ASSIGNED");
+                }
+                else
+                {
+                    header("Location: /users/" . $state_claims["sub"] . "/add-login-method?error=ALREADY_ASSIGNED");
                     exit();
                     //throw new \Exception("This OAuth unique ID has already been used.");
                 }
@@ -173,11 +210,14 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                 $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 $returned_data = $statement->fetch();
-                if ($returned_data == null) {
-                    throw new \Exception("No user with this OAuth unique ID, direct OAuth signup not supported on this configuration.");
-                } else {
+                if($returned_data == null)
+                {
+                    throw new Exception("No user with this OAuth unique ID, direct OAuth signup not supported on this configuration.");
+                }
+                else
+                {
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // Taken from /login
-            
+
                     $session_info = [
                         "session_uuid" => Auxilium\EncodingTools::generate_new_uuid("sessions"),
                         "session_key" => $session_key,
@@ -190,13 +230,19 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
                     setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
-                    if ($form_data == null) {
+                    if($form_data == null)
+                    {
                         header("Location: /");
-                    } else {
-                        if (count($form_data["form_stack"]) > 0) {
+                    }
+                    else
+                    {
+                        if(count($form_data["form_stack"]) > 0)
+                        {
                             Auxilium\PersistentFormData::set($form_data);
                             header("Location: " . array_pop($form_data["form_stack"]));
-                        } else {
+                        }
+                        else
+                        {
                             header("Location: /");
                         }
                     }
@@ -204,11 +250,13 @@ if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
                 }
                 break;
             default:
-                throw new \Exception("Invalid authentication intent.");
+                throw new Exception("Invalid authentication intent.");
                 break;
         }
-    } else {
-        throw new \Exception("OpenID token has been tampered with.");
+    }
+    else
+    {
+        throw new Exception("OpenID token has been tampered with.");
     }
 }
 

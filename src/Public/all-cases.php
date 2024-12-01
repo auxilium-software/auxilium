@@ -5,14 +5,17 @@ require_once __DIR__ . '/../environment.php';
 
 $pb = \Auxilium\TwigHandling\PageBuilder::get_instance();
 
-try {
+try
+{
     $pb->requireLogin();
-    if (in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions())) {
+    if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()))
+    {
         $pb->setVariable("is_admin", true);
     }
     $pb->setTemplate("Pages/all-cases");
     $pb->render();
-} catch (\Auxilium\Exceptions\DatabaseConnectionException $e) {
+} catch(\Auxilium\Exceptions\DatabaseConnectionException $e)
+{
     $pb->setTemplate("ErrorPages/InternalSystemError");
     $pb->render();
 }
