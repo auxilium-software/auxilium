@@ -84,7 +84,7 @@ class OrganisationSchema
             Name: "staff",
             Comment: null,
             ValidSchemas: [
-                "https://schemas.auxiliumsoftware.co.uk/v1/user.json",
+                UserSchema::class,
             ],
         ),
     )]
