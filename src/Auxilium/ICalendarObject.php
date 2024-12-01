@@ -1,6 +1,7 @@
 <?php
 
 namespace Auxilium;
+
 use DateTime;
 
 class ICalendarObject
@@ -9,47 +10,62 @@ class ICalendarObject
 
     public function __construct($content = null)
     {
-        if ($content = null) {
+        if($content = null)
+        {
             $this->sections = [];
-        } else {
+        }
+        else
+        {
             $content = explode("\r\n ", $content);
             $content = implode("", $content); // unfold lines
             $content = explode("\r\n", $content);
             $state = 0;
             $etype = 0;
             $elines = [];
-            foreach ($content as &$line) {
-                switch ($state) {
+            foreach($content as &$line)
+            {
+                switch($state)
+                {
                     case 2:
-                        if (strpos($line, "END:") === 0) {
-                            switch (substr($line, 4)) {
+                        if(strpos($line, "END:") === 0)
+                        {
+                            switch(substr($line, 4))
+                            {
                                 case "VEVENT":
-                                    if ($etype == 1) {
+                                    if($etype == 1)
+                                    {
                                         $state = 1;
                                     }
                                     break;
                                 case "VJOURNAL":
-                                    if ($etype == 2) {
+                                    if($etype == 2)
+                                    {
                                         $state = 1;
                                     }
                                     break;
                             }
                         }
-                        if ($state == 1) {
-                            switch ($etype) {
+                        if($state == 1)
+                        {
+                            switch($etype)
+                            {
                                 case 2:
                                     array_push($this->sections, new ICalendarJournal($elines));
                                     break;
                             }
                             $elines = [];
                             $etype = 0;
-                        } else {
+                        }
+                        else
+                        {
                             array_push($elines, $line);
                         }
                         break;
                     case 1:
-                        if (strpos($line, "BEGIN:") === 0) {
-                            switch (substr($line, 6)) {
+                        if(strpos($line, "BEGIN:") === 0)
+                        {
+                            switch(substr($line, 6))
+                            {
                                 case "VEVENT":
                                     $state = 2;
                                     $etype = 1;
@@ -62,14 +78,16 @@ class ICalendarObject
                         }
                         break;
                     case 0:
-                        if ($line == "BEGIN:VCALENDAR") {
+                        if($line == "BEGIN:VCALENDAR")
+                        {
                             $state = 1;
                         }
                         break;
                     default:
                         break;
                 }
-                if ($state = -1) {
+                if($state = -1)
+                {
                     break;
                 }
             }
@@ -109,7 +127,8 @@ class ICalendarObject
     {
         $stringified = "BEGIN:VCALENDAR\r\n";
         $stringified .= "VERSION:2.0\r\n";
-        foreach ($this->sections as &$section) {
+        foreach($this->sections as &$section)
+        {
             $stringified .= $section->stringify();
         }
         $stringified .= "END:VCALENDAR\r\n";

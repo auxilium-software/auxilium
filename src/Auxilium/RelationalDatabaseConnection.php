@@ -12,7 +12,8 @@ class RelationalDatabaseConnection
 
     public static function get_pdo()
     {
-        if (self::$pdo == null) {
+        if(self::$pdo == null)
+        {
             self::$pdo = new PDO("mysql:host=" . INSTANCE_CREDENTIAL_SQL_HOST . ";dbname=" . INSTANCE_CREDENTIAL_SQL_DATABASE, INSTANCE_CREDENTIAL_SQL_USERNAME, INSTANCE_CREDENTIAL_SQL_PASSWORD);
             self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }

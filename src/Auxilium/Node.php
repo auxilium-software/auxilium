@@ -20,7 +20,8 @@ class Node
 
     public function __construct(string $id)
     {
-        if (strlen($id) == 36) {
+        if(strlen($id) == 36)
+        {
             $this->nodeId = $id;
         }
     }
@@ -37,18 +38,22 @@ class Node
 
     public function addProperty(string $key, Node $node, User $actor = null, bool $force = false)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
-        if (preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key) || $key == "#") { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
+        if(preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key) || $key == "#")
+        { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "LINK {".$node->getId()."} AS ".$key." OF {".$this->getId()."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
                 ->LinkOfRelativePath(new UUID($node->getId()), new UUID($this->getId()))
                 ->As($key);
-            if ($force) $query = $query->Force();
+            if($force) $query = $query->Force();
             $query = $query->Build();
             return GraphDatabaseConnection::query($actor, $query);
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -60,29 +65,36 @@ class Node
 
     public function unlinkProperty(string $key, User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
-        if (preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key)) { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
+        if(preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key))
+        { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "UNLINK ".$key." FROM {".$this->getId()."}";
             $query = QueryBuilder::Unlink()
                 ->UnlinkWhat($key)
                 ->From(new UUID($this->getId()))
                 ->Build();
-            if ($this->cachedProperties != null) {
-                if (isset($this->cachedProperties[$key])) {
+            if($this->cachedProperties != null)
+            {
+                if(isset($this->cachedProperties[$key]))
+                {
                     unset($this->cachedProperties[$key]); // Get rid of any dangling references to this
                 }
             }
             return GraphDatabaseConnection::query($actor, $query);
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
     public function delete(User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
 
@@ -95,7 +107,8 @@ class Node
 
     public function is(Node $n)
     {
-        if ($this->getId() == $n->getId()) {
+        if($this->getId() == $n->getId())
+        {
             return true;
         }
         return false;
@@ -103,10 +116,12 @@ class Node
 
     public function getPermissions(User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
-        if ($this->cachedPermissions != null) {
+        if($this->cachedPermissions != null)
+        {
             return $this->cachedPermissions;
         }
         $outputMap = [];
@@ -115,23 +130,29 @@ class Node
             ->On(new UUID($this->getId()))
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
-        if (isset($response["@permissions"])) {
-            foreach ($response["@permissions"] as $value) {
+        if(isset($response["@permissions"]))
+        {
+            foreach($response["@permissions"] as $value)
+            {
                 array_push($outputMap, $value);
             }
             $this->cachedPermissions = $outputMap;
             return $this->cachedPermissions;
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
 
     public function getReferences(User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
-        if ($this->cachedReferences != null) {
+        if($this->cachedReferences != null)
+        {
             return $this->cachedReferences;
         }
         $outputMap = [];
@@ -140,29 +161,37 @@ class Node
             ->RelativePath(new UUID($this->getId()))
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
-        if (isset($response["@map"])) {
-            foreach ($response["@map"] as $key => $value) {
+        if(isset($response["@map"]))
+        {
+            foreach($response["@map"] as $key => $value)
+            {
                 $arr = [];
-                foreach ($value as $refNodeId) {
+                foreach($value as $refNodeId)
+                {
                     array_push($arr, Node::from_id($refNodeId));
                 }
                 $outputMap[$key] = $arr;
             }
             $this->cachedReferences = $outputMap;
             return $outputMap;
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
 
     public static function from_id(string $id = null)
     {
-        if ($id == null) {
+        if($id == null)
+        {
             return null;
         }
 
-        if (isset(self::$cached_nodes[$id])) {
-            if (self::$cached_nodes[$id] instanceof Node) {
+        if(isset(self::$cached_nodes[$id]))
+        {
+            if(self::$cached_nodes[$id] instanceof Node)
+            {
                 return self::$cached_nodes[$id]; // Skip creating the node representation - we've already loaded it!
             }
         }
@@ -171,19 +200,24 @@ class Node
 
         self::$cached_nodes[$id] = new Node($id);
 
-        if (isset(self::$cached_nodes[$id])) {
+        if(isset(self::$cached_nodes[$id]))
+        {
             return self::$cached_nodes[$id];
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
 
     public function getProperty(string $property, User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
-        if (isset($this->getProperties($actor)[$property])) {
+        if(isset($this->getProperties($actor)[$property]))
+        {
             return $this->getProperties($actor)[$property];
         }
         return null;
@@ -191,10 +225,12 @@ class Node
 
     public function getProperties(User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
-        if ($this->cachedProperties != null) {
+        if($this->cachedProperties != null)
+        {
             return $this->cachedProperties;
         }
         $outputMap = [];
@@ -204,13 +240,17 @@ class Node
             ->Build();
 
         $response = GraphDatabaseConnection::query($actor, $query);
-        if (isset($response["@map"])) {
-            foreach ($response["@map"] as $key => $value) {
+        if(isset($response["@map"]))
+        {
+            foreach($response["@map"] as $key => $value)
+            {
                 $outputMap[$key] = Node::from_id($value);
             }
             $this->cachedProperties = $outputMap;
             return $outputMap;
-        } else {
+        }
+        else
+        {
             return null;
         }
     }
@@ -223,10 +263,14 @@ class Node
 
     public function getContent(User $actor = null)
     {
-        if ($this->getRawContent($actor) != null) {
-            if (substr($this->getRawContent($actor), 0, 5) === "data:") {
+        if($this->getRawContent($actor) != null)
+        {
+            if(substr($this->getRawContent($actor), 0, 5) === "data:")
+            {
                 return new DataURL($this->getRawContent($actor));
-            } elseif (substr($this->getRawContent($actor), 0, 7) === "auxlfs:") {
+            }
+            elseif(substr($this->getRawContent($actor), 0, 7) === "auxlfs:")
+            {
                 return new AuxiliumLFSObject($this->getRawContent($actor));
             }
         }
@@ -235,18 +279,22 @@ class Node
 
     public function getRawContent(User $actor = null)
     {
-        if ($this->rawContentFetched) {
+        if($this->rawContentFetched)
+        {
             return $this->rawContent;
         }
 
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
 
         $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->getId() . "}", "GET");
 
-        if (is_array($result)) {
-            if (isset($result["@data"])) {
+        if(is_array($result))
+        {
+            if(isset($result["@data"]))
+            {
                 $this->rawContent = $result["@data"];
             }
         }
@@ -263,9 +311,12 @@ class Node
 
     public function __toString()
     {
-        if (is_string($this->getData())) {
+        if(is_string($this->getData()))
+        {
             return $this->getData();
-        } else {
+        }
+        else
+        {
             return "";
         }
     }
@@ -283,17 +334,20 @@ class Node
 
     public function getNodeMetadata(User $actor = null)
     {
-        if ($this->metadataFetched) {
+        if($this->metadataFetched)
+        {
             return $this->metadata;
         }
 
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
 
         $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->getId() . "}", "GET");
 
-        if (is_array($result)) {
+        if(is_array($result))
+        {
             $this->metadata = $result;
         }
 
@@ -323,7 +377,8 @@ class Node
 
     public function extendsOrInstanceOf(string $schema)
     {
-        if (!isset($this->getNodeMetadata()["@schema"])) {
+        if(!isset($this->getNodeMetadata()["@schema"]))
+        {
             return false;
         }
         return $this->getNodeMetadata()["@schema"] == $schema;

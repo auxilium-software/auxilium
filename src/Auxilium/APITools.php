@@ -18,7 +18,8 @@ class APITools
 
     public static function get_instance()
     {
-        if (self::$instance == null) {
+        if(self::$instance == null)
+        {
             self::$instance = new APITools();
         }
 
@@ -27,7 +28,8 @@ class APITools
 
     public function requireLogin()
     {
-        if (!Session::get_current()->sessionAuthenticated()) {
+        if(!Session::get_current()->sessionAuthenticated())
+        {
             $this->clearReturnData();
             $this->setStatus("UNAUTHORIZED");
             $this->setErrorText("Login required for this API. Check session token.");
@@ -56,7 +58,8 @@ class APITools
     public function setErrorText($value)
     {
         $this->setVariable("error_message", $value);
-        if (http_response_code() == 200) {
+        if(http_response_code() == 200)
+        {
             http_response_code(400);
         }
     }
@@ -70,10 +73,14 @@ class APITools
     {
         header("Content-Type: application/json; charset=utf-8");
         $this->returnData["response_code"] = http_response_code();
-        if (!isset($this->returnData["status"])) {
-            if (http_response_code() == 200) {
+        if(!isset($this->returnData["status"]))
+        {
+            if(http_response_code() == 200)
+            {
                 $this->returnData["status"] = "OK";
-            } else {
+            }
+            else
+            {
                 $this->returnData["status"] = "ERROR";
             }
         }
@@ -85,11 +92,13 @@ class APITools
     public function requireInternalIpRange()
     {
         $internalAPIConnection = false;
-        if ($this->isInInternalIpRange($_SERVER["REMOTE_ADDR"])) {
+        if($this->isInInternalIpRange($_SERVER["REMOTE_ADDR"]))
+        {
             $internalAPIConnection = true;
         }
 
-        if (!$internalAPIConnection) {
+        if(!$internalAPIConnection)
+        {
             header("Content-Type: application/json; charset=utf-8");
             http_response_code(401);
             $returnData = [
@@ -104,8 +113,10 @@ class APITools
 
     public function isInInternalIpRange($ip)
     {
-        foreach (INSTANCE_CREDENTIAL_LOCAL_IP_RANGES as &$ipr) {
-            if ($this->isInIpRange($ipr, $ip)) {
+        foreach(INSTANCE_CREDENTIAL_LOCAL_IP_RANGES as &$ipr)
+        {
+            if($this->isInIpRange($ipr, $ip))
+            {
                 return true;
             }
         }
@@ -119,9 +130,12 @@ class APITools
         $ipDecimal = ip2long($ip);
         $wildcardDecimal = pow(2, (32 - $netmask)) - 1;
         $netmaskDecimal = ~$wildcardDecimal;
-        if (($ipDecimal & $netmaskDecimal) == ($rangeDecimal & $netmaskDecimal)) {
+        if(($ipDecimal & $netmaskDecimal) == ($rangeDecimal & $netmaskDecimal))
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
@@ -130,16 +144,20 @@ class APITools
     {
         $internalAPIConnection = false;
 
-        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-            if (str_starts_with($_SERVER['HTTP_AUTHORIZATION'], "Digest ")) {
+        if(isset($_SERVER['HTTP_AUTHORIZATION']))
+        {
+            if(str_starts_with($_SERVER['HTTP_AUTHORIZATION'], "Digest "))
+            {
                 $authDigest = substr($_SERVER['HTTP_AUTHORIZATION'], strlen("Digest "));
-                if ($authDigest == hash("sha256", INSTANCE_CREDENTIAL_LOCAL_ONLY_API_KEY)) {
+                if($authDigest == hash("sha256", INSTANCE_CREDENTIAL_LOCAL_ONLY_API_KEY))
+                {
                     $internalAPIConnection = true;
                 }
             }
         }
 
-        if (!$internalAPIConnection) {
+        if(!$internalAPIConnection)
+        {
             header("Content-Type: application/json; charset=utf-8");
             http_response_code(401);
             $returnData = [

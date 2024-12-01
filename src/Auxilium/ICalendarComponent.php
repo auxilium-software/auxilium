@@ -7,16 +7,21 @@ $properties = null;
 
     public function __construct(array $content = null)
     {
-        if ($content == null) {
+        if($content == null)
+        {
             $properties = [];
-        } else {
-            foreach ($content as &$line) {
+        }
+        else
+        {
+            foreach($content as &$line)
+            {
                 $components = explode(":", $line);
                 $attributes = explode(";", array_shift($components));
                 $value = implode($components);
                 $key = strtoupper(array_shift($attributes));
                 $attributeArray = [];
-                foreach ($attributes as &$attribute) {
+                foreach($attributes as &$attribute)
+                {
                     $attribute = explode("=", $attribute);
                     $attributeKey = strtoupper(array_shift($attribute));
                     $attribute = implode("=", $attribute);
@@ -38,14 +43,18 @@ $properties = null;
     public function setProperty($key, $value = null, $attribs = [])
     {
         $key = strtoupper($key);
-        if ($value == null) {
+        if($value == null)
+        {
             unset($this->properties[$key]);
-        } else {
+        }
+        else
+        {
             $this->properties[$key] = [
                 "value" => $value,
                 "attributes" => []
             ]
-            foreach ($attribs as $attribKey => $attribValue) {
+            foreach($attribs as $attribKey => $attribValue)
+            {
                 $this->properties[$key]["attributes"][strtoupper($attribKey)] = $attribValue;
             }
         }
@@ -59,9 +68,11 @@ $properties = null;
     public function stringify()
     {
         $stringified = "";
-        foreach ($this->properties as $key => $value) {
+        foreach($this->properties as $key => $value)
+        {
             $attribs = [];
-            foreach ($value["attributes"] as $attribKey => $attribValue) {
+            foreach($value["attributes"] as $attribKey => $attribValue)
+            {
                 array_push($attribs, strtoupper($attribKey) . "=" . $attribValue);
             }
             $stringified .= ICalendarObject::fold(strtoupper($key) . implode(";", $attribs) . ":" . ICalendarObject::escape($value["value"]) . "\r\n");

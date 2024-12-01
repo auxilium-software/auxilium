@@ -33,7 +33,8 @@ class NodeFactory
 
     protected function build()
     {
-        if ($this->actor == null) {
+        if($this->actor == null)
+        {
             $this->actor = SessionHandling\Session::get_current()->getUser();
         }
         return GraphDatabaseConnection::new_node($this->data, $this->mimeType, $this->schema, $this->actor);

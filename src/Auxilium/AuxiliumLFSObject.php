@@ -17,31 +17,41 @@ class AuxiliumLFSObject
     public function __construct(string $stringRepresentation)
     {
         $stringRepresentation = trim($stringRepresentation);
-        if (mb_strpos($stringRepresentation, "auxlfs://") === 0) {
+        if(mb_strpos($stringRepresentation, "auxlfs://") === 0)
+        {
             $stringRepresentation = mb_substr($stringRepresentation, 9);
             $expl1 = explode("/", $stringRepresentation);
             $expl2 = [];
-            if (strlen($expl1[0]) > 0) {
+            if(strlen($expl1[0]) > 0)
+            {
                 $this->domain = $expl1[0];
             }
-            if (count($expl1) > 1) {
+            if(count($expl1) > 1)
+            {
                 $expl2 = explode("+", $expl1[1]);
             }
-            if (strlen($expl2[0]) > 0) {
+            if(strlen($expl2[0]) > 0)
+            {
                 $this->uuid = $expl2[0];
             }
-            if (count($expl2) > 1) {
-                if (strlen($expl2[1]) > 0) {
+            if(count($expl2) > 1)
+            {
+                if(strlen($expl2[1]) > 0)
+                {
                     $this->dataHash = $expl2[1];
                 }
             }
-            if (count($expl2) > 2) {
-                if (strlen($expl2[2]) > 0) {
+            if(count($expl2) > 2)
+            {
+                if(strlen($expl2[2]) > 0)
+                {
                     $this->mimeType = urldecode($expl2[2]);
                 }
             }
-            if (count($expl2) > 3) {
-                if (strlen($expl2[3]) > 0) {
+            if(count($expl2) > 3)
+            {
+                if(strlen($expl2[3]) > 0)
+                {
                     $this->length = intval($expl2[3]);
                 }
             }
@@ -50,21 +60,29 @@ class AuxiliumLFSObject
 
     public function isWriteable(User $actor = null)
     {
-        if ($this->exists()) {
+        if($this->exists())
+        {
             return false;
         }
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
         $actorId = ($actor == null) ? null : $actor->getId();
-        if ($this->getId() == null) {
+        if($this->getId() == null)
+        {
             return false;
-        } else {
+        }
+        else
+        {
             $query = "SELECT {" . $this->getId() . "}/@creator/@id";
             $response = GraphDatabaseConnection::query($actor, $query);
-            if (isset($response["@rows"])) {
-                if (count($response["@rows"]) > 0) {
-                    if ($response["@rows"][0]["{" . $this->getId() . "}/@creator/@id"]["{" . $this->getId() . "}/@creator/@id"] == "{" . $actorId . "}") {
+            if(isset($response["@rows"]))
+            {
+                if(count($response["@rows"]) > 0)
+                {
+                    if($response["@rows"][0]["{" . $this->getId() . "}/@creator/@id"]["{" . $this->getId() . "}/@creator/@id"] == "{" . $actorId . "}")
+                    {
                         return true;
                     }
                 }
@@ -75,7 +93,8 @@ class AuxiliumLFSObject
 
     public function exists()
     {
-        if (file_exists(LOCAL_STORAGE_DIRECTORY . $this->getId())) {
+        if(file_exists(LOCAL_STORAGE_DIRECTORY . $this->getId()))
+        {
             return true;
         }
         return false;
@@ -103,7 +122,8 @@ class AuxiliumLFSObject
 
     public function getSize()
     {
-        if ($this->length == null) {
+        if($this->length == null)
+        {
             $this->length = strlen($this->getData());
         }
         return $this->length;
@@ -111,9 +131,12 @@ class AuxiliumLFSObject
 
     public function getData(User $actor = null)
     {
-        if ($this->canRead($actor)) {
-            if ($this->data == null) {
-                if ($this->exists()) {
+        if($this->canRead($actor))
+        {
+            if($this->data == null)
+            {
+                if($this->exists())
+                {
                     $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . $this->getId());
                 }
             }
@@ -124,24 +147,34 @@ class AuxiliumLFSObject
 
     public function canRead(User $actor = null)
     {
-        if ($actor == null) {
+        if($actor == null)
+        {
             $actor = Session::get_current()->getUser();
         }
         $actorId = ($actor == null) ? null : $actor->getId();
-        if (!isset($this->readPermission[$actorId])) {
-            if ($this->getId() == null) {
+        if(!isset($this->readPermission[$actorId]))
+        {
+            if($this->getId() == null)
+            {
                 $this->readPermission[$actorId] = false;
-            } else {
+            }
+            else
+            {
                 $query = "SELECT {" . $this->getId() . "}";
                 $response = GraphDatabaseConnection::query($actor, $query);
                 $this->readPermission[$actorId] = false;
-                if (isset($response["@rows"])) {
-                    if (count($response["@rows"]) > 0) {
+                if(isset($response["@rows"]))
+                {
+                    if(count($response["@rows"]) > 0)
+                    {
                         $query = "PERMS ON {" . $this->getId() . "}";
                         $response = GraphDatabaseConnection::query($actor, $query);
-                        if (isset($response["@permissions"])) {
-                            foreach ($response["@permissions"] as $value) {
-                                if (strtoupper($value) == "READ") {
+                        if(isset($response["@permissions"]))
+                        {
+                            foreach($response["@permissions"] as $value)
+                            {
+                                if(strtoupper($value) == "READ")
+                                {
                                     $this->readPermission[$actorId] = true;
                                 }
                             }

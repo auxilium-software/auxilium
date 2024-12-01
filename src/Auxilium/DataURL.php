@@ -10,15 +10,20 @@ class DataURL
     public function __construct(string $stringRepresentation)
     {
         $stringRepresentation = trim($stringRepresentation);
-        if (mb_strpos($stringRepresentation, "data:") === 0) {
+        if(mb_strpos($stringRepresentation, "data:") === 0)
+        {
             $stringRepresentation = mb_substr($stringRepresentation, 5);
-            if (mb_strpos($stringRepresentation, ",") !== false) {
+            if(mb_strpos($stringRepresentation, ",") !== false)
+            {
                 $parts = explode(",", $stringRepresentation, 2);
                 $header = $parts[0];
-                if (mb_strpos($stringRepresentation, ";base64") === false) {
+                if(mb_strpos($stringRepresentation, ";base64") === false)
+                {
                     $this->mimeType = $header;
                     $this->data = urldecode($parts[1]);
-                } else {
+                }
+                else
+                {
                     $this->mimeType = explode(";", $header, 2)[0];
                     $this->data = base64_decode($parts[1]);
                 }
@@ -43,7 +48,8 @@ class DataURL
 
     public function __toString()
     {
-        switch ($this->mimeType) {
+        switch($this->mimeType)
+        {
             case "text/plain":
             case "application/json":
                 return "data:" . $this->mimeType . "," . urlencode($this->data);

@@ -22,8 +22,10 @@ class RFC822ObjectFactory extends NodeFactory
         $this->message = Message::from($data, false);
 
         $non_normal_content_parts = $this->message->getAllAttachmentParts();
-        foreach ($non_normal_content_parts as &$non_normal_content_part) {
-            if ($non_normal_content_part->getContentId() == null) {
+        foreach($non_normal_content_parts as &$non_normal_content_part)
+        {
+            if($non_normal_content_part->getContentId() == null)
+            {
                 $content_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(24)), '+/', '-_'), '=');
                 $non_normal_content_part->setRawHeader("Content-ID", "vnd-auxilium-random-id-" . $content_key);
             }
@@ -35,12 +37,15 @@ class RFC822ObjectFactory extends NodeFactory
     public function build()
     {
         $this->setData($this->message);
-        foreach ($this->message->getAllHeaders() as $header) {
-            switch (strtolower($header->getName())) {
+        foreach($this->message->getAllHeaders() as $header)
+        {
+            switch(strtolower($header->getName()))
+            {
                 case "to":
                 case "from":
                     $emails = $header->getParts();
-                    foreach ($emails as $email) {
+                    foreach($emails as $email)
+                    {
 
                         //"email_address" => $email, Do attaching here
                     }

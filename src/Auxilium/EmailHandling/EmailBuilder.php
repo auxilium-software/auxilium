@@ -44,14 +44,18 @@ class EmailBuilder
 
     public function addRecipient($recipient, $name = null)
     {
-        if (filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+        if(filter_var($recipient, FILTER_VALIDATE_EMAIL))
+        {
             $recipientString = $recipient;
-            if ($name !== null) {
+            if($name !== null)
+            {
                 $recipientString = "\"" . mb_ereg_replace("\"", "\\\"", $name) . "\" <" . $recipientString . ">";
             }
             array_push($this->recipients, $recipientString);
             return $this;
-        } else {
+        }
+        else
+        {
             throw new Exception("Bad recipient string");
         }
     }
@@ -60,8 +64,8 @@ class EmailBuilder
     {
         $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
         $twig = new Environment($twigLoader, [
-            "cache" => false,
-        ]
+                "cache" => false,
+            ]
         );
 
         //$this->emailData["template_properties"]["selected_lang"] = "en";
@@ -124,10 +128,14 @@ class EmailBuilder
 
         $build_content .= "To: ";
         $first = true;
-        foreach ($this->recipients as &$recipient) {
-            if ($first) {
+        foreach($this->recipients as &$recipient)
+        {
+            if($first)
+            {
                 $first = false;
-            } else {
+            }
+            else
+            {
                 $build_content .= ", ";
             }
             $build_content .= $recipient;
@@ -145,21 +153,28 @@ class EmailBuilder
             ]
         ];
 
-        foreach ($contents as &$content) {
-            if ($content["content_type"] == "text/plain") {
+        foreach($contents as &$content)
+        {
+            if($content["content_type"] == "text/plain")
+            {
                 $content["content_type"] = "text/plain; charset=\"UTF-8\"";
             }
-            if ($content["content_type"] == "text/html") {
+            if($content["content_type"] == "text/html")
+            {
                 $content["content_type"] = "text/html; charset=\"UTF-8\"";
             }
         }
 
         $first = true;
-        foreach ($contents as &$content) {
-            if ($first) {
+        foreach($contents as &$content)
+        {
+            if($first)
+            {
                 $build_content .= "--$boundary\r\n";
                 $first = false;
-            } else {
+            }
+            else
+            {
                 $build_content .= "\r\n";
             }
 

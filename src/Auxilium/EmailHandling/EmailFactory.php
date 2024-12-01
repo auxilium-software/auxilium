@@ -91,25 +91,29 @@ class EmailFactory extends RFC822ObjectFactory
         //$debug = true;
 
         $originalUser = Session::get_current()->getUser();
-        if ($sendAs != null) {
+        if($sendAs != null)
+        {
             Session::get_current()->forceSetCurrentUser($sendAs);
         }
 
         $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
         $twig = new Environment($twigLoader, [
-            "cache" => false,
-        ]
+                "cache" => false,
+            ]
         );
 
         $senderUser = null;
-        if ($this->emailData["sender"] != null) {
+        if($this->emailData["sender"] != null)
+        {
             $senderUser = new User($this->emailData["sender"]);
         }
-        if (!isset($this->emailData["template_properties"]["sender"])) { // if it's manually set don't change it!
+        if(!isset($this->emailData["template_properties"]["sender"]))
+        { // if it's manually set don't change it!
             $this->emailData["template_properties"]["sender"] = $senderUser;
         }
         $this->emailData["template_properties"]["selected_lang"] = "en";
-        if ($this->recipients[0] instanceof User) {
+        if($this->recipients[0] instanceof User)
+        {
             $this->emailData["template_properties"]["recipient"] = $this->recipients[0];
             $this->emailData["template_properties"]["selected_lang"] = $this->recipients[0]->getLanguagePreference();
         }
@@ -132,9 +136,12 @@ class EmailFactory extends RFC822ObjectFactory
             "INSTANCE_INFO_GENERAL_ENQUIRIES_CONTACT_EMAIL" => INSTANCE_INFO_GENERAL_ENQUIRIES_CONTACT_EMAIL
         ];
         $fullTemplateProperties = array_merge($fixedTemplateProperties, $this->emailData["template_properties"]);
-        if (isset($this->emailData["body"])) {
+        if(isset($this->emailData["body"]))
+        {
             $content = $this->emailData["body"];
-        } else {
+        }
+        else
+        {
             $filter = new TwigFilter("uiprop", function ($string)
             {
                 return MicroTemplate::data_type_to_human_name($string, $this->twigVariables["selected_lang"]);
@@ -166,27 +173,35 @@ class EmailFactory extends RFC822ObjectFactory
 
         $rfc822RawMessage = null;
 
-        if (INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "MS_APP_GRAPH") {
+        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "MS_APP_GRAPH")
+        {
             $msft_access_token = null;
 
-            if (file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json")) {
+            if(file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json"))
+            {
                 $msft_access_token_json = file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json");
                 $msft_access_token = null;
-                if ($msft_access_token_json === FALSE) {
+                if($msft_access_token_json === FALSE)
+                {
                     $msft_access_token = null;
-                } else {
+                }
+                else
+                {
                     $msft_access_token_json = json_decode($msft_access_token_json, true);
                     $msft_access_token = $msft_access_token_json["access_token"];
                 }
             }
 
-            if ($msft_access_token != null) {
-                if ($msft_access_token_json["expires_at"] <= (time() + 60)) { // If we've only got 60 seconds just refresh now - MS graph takes a while to do *anything*
+            if($msft_access_token != null)
+            {
+                if($msft_access_token_json["expires_at"] <= (time() + 60))
+                { // If we've only got 60 seconds just refresh now - MS graph takes a while to do *anything*
                     $msft_access_token = null;
                 }
             }
 
-            if ($msft_access_token == null) {
+            if($msft_access_token == null)
+            {
                 $url = "https://login.microsoftonline.com/" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["tenant_guid"] . "/oauth2/v2.0/token";
                 $data = [
                     "client_id" => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["client_guid"],
@@ -208,14 +223,18 @@ class EmailFactory extends RFC822ObjectFactory
                 ];
                 $context = stream_context_create($options);
                 $result = file_get_contents($url, false, $context);
-                if ($result === FALSE) {
+                if($result === FALSE)
+                {
                     // Throw an error maybe?
-                } else {
+                }
+                else
+                {
                     $parsed = json_decode($result, true);
                     $parsed["expires_at"] = time() + $parsed["expires_in"];
                     $msft_access_token_json = json_encode($parsed, JSON_PRETTY_PRINT) . "\n";
                     $bytes_written = file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json", $msft_access_token_json);
-                    if ($bytes_written === FALSE) {
+                    if($bytes_written === FALSE)
+                    {
                         // Throw an error maybe?
                     }
                     $msft_access_token_json = json_decode($msft_access_token_json, true);
@@ -267,30 +286,36 @@ class EmailFactory extends RFC822ObjectFactory
 
             // Note: The "singleValueExtendedProperties" is needed to get back the message id of the sent message
 
-            if ($senderUser != null) {
+            if($senderUser != null)
+            {
                 $payload["message"]["from"]["emailAddress"]["name"] = $senderUser->getFullName();
                 $payload["message"]["replyTo"][0]["emailAddress"]["name"] = $senderUser->getFullName();
                 $payload["message"]["sender"]["emailAddress"]["name"] = $senderUser->getFullName();
             }
 
             $this->emailData["recipients"] = [];
-            foreach ($this->recipients as &$user) {
-                if ($user != null) {
-                    if ($user instanceof User) {
+            foreach($this->recipients as &$user)
+            {
+                if($user != null)
+                {
+                    if($user instanceof User)
+                    {
                         array_push($payload["message"]["toRecipients"], [
-                            "emailAddress" => [
-                                "address" => $user->getEmailAddress(),
-                                "name" => $user->getFullName()
+                                "emailAddress" => [
+                                    "address" => $user->getEmailAddress(),
+                                    "name" => $user->getFullName()
+                                ]
                             ]
-                        ]
                         );
                         array_push($this->emailData["recipients"], $user->getUuid());
-                    } else {
+                    }
+                    else
+                    {
                         array_push($payload["message"]["toRecipients"], [
-                            "emailAddress" => [
-                                "address" => $user
+                                "emailAddress" => [
+                                    "address" => $user
+                                ]
                             ]
-                        ]
                         );
                     }
                 }
@@ -305,7 +330,8 @@ class EmailFactory extends RFC822ObjectFactory
             $serverOutput = curl_exec($curlHandle); // Send the message
             curl_close($curlHandle);
 
-            if ($debug) {
+            if($debug)
+            {
                 echo "<pre>" . htmlentities($serverOutput) . "</pre>";
             }
 
@@ -313,7 +339,8 @@ class EmailFactory extends RFC822ObjectFactory
 
             $url = str_replace(" ", "%20", str_replace("{", "%7B", str_replace("}", "%7D", $url)));
 
-            if ($debug) {
+            if($debug)
+            {
                 echo "<pre>" . $url . "</pre>";
             }
 
@@ -322,7 +349,8 @@ class EmailFactory extends RFC822ObjectFactory
             $matchingMessages = [];
             $tries = 0; // Just give up after 8 seconds, we can't wait forever for microsoft to get their act together
 
-            while (count($matchingMessages) == 0 && $tries < 8) { // Sometimes we end up in a race condition where microsoft graph hasn't actually sent the email yet
+            while(count($matchingMessages) == 0 && $tries < 8)
+            { // Sometimes we end up in a race condition where microsoft graph hasn't actually sent the email yet
                 sleep(1); // Sigh, maybe if microsoft graph becomes somewhat performant in the future we won't need to do this
 
                 $curlHandle = curl_init();
@@ -332,18 +360,23 @@ class EmailFactory extends RFC822ObjectFactory
                 $serverOutput = curl_exec($curlHandle);
                 curl_close($curlHandle);
 
-                if ($debug) {
+                if($debug)
+                {
                     echo "<pre>" . htmlentities($serverOutput) . "</pre>";
                 }
 
-                if (isset(json_decode($serverOutput, true)["value"])) {
+                if(isset(json_decode($serverOutput, true)["value"]))
+                {
                     $matchingMessages = json_decode($serverOutput, true)["value"];
-                } else {
+                }
+                else
+                {
                     echo $serverOutput;
                     die();
                 }
 
-                if (count($matchingMessages) > 0) {
+                if(count($matchingMessages) > 0)
+                {
                     $url = "https://graph.microsoft.com/v1.0/users/" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["user_guid"] . "/messages/" . $matchingMessages[0]["id"] . "/\$value"; // Now we can finally get the actual sent email in RFC822 format
 
                     $curlHandle = curl_init();
@@ -360,13 +393,15 @@ class EmailFactory extends RFC822ObjectFactory
             }
 
 
-            if ($debug) {
+            if($debug)
+            {
                 echo "<pre>" . htmlentities($serverOutput) . "</pre>";
                 //die();
             }
         }
 
-        if (INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "STANDARD") {
+        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "STANDARD")
+        {
             $mail = new PHPMailer();
 
             // Settings
@@ -391,12 +426,17 @@ class EmailFactory extends RFC822ObjectFactory
             //$mail->addBCC('bcc@example.com');
 
             $this->emailData["recipients"] = [];
-            foreach ($this->recipients as &$user) {
-                if ($user != null) {
-                    if ($user instanceof User) {
+            foreach($this->recipients as &$user)
+            {
+                if($user != null)
+                {
+                    if($user instanceof User)
+                    {
                         $mail->addAddress($user->getEmailAddress(), $user->getFullName());
                         array_push($this->emailData["recipients"], $user->getUuid());
-                    } else {
+                    }
+                    else
+                    {
                         $mail->addAddress($user);
                     }
                 }
@@ -407,14 +447,17 @@ class EmailFactory extends RFC822ObjectFactory
             $mail->Subject = MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]);
             $mail->Body = $content;
 
-            if (!$mail->send()) {
+            if(!$mail->send())
+            {
                 throw new MessageSendException($mail->ErrorInfo);
             }
         }
 
         Session::get_current()->forceSetCurrentUser($originalUser);
-        if (isset($this->emailData["hidden"])) {
-            if ($this->emailData["hidden"]) {
+        if(isset($this->emailData["hidden"]))
+        {
+            if($this->emailData["hidden"])
+            {
                 return null; // Just send mail, don't actually write to database
             }
         }

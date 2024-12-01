@@ -19,9 +19,11 @@ class PageBuilder
     private function __construct()
     {
         $this->setDefaultVariables();
-        try {
+        try
+        {
             $this->twigVariables["current_user"] = Session::get_current()->getUser();
-        } catch (Exception $e) {
+        } catch(Exception $e)
+        {
             $this->twigVariables["current_user"] = null;
         }
     }
@@ -54,8 +56,10 @@ class PageBuilder
         ];
 
         // Serve the correct language *if* the cookie is set
-        if (isset($_COOKIE["lang"])) {
-            switch ($_COOKIE["lang"]) {
+        if(isset($_COOKIE["lang"]))
+        {
+            switch($_COOKIE["lang"])
+            {
                 case "cy":
                     $this->twigVariables["selected_lang"] = "cy";
                     break;
@@ -73,8 +77,10 @@ class PageBuilder
         }
 
         // Grab style options if present
-        if (isset($_COOKIE["style"])) {
-            if (isset($_COOKIE["style"])) {
+        if(isset($_COOKIE["style"]))
+        {
+            if(isset($_COOKIE["style"]))
+            {
                 $this->twigVariables["head_asset_options"] = explode(" ", $_COOKIE["style"]);
             }
         }
@@ -82,7 +88,8 @@ class PageBuilder
 
     public static function get_instance()
     {
-        if (self::$instance == null) {
+        if(self::$instance == null)
+        {
             self::$instance = new PageBuilder();
         }
 
@@ -96,7 +103,8 @@ class PageBuilder
 
     public function overrideCurrentLanguage($lang)
     {
-        switch (strtolower($lang)) {
+        switch(strtolower($lang))
+        {
             case "cy":
                 $this->twigVariables["selected_lang"] = "cy";
                 break;
@@ -131,7 +139,8 @@ class PageBuilder
 
     public function requireLogin()
     {
-        if (Session::get_current()->sessionAuthenticated()) {
+        if(Session::get_current()->sessionAuthenticated())
+        {
             /*
             if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."root-encryption-key.json")) {
                 if ($_SERVER["REQUEST_URI"] != "/unlock") {
@@ -140,7 +149,9 @@ class PageBuilder
                 }
             }
             */
-        } else {
+        }
+        else
+        {
             header("Location: /login");
             exit();
         }
@@ -161,9 +172,12 @@ class PageBuilder
     public function setTemplate($template)
     {
         $template = "/" . $template;
-        if (str_ends_with($template, ".html.twig")) {
+        if(str_ends_with($template, ".html.twig"))
+        {
             $this->template = $template;
-        } else {
+        }
+        else
+        {
             $this->template = $template . ".html.twig";
         }
         return $this;
@@ -190,18 +204,20 @@ class PageBuilder
     {
         $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
         $twig = new Environment($twigLoader, [
-            "cache" => false,
-        ]
+                "cache" => false,
+            ]
         );
 
         $twig->addExtension(new CommonFilters());
         $twig->addExtension(new CommonFunctions());
 
         $this->twigVariables["current_uri"] = $_SERVER["REQUEST_URI"];
-        try {
+        try
+        {
             echo $twig->render($this->template, $this->twigVariables);
             exit();
-        } catch (RuntimeError $e) {
+        } catch(RuntimeError $e)
+        {
             $e = $e->getPrevious();
             PageBuilder2::RenderInternalSystemError($e);
         }

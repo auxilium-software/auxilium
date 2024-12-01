@@ -16,10 +16,12 @@ class User extends Node
 
     public function getDisplayName()
     {
-        if ($this->getProperty("display_name") != null) {
+        if($this->getProperty("display_name") != null)
+        {
             return $this->getProperty("display_name");
         }
-        if ($this->getProperty("name") != null) {
+        if($this->getProperty("name") != null)
+        {
             return $this->getProperty("name");
         }
         return null;
@@ -27,7 +29,8 @@ class User extends Node
 
     public function getFullName()
     {
-        if ($this->getProperty("name") != null) {
+        if($this->getProperty("name") != null)
+        {
             return $this->getProperty("name");
         }
         return null;
@@ -35,7 +38,8 @@ class User extends Node
 
     public function getContactEmail()
     {
-        if ($this->getProperty("contact_email") != null) {
+        if($this->getProperty("contact_email") != null)
+        {
             return $this->getProperty("contact_email");
         }
         return null;
@@ -43,9 +47,12 @@ class User extends Node
 
     public function __toString()
     {
-        if ($this->getProperty("name") == null) {
+        if($this->getProperty("name") == null)
+        {
             return "";
-        } else {
+        }
+        else
+        {
             return strval($this->getProperty("name"));
         }
     }
