@@ -58,7 +58,7 @@ if (isset($_POST["submit"])) {
         $import_id = null;
         $data = null;
         $original_creation_date = null;
-        $schema = "https://schemas.auxiliumsoftware.co.uk/v1/user.json";
+        $schema = URLHandling::GetURLForSchema(UserSchema::class);
         $props = [];
         //var_dump($structural_node);
         foreach ($structural_node as $key => &$value) {
@@ -98,7 +98,7 @@ if (isset($_POST["submit"])) {
         $import_id = null;
         $data = null;
         $original_creation_date = null;
-        $schema = "https://schemas.auxiliumsoftware.co.uk/v1/case.json";
+        $schema = URLHandling::GetURLForSchema(CaseSchema::class);
         $props = [];
         //var_dump($structural_node);
         foreach ($structural_node as $key => &$value) {

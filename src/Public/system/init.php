@@ -103,11 +103,11 @@ if (isset($_GET["page"]))
         case "racc":
             if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
             {
-                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
+                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
                 $user_node = new Auxilium\User($user_node->getId());
                 
                 $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true)); 
-                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
+                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
                 $user_node = new Auxilium\User($user_node->getId());
         
                 $hash_options = [

@@ -109,18 +109,18 @@ try {
                     $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
                     $primary_node_path_nodes[$np] = Auxilium\Node::from_path($absolute_path);
                     if ($primary_node_path_nodes[$np] != null) {
-                        if ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
+                        if ($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class))) {
                             if ($primary_node_path_nodes[$np]->is(\Auxilium\SessionHandling\Session::get_current()->getUser())) {
                                 $primary_node_path_names[$np] = "::auxpckstr:ui_heading/my_account::";
                                 $pb->setVariable("is_own_account", true);
                             } else {
                                 $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("name");
                             }
-                        } elseif ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
+                        } elseif ($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class))) {
                             $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("title");
-                        } elseif ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/message.json")) {
+                        } elseif ($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(MessageSchema::class))) {
                             $primary_node_path_names[$np] = "Message";
-                        } elseif ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json")) {
+                        } elseif ($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class))) {
                             $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("name");
                         }
                     }
@@ -184,9 +184,9 @@ try {
             switch ($action) {
                 case "@delete_confirm":
                     if ($jwt_validation_passed) {
-                        if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
+                        if ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class))) {
                             $pb->setTemplate("Pages/delete-views/generic");
-                        } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
+                        } elseif ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class))) {
                             $pb->setTemplate("Pages/delete-views/generic");
                         } else {
                             $pb->setTemplate("Pages/delete-views/generic");
@@ -322,7 +322,7 @@ try {
                     $pb->setVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
                 case "@view":
                 default:
-                    if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
+                    if ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class))) {
                         $login_methods = [];
                         $bind_variables = [
                             "user_uuid" => $node->getId(),
@@ -366,10 +366,10 @@ try {
                         $pb->setVariable("hidden_props", ["cases", "messages", "documents"]);
                         
                         //$pb->setVariable("traditional_login_method", []);
-                    } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
+                    } elseif ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class))) {
                         $pb->setTemplate("Pages/node-views/case");
                         $pb->setVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
-                    } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json")) {
+                    } elseif ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class))) {
                         $pb->setTemplate("Pages/node-views/group");
                         $pb->setVariable("hidden_props", ["departments", "cases", "staff"]);
                     } else {

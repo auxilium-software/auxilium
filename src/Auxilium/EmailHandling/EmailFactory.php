@@ -3,8 +3,10 @@ namespace Auxilium\EmailHandling;
 
 use Auxilium\Exceptions\MessageSendException;
 use Auxilium\MicroTemplate;
+use Auxilium\Schemas\MessageSchema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\User;
+use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 class EmailFactory extends RFC822ObjectFactory {
     private $emailData = null;
@@ -12,7 +14,7 @@ class EmailFactory extends RFC822ObjectFactory {
     
     public function __construct() {
         parent::__construct(null);
-        $this->setSchema("https://schemas.auxiliumsoftware.co.uk/v1/message.json");
+        $this->setSchema(URLHandling::GetURLForSchema(MessageSchema::class),);
         $this->emailData = [
             "sender" => null,
             "template" => "generic-case-email",

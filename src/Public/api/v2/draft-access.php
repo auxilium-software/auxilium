@@ -147,7 +147,7 @@ if ($action == "access") {
         $at->setErrorText("Failed to write new RFC822 object to RAM disk");
         $at->output();
     } else {
-        $message_node = Auxilium\GraphDatabaseConnection::new_node_raw("auxlfs://".INSTANCE_BRANDING_DOMAIN_NAME."/++message%3Arfc822+".$bytes_written, "https://schemas.auxiliumsoftware.co.uk/v1/message.json");
+        $message_node = Auxilium\GraphDatabaseConnection::new_node_raw("auxlfs://".INSTANCE_BRANDING_DOMAIN_NAME."/++message%3Arfc822+".$bytes_written, URLHandling::GetURLForSchema(MessageSchema::class));
         
         rename($message_build_path, LOCAL_STORAGE_DIRECTORY.$message_node->getId());
         
@@ -159,7 +159,7 @@ if ($action == "access") {
                 try {
                     // Due to caching, we MUST add property using the node returned from creation
                     if ($message_party->getProperty("messages") == null) {
-                        $messages_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/collection.json");
+                        $messages_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
                         $message_party->addProperty("messages", $messages_node);
                         $messages_node->addProperty("#", $message_node);
                     } else {

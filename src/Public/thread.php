@@ -91,9 +91,9 @@ try {
         switch ($action) {
             case "@delete_confirm":
                 if ($jwt_validation_passed) {
-                    if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
+                    if ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class))) {
                         $pb->setTemplate("Pages/delete-views/generic");
-                    } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
+                    } elseif ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class))) {
                         $pb->setTemplate("Pages/delete-views/generic");
                     } else {
                         $pb->setTemplate("Pages/delete-views/generic");
@@ -229,10 +229,10 @@ try {
                 $pb->setVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
             case "@view":
             default:
-                if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
+                if ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class))) {
                     $pb->setTemplate("Pages/node-views/user");
                     $pb->setVariable("hidden_props", ["cases", "messages", "documents"]);
-                } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
+                } elseif ($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class))) {
                     $pb->setTemplate("Pages/node-views/case");
                     $pb->setVariable("hidden_props", ["description", "clients", "messages", "documents"]);
                 } else {

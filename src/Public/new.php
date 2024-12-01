@@ -39,7 +39,7 @@ if (count($uri_components) > 2) {
 
 switch ($action) {
     case "collection":
-        $new_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/collection.json");
+        $new_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
         $ret_url = $url_metadata->popFromReturnStack();
         $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->getId())));
         //echo $ret_url."?".$url_metadata;

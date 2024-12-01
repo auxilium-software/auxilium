@@ -164,7 +164,7 @@ try {
                     $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true)); 
                     // NOTE: BCrypt has a max input of 72 chars, so in order to mitigate attacks on sentence based passwords, that are long but lower complexity, we must pre-hash the password and then base64 encode to get down to 44 chars, which is under the limit. These 44 chars still have plenty of entropy thanks to sha256 being a robust hash algorithm.
             
-                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, "https://schemas.auxiliumsoftware.co.uk/v1/user.json", Auxilium\User::get_system_node());
+                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
                     $user_node = new Auxilium\User($user_node->getId());
             
                     $hash_options = [
