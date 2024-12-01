@@ -1,6 +1,7 @@
 <?php
 
-require_once "../../environment.php";
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../environment.php';
 
 if (isset($_POST["id_token"]) || isset($_GET["id_token"])) {
     $state_claims = null;

@@ -1,5 +1,6 @@
 <?php
-require_once "environment.php";
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../environment.php';
 
 /*
 Cookie consent *not* required for "essential functionality"

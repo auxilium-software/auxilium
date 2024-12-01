@@ -1,5 +1,6 @@
 <?php
-require_once "../environment.php";
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../environment.php';
 
 $at = Auxilium\APITools::get_instance();
 $at->requireLogin();
