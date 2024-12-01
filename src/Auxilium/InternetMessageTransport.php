@@ -227,7 +227,7 @@ class InternetMessageTransport
             //$this->emailData["recipients"] = [];
             //foreach($this->recipients as &$user) {
             //    if ($user != null) {
-            //        if ($user instanceof \auxilium\User) {
+            //        if ($user instanceof \Auxilium\User) {
             //            $mail->addAddress($user->getEmailAddress(), $user->getFullName());
             //            array_push($this->emailData["recipients"], $user->getUuid());
             //        } else {
@@ -238,7 +238,7 @@ class InternetMessageTransport
 
             // Content
             //$mail->isHTML(true);                       // Set email format to HTML
-            //$mail->Subject = \auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]);
+            //$mail->Subject = \Auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]);
             //$mail->Body = $content;
 
             $message = Message::from($rfc822_raw_message, false);
