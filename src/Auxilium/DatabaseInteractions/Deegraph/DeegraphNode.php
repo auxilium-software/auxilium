@@ -14,20 +14,24 @@ use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
 class DeegraphNode
 {
     private static $cached_nodes = [];
-    private $rawContent = null;
-    private $rawContentFetched = false;
-    private $metadata = null;
-    private $metadataFetched = false;
-    private $cachedProperties = null;
-    private $cachedReferences = null;
-    private $cachedPermissions = null;
-    private $nodeId = null;
+
+    
+    private $RawContent = null;
+    private $RawContentFetched = false;
+    private $Metadata = null;
+    private $MetadataFetched = false;
+    private $CachedProperties = null;
+    private $CachedReferences = null;
+    private $CachedPermissions = null;
+    private $NodeID = null;
+
+
 
     public function __construct(string $id)
     {
         if(strlen($id) == 36)
         {
-            $this->nodeId = $id;
+            $this->NodeID = $id;
         }
     }
 
@@ -38,7 +42,7 @@ class DeegraphNode
 
     public function getUuid()
     {
-        return $this->nodeId;
+        return $this->NodeID;
     }
 
     public function addProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
@@ -65,7 +69,7 @@ class DeegraphNode
 
     public function getId()
     {
-        return $this->nodeId;
+        return $this->NodeID;
     }
 
     public function unlinkProperty(string $key, User $actor = null)
@@ -81,11 +85,11 @@ class DeegraphNode
                 ->UnlinkWhat($key)
                 ->From(new UUID($this->getId()))
                 ->Build();
-            if($this->cachedProperties != null)
+            if($this->CachedProperties != null)
             {
-                if(isset($this->cachedProperties[$key]))
+                if(isset($this->CachedProperties[$key]))
                 {
-                    unset($this->cachedProperties[$key]); // Get rid of any dangling references to this
+                    unset($this->CachedProperties[$key]); // Get rid of any dangling references to this
                 }
             }
             return GraphDatabaseConnection::query($actor, $query);
@@ -125,9 +129,9 @@ class DeegraphNode
         {
             $actor = Session::get_current()->getUser();
         }
-        if($this->cachedPermissions != null)
+        if($this->CachedPermissions != null)
         {
-            return $this->cachedPermissions;
+            return $this->CachedPermissions;
         }
         $outputMap = [];
         // $query = "PERMS ON {".$this->getId()."}";
@@ -141,8 +145,8 @@ class DeegraphNode
             {
                 array_push($outputMap, $value);
             }
-            $this->cachedPermissions = $outputMap;
-            return $this->cachedPermissions;
+            $this->CachedPermissions = $outputMap;
+            return $this->CachedPermissions;
         }
         else
         {
@@ -156,9 +160,9 @@ class DeegraphNode
         {
             $actor = Session::get_current()->getUser();
         }
-        if($this->cachedReferences != null)
+        if($this->CachedReferences != null)
         {
-            return $this->cachedReferences;
+            return $this->CachedReferences;
         }
         $outputMap = [];
         // $query = "REFERENCES {".$this->getId()."}";
@@ -177,7 +181,7 @@ class DeegraphNode
                 }
                 $outputMap[$key] = $arr;
             }
-            $this->cachedReferences = $outputMap;
+            $this->CachedReferences = $outputMap;
             return $outputMap;
         }
         else
@@ -234,9 +238,9 @@ class DeegraphNode
         {
             $actor = Session::get_current()->getUser();
         }
-        if($this->cachedProperties != null)
+        if($this->CachedProperties != null)
         {
-            return $this->cachedProperties;
+            return $this->CachedProperties;
         }
         $outputMap = [];
         // $query = "DIRECTORY {".$this->getId()."}";
@@ -251,7 +255,7 @@ class DeegraphNode
             {
                 $outputMap[$key] = DeegraphNode::from_id($value);
             }
-            $this->cachedProperties = $outputMap;
+            $this->CachedProperties = $outputMap;
             return $outputMap;
         }
         else
@@ -284,9 +288,9 @@ class DeegraphNode
 
     public function getRawContent(User $actor = null)
     {
-        if($this->rawContentFetched)
+        if($this->RawContentFetched)
         {
-            return $this->rawContent;
+            return $this->RawContent;
         }
 
         if($actor == null)
@@ -300,12 +304,12 @@ class DeegraphNode
         {
             if(isset($result["@data"]))
             {
-                $this->rawContent = $result["@data"];
+                $this->RawContent = $result["@data"];
             }
         }
 
-        $this->rawContentFetched = true;
-        return $this->rawContent;
+        $this->RawContentFetched = true;
+        return $this->RawContent;
     }
 
     public function getMimeType()
@@ -339,9 +343,9 @@ class DeegraphNode
 
     public function getNodeMetadata(User $actor = null)
     {
-        if($this->metadataFetched)
+        if($this->MetadataFetched)
         {
-            return $this->metadata;
+            return $this->Metadata;
         }
 
         if($actor == null)
@@ -353,11 +357,11 @@ class DeegraphNode
 
         if(is_array($result))
         {
-            $this->metadata = $result;
+            $this->Metadata = $result;
         }
 
-        $this->metadataFetched = true;
-        return $this->metadata;
+        $this->MetadataFetched = true;
+        return $this->Metadata;
     }
 
     public function getTimestampInt()
