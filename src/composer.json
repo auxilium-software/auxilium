@@ -30,7 +30,7 @@
         "ext-dom": "*",
         "ext-sodium": "*",
 
-        "phpunit/phpunit": "~9.6.21",
+        "phpunit/phpunit": "11.4.4",
 
         "twig/twig": "^3.0",
 
