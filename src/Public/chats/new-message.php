@@ -1,6 +1,7 @@
 <?php
 
 use Auxilium\SessionHandling\Session;
+use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
@@ -46,6 +47,6 @@ if($bytes_written === FALSE)
 }
 else
 {
-    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/chats/drafts/" . $message_uuid);
+    NavigationUtilities::Redirect(target: "/chats/drafts/" . $message_uuid);
     exit();
 }

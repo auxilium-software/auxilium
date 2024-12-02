@@ -5,6 +5,7 @@ use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\MessageSendException;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -102,11 +103,11 @@ try
                         $next_location = array_pop($form_data["form_stack"]);
                         if($next_location == null)
                         {
-                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/dashboard");
+                            NavigationUtilities::Redirect(target: "/dashboard");
                         }
                         else
                         {
-                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $next_location);
+                            NavigationUtilities::Redirect(target: "" . $next_location);
                         }
                         exit();
                     }

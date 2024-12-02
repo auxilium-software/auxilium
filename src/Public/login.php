@@ -68,7 +68,8 @@ try
                 "email_address",
                 "password",
                 "user_uuid",
-            ])
+            ]
+            )
             ->where(cond: "email_address=:email_address")
             ->bindValue(name: "email_address", value: $unverified_user_data["email_address"])
     );
@@ -154,13 +155,14 @@ try
 
                 $used_code_info = MariaDBServerConnection::RunSelect(
                     SQLQueryBuilderWrapper::SELECT(MariaDBTable::TOTP_USED_CODES)
-                    ->cols(cols: [
-                        "1",
-                    ])
-                    ->where(cond: "device_uuid=:device_uuid")
-                    ->where(cond: "totp_code=:totp_code")
-                    ->bindValue("device_uuid", $secret_data["device_uuid"])
-                    ->bindValue("totp_code", preg_replace("/\s+/", "", $_POST["totp-code"]))
+                        ->cols(cols: [
+                            "1",
+                        ]
+                        )
+                        ->where(cond: "device_uuid=:device_uuid")
+                        ->where(cond: "totp_code=:totp_code")
+                        ->bindValue("device_uuid", $secret_data["device_uuid"])
+                        ->bindValue("totp_code", preg_replace("/\s+/", "", $_POST["totp-code"]))
                 );
 
                 if($used_code_info === true)

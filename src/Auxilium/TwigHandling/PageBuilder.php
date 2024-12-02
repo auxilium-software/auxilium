@@ -5,6 +5,7 @@ namespace Auxilium\TwigHandling;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\Extensions\CommonFilters;
 use Auxilium\TwigHandling\Extensions\CommonFunctions;
+use Auxilium\Utilities\NavigationUtilities;
 use Exception;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
@@ -153,7 +154,7 @@ class PageBuilder
         }
         else
         {
-            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/login");
+            NavigationUtilities::Redirect(target: "/login");
             exit();
         }
         return $this;

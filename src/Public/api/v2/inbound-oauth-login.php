@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\Utilities\NavigationUtilities;
 use Jose\Component\Core\Util\RSAKey;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Signer\Eddsa;
@@ -194,12 +195,12 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     $sql = "INSERT INTO oauth_logins (unique_sub, user_uuid) VALUES (:unique_sub, :user_uuid)";
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/~" . $state_claims["sub"]);
+                    NavigationUtilities::Redirect(target: "/graph/~" . $state_claims["sub"]);
                     exit();
                 }
                 else
                 {
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/users/" . $state_claims["sub"] . "/add-login-method?error=ALREADY_ASSIGNED");
+                    NavigationUtilities::Redirect(target: "/users/" . $state_claims["sub"] . "/add-login-method?error=ALREADY_ASSIGNED");
                     exit();
                     //throw new \Exception("This OAuth unique ID has already been used.");
                 }
@@ -234,18 +235,18 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
                     if($form_data == null)
                     {
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/");
+                        NavigationUtilities::Redirect(target: "/");
                     }
                     else
                     {
                         if(count($form_data["form_stack"]) > 0)
                         {
                             Auxilium\PersistentFormData::set($form_data);
-                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . array_pop($form_data["form_stack"]));
+                            NavigationUtilities::Redirect(target: "" . array_pop($form_data["form_stack"]));
                         }
                         else
                         {
-                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/");
+                            NavigationUtilities::Redirect(target: "/");
                         }
                     }
                     exit();

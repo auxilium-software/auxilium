@@ -1,6 +1,7 @@
 <?php
 
 use Auxilium\SessionHandling\Session;
+use Auxilium\Utilities\NavigationUtilities;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Eddsa;
@@ -86,5 +87,5 @@ $token = $token_builder->getToken($algorithm, $signing_key);
 $jwt = $token->toString();
 
 $redirect_uri = $openid_config["openid_login_uri"] . "&redirect_uri=https%3A%2F%2F" . INSTANCE_DOMAIN_NAME . "%2Fapi%2Fv2%2Finbound-oauth-login&state=$jwt&nonce=$nonce";
-\Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $redirect_uri);
+NavigationUtilities::Redirect(target: "" . $redirect_uri);
 

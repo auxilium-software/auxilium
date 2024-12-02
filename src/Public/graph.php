@@ -10,6 +10,7 @@ use Auxilium\Schemas\OrganisationSchema;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -58,7 +59,7 @@ try
         }
         if(count($uri_components) == 0)
         {
-            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/~" . Session::get_current()->getUser()->getId());
+            NavigationUtilities::Redirect(target: "/graph/~" . Session::get_current()->getUser()->getId());
             exit();
         }
 
@@ -227,7 +228,7 @@ try
                 {
                     if($node != null)
                     {
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/~" . $node->getId() . "/@ref_error");
+                        NavigationUtilities::Redirect(target: "/graph/~" . $node->getId() . "/@ref_error");
                         exit();
                     }
                     $url_metadata = new Auxilium\URLMetadata();
@@ -276,7 +277,7 @@ try
                     }
                     else
                     {
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                         exit();
                     }
                     break;
@@ -287,12 +288,12 @@ try
                         $path = explode("/", $primary_string_path);
                         array_pop($path);
                         //echo implode("/", $path);
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
+                        NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
                         exit();
                     }
                     else
                     {
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                         exit();
                     }
                     break;
@@ -319,7 +320,7 @@ try
                             }
                             $path = explode("/", $primary_string_path);
                             array_pop($path);
-                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
+                            NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
                             exit();
                             //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                             //$query_result = $node->addProperty($_POST["name"], $return_node);
@@ -331,7 +332,7 @@ try
                     }
                     else
                     {
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                         exit();
                     }
                     break;
@@ -353,13 +354,13 @@ try
                             }
                             //exit();
                             //$node->unlinkProperty($last_prop);
-                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                            NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                             exit();
                         }
                     }
                     else
                     {
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                         exit();
                         //$action = "@view";
                     }
@@ -387,7 +388,7 @@ try
                                         $ret_url = "/graph/" . $primary_string_path;
                                     }
                                     $url_metadata->setProperty("rcn", null);
-                                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $ret_url . "?" . $url_metadata);
+                                    NavigationUtilities::Redirect(target: "" . $ret_url . "?" . $url_metadata);
                                     exit();
                                 }
                                 //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
@@ -451,7 +452,8 @@ try
                                 ->cols(cols: [
                                     "email_address",
                                     "user_uuid",
-                                ])
+                                ]
+                                )
                                 ->where(cond: "user_uuid=:user_uuid")
                                 ->bindValue(name: "user_uuid", value: $node->getId())
                         );
@@ -469,7 +471,8 @@ try
                                 ->cols(cols: [
                                     "unique_sub",
                                     "user_uuid",
-                                ])
+                                ]
+                                )
                                 ->where(cond: "user_uuid=:user_uuid")
                                 ->bindValue(name: "user_uuid", value: $node->getId())
                         );

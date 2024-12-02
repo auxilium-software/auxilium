@@ -12,8 +12,7 @@ class SQLQueryBuilderWrapper
     {
         $query_factory = new QueryFactory(db: 'mysql');
         $query = $query_factory->newSelect()
-            ->from($table->value . " AS T")
-        ;
+            ->from($table->value . " AS T");
 
         return $query;
     }

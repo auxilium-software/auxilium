@@ -1,6 +1,7 @@
 <?php
 
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
@@ -54,9 +55,9 @@ if(isset($_SERVER["HTTP_REFERER"]))
 {
     if(!str_contains($_SERVER["HTTP_REFERER"], "/style"))
     {
-        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $_SERVER["HTTP_REFERER"]);
+        NavigationUtilities::Redirect(target: "" . $_SERVER["HTTP_REFERER"]);
         exit();
     }
 }
-\Auxilium\Utilities\NavigationUtilities::Redirect(target: "/");
+NavigationUtilities::Redirect(target: "/");
 exit();

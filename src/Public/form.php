@@ -2,6 +2,7 @@
 
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
@@ -433,7 +434,7 @@ if(isset($uri_components[0]))
                     $ret_url_full = $return_to . "?" . $url_metadata;
                     //echo "<pre>";
                     //echo $ret_url_full;
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "$ret_url_full");
+                    NavigationUtilities::Redirect(target: "$ret_url_full");
                     //echo "</pre>";
                     exit();
                 }

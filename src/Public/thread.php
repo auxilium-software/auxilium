@@ -4,6 +4,7 @@ use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Schemas\CaseSchema;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -50,7 +51,7 @@ try
     }
     if(count($uri_components) == 0)
     {
-        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/thread/new");
+        NavigationUtilities::Redirect(target: "/thread/new");
         exit();
     }
 
@@ -139,7 +140,7 @@ try
                 }
                 else
                 {
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                    NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                 }
                 break;
@@ -150,12 +151,12 @@ try
                     $path = explode("/", $primary_string_path);
                     array_pop($path);
                     //echo implode("/", $path);
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
+                    NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
                     exit();
                 }
                 else
                 {
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                    NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                 }
                 break;
@@ -182,7 +183,7 @@ try
                         }
                         $path = explode("/", $primary_string_path);
                         array_pop($path);
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
+                        NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
                         exit();
                         //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                         //$query_result = $node->addProperty($_POST["name"], $return_node);
@@ -194,7 +195,7 @@ try
                 }
                 else
                 {
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                    NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                 }
                 break;
@@ -216,13 +217,13 @@ try
                         }
                         //exit();
                         //$node->unlinkProperty($last_prop);
-                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                         exit();
                     }
                 }
                 else
                 {
-                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                    NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                     //$action = "@view";
                 }
@@ -250,7 +251,7 @@ try
                                     $ret_url = "/graph/" . $primary_string_path;
                                 }
                                 $url_metadata->setProperty("rcn", null);
-                                \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $ret_url . "?" . $url_metadata);
+                                NavigationUtilities::Redirect(target: "" . $ret_url . "?" . $url_metadata);
                                 exit();
                             }
                             //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));

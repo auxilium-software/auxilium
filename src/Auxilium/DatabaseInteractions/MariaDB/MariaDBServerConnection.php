@@ -17,7 +17,7 @@ class MariaDBServerConnection
         $password = INSTANCE_CREDENTIAL_SQL_PASSWORD;
 
         $this->pdo = new PDO(
-            dsn: "mysql:host=$servername;dbname=$database",
+            dsn     : "mysql:host=$servername;dbname=$database",
             username: $username,
             password: $password,
         );
@@ -33,6 +33,7 @@ class MariaDBServerConnection
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+
     public static function RunOneRowSelect(SelectInterface $queryBuilder): array|null
     {
         $db = new MariaDBServerConnection();

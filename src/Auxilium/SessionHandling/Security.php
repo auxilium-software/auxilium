@@ -2,6 +2,8 @@
 
 namespace Auxilium\SessionHandling;
 
+use Auxilium\Utilities\NavigationUtilities;
+
 class Security
 {
     public static function RequireLogin(): void
@@ -19,7 +21,7 @@ class Security
         }
         else
         {
-            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/login");
+            NavigationUtilities::Redirect(target: "/login");
         }
     }
 }
