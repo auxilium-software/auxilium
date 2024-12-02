@@ -33,16 +33,16 @@ class MariaDBServerConnection
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-    public static function RunOneRowSelect(SelectInterface $queryBuilder): array
+    public static function RunOneRowSelect(SelectInterface $queryBuilder): array|null
     {
         $db = new MariaDBServerConnection();
 
         $sth = $db->pdo->prepare($queryBuilder->getStatement());
         $sth->execute($queryBuilder->getBindValues());
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
         if(sizeof($result) == 1) return $result[0];
 
-        echo "invalid single row db response";
-        die();
+        return null;
     }
 }

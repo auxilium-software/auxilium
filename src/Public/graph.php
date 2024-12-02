@@ -464,7 +464,7 @@ try
                         }
 
 
-                        foreach(MariaDBServerConnection::RunSelect(
+                        $queryResponse = MariaDBServerConnection::RunSelect(
                             SQLQueryBuilderWrapper::SELECT(MariaDBTable::OAUTH_LOGINS)
                                 ->cols(cols: [
                                     "unique_sub",
@@ -472,7 +472,8 @@ try
                                 ])
                                 ->where(cond: "user_uuid=:user_uuid")
                                 ->bindValue(name: "user_uuid", value: $node->getId())
-                        ) as $loginDetails)
+                        );
+                        foreach($queryResponse as $loginDetails)
                         {
                             $login_methods[] = [
                                 "type" => "oauth",
