@@ -194,12 +194,12 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     $sql = "INSERT INTO oauth_logins (unique_sub, user_uuid) VALUES (:unique_sub, :user_uuid)";
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
-                    header("Location: /graph/~" . $state_claims["sub"]);
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/~" . $state_claims["sub"]);
                     exit();
                 }
                 else
                 {
-                    header("Location: /users/" . $state_claims["sub"] . "/add-login-method?error=ALREADY_ASSIGNED");
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/users/" . $state_claims["sub"] . "/add-login-method?error=ALREADY_ASSIGNED");
                     exit();
                     //throw new \Exception("This OAuth unique ID has already been used.");
                 }
@@ -234,18 +234,18 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
                     if($form_data == null)
                     {
-                        header("Location: /");
+                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/");
                     }
                     else
                     {
                         if(count($form_data["form_stack"]) > 0)
                         {
                             Auxilium\PersistentFormData::set($form_data);
-                            header("Location: " . array_pop($form_data["form_stack"]));
+                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . array_pop($form_data["form_stack"]));
                         }
                         else
                         {
-                            header("Location: /");
+                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/");
                         }
                     }
                     exit();
@@ -263,5 +263,5 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
 }
 
 //$redirect_uri = $openid_config["openid_login_uri"]."&redirect_uri=https%3A%2F%2F".INSTANCE_DOMAIN_NAME."%2Flogin&state=$jwt&nonce=$nonce";
-//header("Location: ".$redirect_uri);
+//\Auxilium\Utilities\NavigationUtilities::Redirect(target: "".$redirect_uri);
 exit();

@@ -46,6 +46,6 @@ if($bytes_written === FALSE)
 }
 else
 {
-    header("Location: /chats/drafts/" . $message_uuid);
+    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/chats/drafts/" . $message_uuid);
     exit();
 }

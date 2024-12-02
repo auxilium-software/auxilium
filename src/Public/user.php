@@ -199,7 +199,7 @@ switch($uri_components[1])
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
 
-                        header("Location: /users/" . $target_node->getId() . "/login-methods");
+                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     }
                 }
@@ -248,7 +248,7 @@ switch($uri_components[1])
                         $sql = "DELETE FROM oauth_logins WHERE user_uuid=:user_uuid AND unique_sub=:unique_sub";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        header("Location: /users/" . $target_node->getId() . "/login-methods");
+                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     case "standard":
                         $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
@@ -262,7 +262,7 @@ switch($uri_components[1])
                         $sql = "DELETE FROM standard_logins WHERE user_uuid=:user_uuid AND email_address=:email_address";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        header("Location: /users/" . $target_node->getId() . "/login-methods");
+                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     default:
                         $pb->setDefaultVariables();

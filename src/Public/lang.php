@@ -33,9 +33,9 @@ if(isset($_SERVER["HTTP_REFERER"]))
 {
     if(!str_contains($_SERVER["HTTP_REFERER"], "/lang"))
     {
-        header("Location: " . $_SERVER["HTTP_REFERER"]);
+        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $_SERVER["HTTP_REFERER"]);
         exit();
     }
 }
-header("Location: /");
+\Auxilium\Utilities\NavigationUtilities::Redirect(target: "/");
 exit();

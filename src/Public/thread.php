@@ -50,7 +50,7 @@ try
     }
     if(count($uri_components) == 0)
     {
-        header("Location: /thread/new");
+        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/thread/new");
         exit();
     }
 
@@ -139,7 +139,7 @@ try
                 }
                 else
                 {
-                    header("Location: /graph/" . $primary_string_path);
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                 }
                 break;
@@ -150,12 +150,12 @@ try
                     $path = explode("/", $primary_string_path);
                     array_pop($path);
                     //echo implode("/", $path);
-                    header("Location: /graph/" . implode("/", $path));
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
                     exit();
                 }
                 else
                 {
-                    header("Location: /graph/" . $primary_string_path);
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                 }
                 break;
@@ -182,7 +182,7 @@ try
                         }
                         $path = explode("/", $primary_string_path);
                         array_pop($path);
-                        header("Location: /graph/" . implode("/", $path));
+                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
                         exit();
                         //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                         //$query_result = $node->addProperty($_POST["name"], $return_node);
@@ -194,7 +194,7 @@ try
                 }
                 else
                 {
-                    header("Location: /graph/" . $primary_string_path);
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                 }
                 break;
@@ -216,13 +216,13 @@ try
                         }
                         //exit();
                         //$node->unlinkProperty($last_prop);
-                        header("Location: /graph/" . $primary_string_path);
+                        \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                         exit();
                     }
                 }
                 else
                 {
-                    header("Location: /graph/" . $primary_string_path);
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
                     exit();
                     //$action = "@view";
                 }
@@ -250,7 +250,7 @@ try
                                     $ret_url = "/graph/" . $primary_string_path;
                                 }
                                 $url_metadata->setProperty("rcn", null);
-                                header("Location: " . $ret_url . "?" . $url_metadata);
+                                \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $ret_url . "?" . $url_metadata);
                                 exit();
                             }
                             //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));

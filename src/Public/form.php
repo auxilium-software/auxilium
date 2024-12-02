@@ -433,7 +433,7 @@ if(isset($uri_components[0]))
                     $ret_url_full = $return_to . "?" . $url_metadata;
                     //echo "<pre>";
                     //echo $ret_url_full;
-                    header("Location: $ret_url_full");
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "$ret_url_full");
                     //echo "</pre>";
                     exit();
                 }

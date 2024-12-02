@@ -86,5 +86,5 @@ $token = $token_builder->getToken($algorithm, $signing_key);
 $jwt = $token->toString();
 
 $redirect_uri = $openid_config["openid_login_uri"] . "&redirect_uri=https%3A%2F%2F" . INSTANCE_DOMAIN_NAME . "%2Fapi%2Fv2%2Finbound-oauth-login&state=$jwt&nonce=$nonce";
-header("Location: " . $redirect_uri);
-exit();
+\Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $redirect_uri);
+

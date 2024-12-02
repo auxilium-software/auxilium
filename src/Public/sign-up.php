@@ -102,11 +102,11 @@ try
                         $next_location = array_pop($form_data["form_stack"]);
                         if($next_location == null)
                         {
-                            header("Location: /dashboard");
+                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/dashboard");
                         }
                         else
                         {
-                            header("Location: " . $next_location);
+                            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "" . $next_location);
                         }
                         exit();
                     }

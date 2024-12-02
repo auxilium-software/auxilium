@@ -11,7 +11,7 @@ class Security
             /*
             if (!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE."root-encryption-key.json")) {
                 if ($_SERVER["REQUEST_URI"] != "/unlock") {
-                    header("Location: /unlock");
+                    \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/unlock");
                     exit();
                 }
             }
@@ -19,8 +19,7 @@ class Security
         }
         else
         {
-            header("Location: /login");
-            exit();
+            \Auxilium\Utilities\NavigationUtilities::Redirect(target: "/login");
         }
     }
 }
