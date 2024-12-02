@@ -42,8 +42,8 @@
         "phpmailer/phpmailer": "^6.6",
         "webklex/php-imap": "^3.2",
 
-        "lcobucci/jwt": "^4.3",
         "web-token/jwt-core": "^2.2",
+        "lcobucci/jwt": "^5.4.2",
 
         "aws/aws-sdk-php": "^3.277",
 
