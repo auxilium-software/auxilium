@@ -1,11 +1,13 @@
 <?php
 
-use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\TwigHandling\PageBuilder2;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
 
-$pb = PageBuilder::get_instance();
-$pb->setVariable("error_code", 500);
-$pb->setTemplate("ErrorPages/HTTPError");
-$pb->render();
+PageBuilder2::Render(
+    template: "ErrorPages/HTTPError.html.twig",
+    variables: [
+        "error_code" => 500,
+    ],
+);
