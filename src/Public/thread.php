@@ -239,7 +239,7 @@ try
 
                             //exit();
                             $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                            $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_id($return_node_id);
+                            $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
                             $query_result = $node->addProperty($_POST["name"], $return_node);
                             if($query_result !== false)
                             {

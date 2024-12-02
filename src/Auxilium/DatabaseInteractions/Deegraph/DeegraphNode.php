@@ -15,7 +15,7 @@ class DeegraphNode
 {
     private static $cached_nodes = [];
 
-    
+
     private $RawContent = null;
     private $RawContentFetched = false;
     private $Metadata = null;
@@ -23,26 +23,53 @@ class DeegraphNode
     private $CachedProperties = null;
     private $CachedReferences = null;
     private $CachedPermissions = null;
-    private $NodeID = null;
-
+    private ?UUID $NodeID = null;
 
 
     public function __construct(string $id)
     {
-        if(strlen($id) == 36)
-        {
-            $this->NodeID = $id;
-        }
+        $this->NodeID = new UUID($id);
     }
 
-    public static function from_path(string $path)
+
+    
+    public static function FromPath(string $path)
     {
         return GraphDatabaseConnection::node_from_path($path);
     }
+    public static function FromID(string $id = null)
+    {
+        if($id == null)
+        {
+            return null;
+        }
+
+        if(isset(self::$cached_nodes[$id]))
+        {
+            if(self::$cached_nodes[$id] instanceof DeegraphNode)
+            {
+                return self::$cached_nodes[$id]; // Skip creating the node representation - we've already loaded it!
+            }
+        }
+
+        // Do stuff
+
+        self::$cached_nodes[$id] = new DeegraphNode($id);
+
+        if(isset(self::$cached_nodes[$id]))
+        {
+            return self::$cached_nodes[$id];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
 
     public function getUuid()
     {
-        return $this->NodeID;
+        return substr($this->NodeID, 1, -1);
     }
 
     public function addProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
@@ -69,7 +96,7 @@ class DeegraphNode
 
     public function getId()
     {
-        return $this->NodeID;
+        return substr($this->NodeID, 1, -1);
     }
 
     public function unlinkProperty(string $key, User $actor = null)
@@ -177,41 +204,12 @@ class DeegraphNode
                 $arr = [];
                 foreach($value as $refNodeId)
                 {
-                    array_push($arr, DeegraphNode::from_id($refNodeId));
+                    array_push($arr, DeegraphNode::FromID($refNodeId));
                 }
                 $outputMap[$key] = $arr;
             }
             $this->CachedReferences = $outputMap;
             return $outputMap;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    public static function from_id(string $id = null)
-    {
-        if($id == null)
-        {
-            return null;
-        }
-
-        if(isset(self::$cached_nodes[$id]))
-        {
-            if(self::$cached_nodes[$id] instanceof DeegraphNode)
-            {
-                return self::$cached_nodes[$id]; // Skip creating the node representation - we've already loaded it!
-            }
-        }
-
-        // Do stuff
-
-        self::$cached_nodes[$id] = new DeegraphNode($id);
-
-        if(isset(self::$cached_nodes[$id]))
-        {
-            return self::$cached_nodes[$id];
         }
         else
         {
@@ -225,10 +223,9 @@ class DeegraphNode
         {
             $actor = Session::get_current()->getUser();
         }
-        if(isset($this->getProperties($actor)[$property]))
-        {
-            return $this->getProperties($actor)[$property];
-        }
+        $temp = $this->getProperties($actor);
+        if(isset($temp[$property]))
+            return $temp[$property];
         return null;
     }
 
@@ -253,7 +250,7 @@ class DeegraphNode
         {
             foreach($response["@map"] as $key => $value)
             {
-                $outputMap[$key] = DeegraphNode::from_id($value);
+                $outputMap[$key] = DeegraphNode::FromID($value);
             }
             $this->CachedProperties = $outputMap;
             return $outputMap;
@@ -381,7 +378,7 @@ class DeegraphNode
 
     public function getCreator()
     {
-        return DeegraphNode::from_id($this->getNodeMetadata()["@creator"]);
+        return DeegraphNode::FromID($this->getNodeMetadata()["@creator"]);
     }
 
     public function extendsOrInstanceOf(string $schema)
@@ -393,5 +390,3 @@ class DeegraphNode
         return $this->getNodeMetadata()["@schema"] == $schema;
     }
 }
-
-?>
