@@ -87,7 +87,7 @@ else
         exit();
     }
 }
-$target_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_id($target_node);
+$target_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($target_node);
 
 $pb->setVariable("user_uuid", $target_node->getId());
 

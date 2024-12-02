@@ -110,7 +110,7 @@ class URLMetadata
         $this->metadata["rp"] = rtrim(ltrim($path, "/"), "/"); // Relative Path
         if($node == null)
         {
-            $node = DeegraphNode::from_path($this->metadata["rp"]);
+            $node = DeegraphNode::FromPath($this->metadata["rp"]);
         }
         $this->metadata["tn"] = $node;
         if($this->metadata["tn"] != null)
@@ -240,7 +240,7 @@ class URLMetadata
         $pthcps = explode("/", $parent["rp"]);
         array_pop($pthcps);
         $parent["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
-        $parent["tn"] = DeegraphNode::from_path($parent["rp"]);
+        $parent["tn"] = DeegraphNode::FromPath($parent["rp"]);
         if($parent["tn"] != null)
         {
             $parent["tn"] = URLMetadata::crush_uuid($parent["tn"]->getId());
@@ -263,7 +263,7 @@ class URLMetadata
         $pthcps = explode("/", $childmd["rp"]);
         array_push($pthcps, $child);
         $childmd["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
-        $childmd["tn"] = DeegraphNode::from_path($childmd["rp"]);
+        $childmd["tn"] = DeegraphNode::FromPath($childmd["rp"]);
         if($childmd["tn"] != null)
         {
             $childmd["tn"] = URLMetadata::crush_uuid($childmd["tn"]->getId());
