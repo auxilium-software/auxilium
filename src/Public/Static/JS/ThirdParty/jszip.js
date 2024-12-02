@@ -12,7 +12,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.JSZip = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var support = require("./support");
 // private property
 var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -213,7 +213,7 @@ exports.DEFLATE = require("./flate");
 },{"./flate":7,"./stream/GenericWorker":28}],4:[function(require,module,exports){
 "use strict";
 
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 
 /**
  * The following functions come from pako, from pako/lib/zlib/crc32.js
@@ -327,7 +327,7 @@ module.exports = {
 var USE_TYPEDARRAY = (typeof Uint8Array !== "undefined") && (typeof Uint16Array !== "undefined") && (typeof Uint32Array !== "undefined");
 
 var pako = require("pako");
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var GenericWorker = require("./stream/GenericWorker");
 
 var ARRAY_TYPE = USE_TYPEDARRAY ? "uint8array" : "array";
@@ -1068,7 +1068,7 @@ module.exports = JSZip;
 
 },{"./defaults":5,"./external":6,"./load":11,"./object":15,"./support":30}],11:[function(require,module,exports){
 "use strict";
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var external = require("./external");
 var utf8 = require("./utf8");
 var ZipEntries = require("./zipEntries");
@@ -1338,7 +1338,7 @@ module.exports = {
 },{}],15:[function(require,module,exports){
 "use strict";
 var utf8 = require("./utf8");
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var GenericWorker = require("./stream/GenericWorker");
 var StreamHelper = require("./stream/StreamHelper");
 var defaults = require("./defaults");
@@ -2761,7 +2761,7 @@ try {
 },{"readable-stream":16}],31:[function(require,module,exports){
 "use strict";
 
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var support = require("./support");
 var nodejsUtils = require("./nodejsUtils");
 var GenericWorker = require("./stream/GenericWorker");
@@ -3541,7 +3541,7 @@ exports.prepareContent = function(name, inputData, isBinary, isOptimizedBinarySt
 },{"./base64":1,"./external":6,"./nodejsUtils":14,"./support":30,"setimmediate":54}],33:[function(require,module,exports){
 "use strict";
 var readerFor = require("./reader/readerFor");
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var sig = require("./signature");
 var ZipEntry = require("./zipEntry");
 var support = require("./support");
@@ -3804,7 +3804,7 @@ module.exports = ZipEntries;
 },{"./reader/readerFor":22,"./signature":23,"./support":30,"./utils":32,"./zipEntry":34}],34:[function(require,module,exports){
 "use strict";
 var readerFor = require("./reader/readerFor");
-var utils = require("../../../js/utils");
+var utils = require("/Static/JS/General/Utils");
 var CompressedObject = require("./compressedObject");
 var crc32fn = require("./crc32");
 var utf8 = require("./utf8");
