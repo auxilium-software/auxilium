@@ -5,6 +5,7 @@ use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use auxilium\TotpUtility;
 use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
@@ -225,22 +226,15 @@ try
     $statement->execute($session_info);
     setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
     if($form_data == null)
+        NavigationUtilities::Redirect(target: "/");
+
+    if(count($form_data["form_stack"]) > 0)
     {
-        header("Location: /");
+        Auxilium\PersistentFormData::set($form_data);
+        NavigationUtilities::Redirect(target: array_pop($form_data["form_stack"]));
     }
-    else
-    {
-        if(count($form_data["form_stack"]) > 0)
-        {
-            Auxilium\PersistentFormData::set($form_data);
-            header("Location: " . array_pop($form_data["form_stack"]));
-        }
-        else
-        {
-            header("Location: /");
-        }
-    }
-    exit();
+
+    NavigationUtilities::Redirect(target: "/");
 }
 catch(Exception $e)
 {
