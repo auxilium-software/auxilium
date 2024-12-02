@@ -2,7 +2,7 @@
 
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../environment.php';
+require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 use Auxilium\EncodingTools;
 use PHPUnit\Framework\TestCase;

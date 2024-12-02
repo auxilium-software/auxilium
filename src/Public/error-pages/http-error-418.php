@@ -2,7 +2,7 @@
 
 use Auxilium\TwigHandling\PageBuilder;
 
-require_once "../environment.php";
+require_once "../Environment.php";
 $pb = PageBuilder::get_instance();
 $pb->setVariable("error_code", 418);
 $pb->setTemplate("ErrorPages/HTTPError");

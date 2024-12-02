@@ -11,7 +11,7 @@ use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../environment.php';
+require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
 if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
 {

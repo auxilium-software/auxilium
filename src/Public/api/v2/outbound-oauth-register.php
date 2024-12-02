@@ -8,7 +8,7 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../environment.php';
+require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
 $at = Auxilium\APITools::get_instance();
 $at->requireLogin();
