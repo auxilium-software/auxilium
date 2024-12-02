@@ -1,12 +1,17 @@
 <?php
 
-namespace Auxilium;
+namespace Auxilium\DatabaseInteractions\Deegraph;
 
+use Auxilium\AuxiliumLFSObject;
+use Auxilium\DataURL;
+use Auxilium\GraphDatabaseConnection;
+use Auxilium\Schema;
 use Auxilium\SessionHandling\Session;
+use Auxilium\User;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
 
-class Node
+class DeegraphNode
 {
     private static $cached_nodes = [];
     private $rawContent = null;
@@ -36,7 +41,7 @@ class Node
         return $this->nodeId;
     }
 
-    public function addProperty(string $key, Node $node, User $actor = null, bool $force = false)
+    public function addProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
     {
         if($actor == null)
         {
@@ -105,7 +110,7 @@ class Node
         return GraphDatabaseConnection::query($actor, $query);
     }
 
-    public function is(Node $n)
+    public function is(DeegraphNode $n)
     {
         if($this->getId() == $n->getId())
         {
@@ -168,7 +173,7 @@ class Node
                 $arr = [];
                 foreach($value as $refNodeId)
                 {
-                    array_push($arr, Node::from_id($refNodeId));
+                    array_push($arr, DeegraphNode::from_id($refNodeId));
                 }
                 $outputMap[$key] = $arr;
             }
@@ -190,7 +195,7 @@ class Node
 
         if(isset(self::$cached_nodes[$id]))
         {
-            if(self::$cached_nodes[$id] instanceof Node)
+            if(self::$cached_nodes[$id] instanceof DeegraphNode)
             {
                 return self::$cached_nodes[$id]; // Skip creating the node representation - we've already loaded it!
             }
@@ -198,7 +203,7 @@ class Node
 
         // Do stuff
 
-        self::$cached_nodes[$id] = new Node($id);
+        self::$cached_nodes[$id] = new DeegraphNode($id);
 
         if(isset(self::$cached_nodes[$id]))
         {
@@ -244,7 +249,7 @@ class Node
         {
             foreach($response["@map"] as $key => $value)
             {
-                $outputMap[$key] = Node::from_id($value);
+                $outputMap[$key] = DeegraphNode::from_id($value);
             }
             $this->cachedProperties = $outputMap;
             return $outputMap;
@@ -372,7 +377,7 @@ class Node
 
     public function getCreator()
     {
-        return Node::from_id($this->getNodeMetadata()["@creator"]);
+        return DeegraphNode::from_id($this->getNodeMetadata()["@creator"]);
     }
 
     public function extendsOrInstanceOf(string $schema)

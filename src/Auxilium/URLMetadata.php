@@ -2,6 +2,7 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\SessionHandling\Session;
 
 class URLMetadata
@@ -104,12 +105,12 @@ class URLMetadata
         return $this->jwtValidated && $this->jwtMatchedUser;
     }
 
-    public function setPath(string $path, Node $node = null)
+    public function setPath(string $path, DeegraphNode $node = null)
     {
         $this->metadata["rp"] = rtrim(ltrim($path, "/"), "/"); // Relative Path
         if($node == null)
         {
-            $node = Node::from_path($this->metadata["rp"]);
+            $node = DeegraphNode::from_path($this->metadata["rp"]);
         }
         $this->metadata["tn"] = $node;
         if($this->metadata["tn"] != null)
@@ -130,7 +131,7 @@ class URLMetadata
         return (isset($this->metadata["rc"])) ? (URLMetadata::standard_metadata_checksum($path) == $this->metadata["rc"]) : false;
     }
 
-    public function checkNode(?Node $node)
+    public function checkNode(?DeegraphNode $node)
     {
         if($node == null)
         {
@@ -239,7 +240,7 @@ class URLMetadata
         $pthcps = explode("/", $parent["rp"]);
         array_pop($pthcps);
         $parent["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
-        $parent["tn"] = Node::from_path($parent["rp"]);
+        $parent["tn"] = DeegraphNode::from_path($parent["rp"]);
         if($parent["tn"] != null)
         {
             $parent["tn"] = URLMetadata::crush_uuid($parent["tn"]->getId());
@@ -262,7 +263,7 @@ class URLMetadata
         $pthcps = explode("/", $childmd["rp"]);
         array_push($pthcps, $child);
         $childmd["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
-        $childmd["tn"] = Node::from_path($childmd["rp"]);
+        $childmd["tn"] = DeegraphNode::from_path($childmd["rp"]);
         if($childmd["tn"] != null)
         {
             $childmd["tn"] = URLMetadata::crush_uuid($childmd["tn"]->getId());

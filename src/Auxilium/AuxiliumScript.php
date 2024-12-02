@@ -140,7 +140,7 @@ class AuxiliumScript
             $st = substr(array_shift($pth), 1);
             if(isset($vars[$st]))
             {
-                if(is_a($vars[$st], "\Auxilium\Node"))
+                if(is_a($vars[$st], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                 {
                     array_unshift($pth, "{" . $vars[$st]->getId() . "}");
                     $fcn = "@view";

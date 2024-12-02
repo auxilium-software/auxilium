@@ -2,7 +2,9 @@
 
 namespace Auxilium;
 
-class User extends Node
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+
+class User extends DeegraphNode
 {
     public function __construct(string $objectUuid)
     {

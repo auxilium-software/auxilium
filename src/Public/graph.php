@@ -153,7 +153,7 @@ try
                 if((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim))
                 {
                     $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
-                    $primary_node_path_nodes[$np] = Auxilium\Node::from_path($absolute_path);
+                    $primary_node_path_nodes[$np] = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_path($absolute_path);
                     if($primary_node_path_nodes[$np] != null)
                     {
                         if($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
@@ -200,7 +200,7 @@ try
             $pb->setVariable("primary_node_path_name", end($primary_node_path_names));
         }
 
-        $node = Auxilium\Node::from_path($primary_string_path);
+        $node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_path($primary_string_path);
 
         $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated. 
         //This is not the current state of the url_metadata, rather the state it was in when we received the request
@@ -376,7 +376,7 @@ try
 
                                 //exit();
                                 $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                                $return_node = Auxilium\Node::from_id($return_node_id);
+                                $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_id($return_node_id);
                                 $query_result = $node->addProperty($_POST["name"], $return_node);
                                 if($query_result !== false)
                                 {

@@ -57,7 +57,7 @@ if(isset($_GET["for"]))
     }
 }
 
-$target_node = new Auxilium\Node($target_user_id);
+$target_node = new \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode($target_user_id);
 if(in_array("ACT", $target_node->getPermissions()))
 {
     $target_user_id = $target_node->getId();

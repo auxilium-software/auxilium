@@ -87,7 +87,7 @@ try
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
 
-                        $user_node = Auxilium\Node::from_id($returned_data["user_uuid"]);
+                        $user_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_id($returned_data["user_uuid"]);
                         $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, Auxilium\User::get_system_node());
                         $user_node->addProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 

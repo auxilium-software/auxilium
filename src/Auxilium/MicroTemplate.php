@@ -2,6 +2,8 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+
 class MicroTemplate
 {
     protected static $lookup_table = null;
@@ -164,7 +166,7 @@ class MicroTemplate
                     {
                         if(preg_match("/^\{[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\}$/", $tvval))
                         { // Might be a node uuid
-                            $tvval = strval(Node::from_id(substr($tvval, 1, 36)));
+                            $tvval = strval(DeegraphNode::from_id(substr($tvval, 1, 36)));
                         }
                         elseif(preg_match("/^\{(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2}|[A-Za-z0-9_-]{3})?\}$/", $tvval))
                         { // Might be an inner encoded template

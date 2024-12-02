@@ -52,7 +52,7 @@ $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 $target_node = $url_metadata->getProperty("tn");
 if($target_node != null)
 {
-    $target_node = Auxilium\Node::from_id(Auxilium\URLMetadata::expand_crushed_uuid($target_node));
+    $target_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::from_id(Auxilium\URLMetadata::expand_crushed_uuid($target_node));
 }
 
 if(isset($uri_components[0]))
@@ -287,7 +287,7 @@ if(isset($uri_components[0]))
                                         "property" => $out_node,
                                         "target" => $action["target"]
                                     ];
-                                    if(is_a($fvars["property"], "\Auxilium\Node"))
+                                    if(is_a($fvars["property"], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                     {
                                         $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
                                     }
@@ -297,7 +297,7 @@ if(isset($uri_components[0]))
                                         {
                                             if(strpos($fvars["target"], "\$" . $key) === 0)
                                             {
-                                                if(is_a($prop, "\Auxilium\Node"))
+                                                if(is_a($prop, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                                 {
                                                     $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
                                                 }
@@ -328,7 +328,7 @@ if(isset($uri_components[0]))
                                     {
                                         $fvars["name"] = $action["name"];
                                     }
-                                    if(is_a($fvars["property"], "\Auxilium\Node"))
+                                    if(is_a($fvars["property"], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                     {
                                         $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
                                     }
@@ -338,7 +338,7 @@ if(isset($uri_components[0]))
                                         {
                                             if(strpos($fvars["target"], "\$" . $key) === 0)
                                             {
-                                                if(is_a($prop, "\Auxilium\Node"))
+                                                if(is_a($prop, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                                 {
                                                     $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
                                                 }
@@ -385,7 +385,7 @@ if(isset($uri_components[0]))
 
                 if($export != null)
                 {
-                    if(is_a($export, "\Auxilium\Node"))
+                    if(is_a($export, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                     {
                         $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($export->getId())));
                         $url_metadata->setProperty("exp", null);
@@ -513,7 +513,7 @@ if(isset($uri_components[0]))
                                     if(isset($component["value"]))
                                     {
                                         $var = Auxilium\AuxiliumScript::evaluate_variable_path($component["value"], $internal_vars);
-                                        if(is_a($var, "\Auxilium\Node"))
+                                        if(is_a($var, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                         {
                                             $component["object"] = $var;
                                         }
@@ -529,7 +529,7 @@ if(isset($uri_components[0]))
                                         foreach($component["dictionary"] as $dkey => &$dvar)
                                         {
                                             $var = Auxilium\AuxiliumScript::evaluate_variable_path($dvar, $internal_vars);
-                                            if(is_a($var, "\Auxilium\Node"))
+                                            if(is_a($var, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                             {
                                                 $dvar = ["object" => $var, "text" => $dvar];
                                             }
