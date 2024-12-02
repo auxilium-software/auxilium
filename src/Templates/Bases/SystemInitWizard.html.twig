@@ -6,13 +6,13 @@
     <link rel="shortcut icon" type="image/svg" href="/favicon.svg">
     <link rel="shortcut icon" type="image/png" href="/favicon.png">
     {% block head_assets %}
-        <style>@import url("/assets/main.css");</style>
+        <style>@import url("/Static/CSS/Mapper.css");</style>
         <style>@import url("/system/first-setup/assets/aux.css");</style>
         {% if "dark-mode" in head_asset_options %}
-            <style>@import url("/assets/dark-mode.css");</style>
+            <style>@import url("/Static/CSS/Themes/DarkMode.css");</style>
         {% endif %}
         {% if "large-fonts" in head_asset_options %}
-            <style>@import url("/assets/large-fonts.css");</style>
+            <style>@import url("/Static/CSS/Accessibility/LargeFonts.css");</style>
         {% endif %}
     {% endblock %}
     <title>Auxilium Setup</title>

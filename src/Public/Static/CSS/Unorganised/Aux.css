@@ -270,7 +270,7 @@ dd > .email-box {
     opacity: 0.5;
     background: var(--brand-color);
     border: 2rem dashed #ffffff;
-    background-image: url("/assets/icons/upload_white_48dp.svg");
+    background-image: url("/Static/Icons/upload_white_48dp.svg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: 50vmin 50vmin;

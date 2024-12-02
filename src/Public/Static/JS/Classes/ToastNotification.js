@@ -1,4 +1,4 @@
- 
+
 class ToastNotification {
     static lastInStack = null;
     doAfterFunc = null;
