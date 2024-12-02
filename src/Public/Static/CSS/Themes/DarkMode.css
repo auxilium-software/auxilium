@@ -7,16 +7,16 @@
     --foreground-color-outlines: #dbdbdb;
     --error-color: #cc2200;
     --error-color-contrast: #ffffff;
-    
+
     --outline-width: 0.15rem;
-    
+
     --form-max-width-small: 128mm;
     --form-max-width-small-fieldset: 122mm;
     /* --form-max-width-small-fieldset: 116mm; */
-    
+
     --padding-level-one: 5mm;
     --button-padding: 3mm;
-    
+
     font-size: 5mm;
 }
 
