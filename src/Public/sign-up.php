@@ -213,7 +213,7 @@ try
                     // NOTE: BCrypt has a max input of 72 chars, so in order to mitigate attacks on sentence based passwords, that are long but lower complexity, we must pre-hash the password and then base64 encode to get down to 44 chars, which is under the limit. These 44 chars still have plenty of entropy thanks to sha256 being a robust hash algorithm.
 
                     $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
-                    $user_node = new Auxilium\User($user_node->getId());
+                    $user_node = new Auxilium\User($user_node->GetNodeID());
 
                     $hash_options = [
                         "cost" => 12,
@@ -226,7 +226,7 @@ try
 
                     $verification_code = $word_list[ord($garbage_data[0])] . " " . $word_list[ord($garbage_data[1])] . " " . $word_list[ord($garbage_data[2])] . " " . $word_list[ord($garbage_data[3])];
                     $temporary_data = [
-                        "user_uuid" => $user_node->getId(),
+                        "user_uuid" => $user_node->GetNodeID(),
                         "email_address" => strtolower($_POST["email_address"]),
                         "verification_code" => str_replace(" ", "", $verification_code),
                     ];
@@ -257,7 +257,7 @@ try
                     $session_info = [
                         "session_uuid" => Auxilium\EncodingTools::generate_new_uuid(),
                         "session_key" => $session_key,
-                        "user_uuid" => $user_node->getId(),
+                        "user_uuid" => $user_node->GetNodeID(),
                         "ip_address" => $_SERVER["REMOTE_ADDR"],
                         "sub" => "auxilium/" . strtolower($_POST["email_address"]),
                         "active" => 1,
@@ -266,7 +266,7 @@ try
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
 
-                    $form_data["user_uuid"] = $user_node->getId();
+                    $form_data["user_uuid"] = $user_node->GetNodeID();
                     $form_data["session_key"] = $session_info["session_key"];
                     $form_data["email_address"] = strtolower($_POST["email_address"]);
                     $form_data["hashed_password"] = $hashed_password;

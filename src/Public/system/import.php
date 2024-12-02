@@ -57,7 +57,7 @@ if(isset($_POST["submit"]))
         {
             $node->addProperty($key, $value, null, false);
         }
-        echo "SN:" . $node->getId();
+        echo "SN:" . $node->GetNodeID();
         if($import_id != null)
         {
             $import_id_deegraph_id_map[$import_id] = $node;
@@ -107,7 +107,7 @@ if(isset($_POST["submit"]))
         {
             $node->addProperty($key, $value, null, false);
         }
-        echo "UN:" . $node->getId();
+        echo "UN:" . $node->GetNodeID();
         if($import_id != null)
         {
             $import_id_deegraph_id_map[$import_id] = $node;
@@ -157,7 +157,7 @@ if(isset($_POST["submit"]))
         {
             $node->addProperty($key, $value, null, false);
         }
-        echo "CN:" . $node->getId();
+        echo "CN:" . $node->GetNodeID();
         if($import_id != null)
         {
             $import_id_deegraph_id_map[$import_id] = $node;

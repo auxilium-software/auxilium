@@ -40,10 +40,10 @@ if(!array_key_exists($index_id, $index_list))
     }
 }
 
-$index_store_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "indexes/" . Session::get_current()->getUser()->getUuid() . "/" . $index_id . ".json";
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "indexes/" . Session::get_current()->getUser()->getUuid() . "/"))
+$index_store_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "indexes/" . Session::get_current()->getUser()->GetNodeID() . "/" . $index_id . ".json";
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "indexes/" . Session::get_current()->getUser()->GetNodeID() . "/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "indexes/" . Session::get_current()->getUser()->getUuid() . "/", 0700, true);
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "indexes/" . Session::get_current()->getUser()->GetNodeID() . "/", 0700, true);
 }
 $old_index = ["created" => "1970-01-01T00:00:00Z"];
 if(file_exists($index_store_path))

@@ -57,7 +57,7 @@ class EmailFactory extends RFC822ObjectFactory
 
     public function setSender(?User $user)
     {
-        $this->emailData["sender"] = $user->getUuid();
+        $this->emailData["sender"] = $user->GetNodeID();
         return $this;
     }
 
@@ -307,7 +307,7 @@ class EmailFactory extends RFC822ObjectFactory
                                 ]
                             ]
                         );
-                        array_push($this->emailData["recipients"], $user->getUuid());
+                        array_push($this->emailData["recipients"], $user->GetNodeID());
                     }
                     else
                     {
@@ -433,7 +433,7 @@ class EmailFactory extends RFC822ObjectFactory
                     if($user instanceof User)
                     {
                         $mail->addAddress($user->getEmailAddress(), $user->getFullName());
-                        array_push($this->emailData["recipients"], $user->getUuid());
+                        array_push($this->emailData["recipients"], $user->GetNodeID());
                     }
                     else
                     {

@@ -370,11 +370,11 @@ class InternetMessageTransport
                     {
                         if(isset(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_dynamic_prefix"]) && strlen(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_dynamic_prefix"]) > 0)
                         {
-                            $mime_message->setRawHeader("From", $sender_user->getFullName() . " <" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_dynamic_prefix"] . "+" . $sender_user->getId() . "@" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_domain"] . ">");
+                            $mime_message->setRawHeader("From", $sender_user->getFullName() . " <" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_dynamic_prefix"] . "+" . $sender_user->GetNodeID() . "@" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_domain"] . ">");
                         }
                         else
                         {
-                            $mime_message->setRawHeader("From", $sender_user->getFullName() . " <" . $sender_user->getId() . "@" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_domain"] . ">");
+                            $mime_message->setRawHeader("From", $sender_user->getFullName() . " <" . $sender_user->GetNodeID() . "@" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_domain"] . ">");
                         }
                     }
                     else

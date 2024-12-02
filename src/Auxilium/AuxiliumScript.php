@@ -142,7 +142,7 @@ class AuxiliumScript
             {
                 if(is_a($vars[$st], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                 {
-                    array_unshift($pth, "{" . $vars[$st]->getId() . "}");
+                    array_unshift($pth, "{" . $vars[$st]->GetNodeID() . "}");
                     $fcn = "@view";
                     if(substr(end($pth), 0, 1) === "@")
                     {
@@ -166,10 +166,10 @@ class AuxiliumScript
                             {
                                 $node = $node->getCreator();
                             }
-                            return ($node == null) ? null : $node->getId();
+                            return ($node == null) ? null : $node->GetNodeID();
                         case "@id":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getId();
+                            return ($node == null) ? null : $node->GetNodeID();
                         case "@view":
                             return GraphDatabaseConnection::node_from_path($string);
                     }

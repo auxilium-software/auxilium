@@ -32,7 +32,7 @@ class DeegraphNode
     }
 
 
-    
+
     public static function FromPath(string $path)
     {
         return GraphDatabaseConnection::node_from_path($path);
@@ -67,7 +67,8 @@ class DeegraphNode
     }
 
 
-    public function getUuid()
+
+    public function GetNodeID()
     {
         return substr($this->NodeID, 1, -1);
     }
@@ -82,7 +83,7 @@ class DeegraphNode
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "LINK {".$node->getId()."} AS ".$key." OF {".$this->getId()."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
-                ->LinkOfRelativePath(new UUID($node->getId()), new UUID($this->getId()))
+                ->LinkOfRelativePath(new UUID($node->GetNodeID()), new UUID($this->GetNodeID()))
                 ->As($key);
             if($force) $query = $query->Force();
             $query = $query->Build();
@@ -94,10 +95,6 @@ class DeegraphNode
         }
     }
 
-    public function getId()
-    {
-        return substr($this->NodeID, 1, -1);
-    }
 
     public function unlinkProperty(string $key, User $actor = null)
     {
@@ -110,7 +107,7 @@ class DeegraphNode
             // $query = "UNLINK ".$key." FROM {".$this->getId()."}";
             $query = QueryBuilder::Unlink()
                 ->UnlinkWhat($key)
-                ->From(new UUID($this->getId()))
+                ->From(new UUID($this->GetNodeID()))
                 ->Build();
             if($this->CachedProperties != null)
             {
@@ -136,14 +133,14 @@ class DeegraphNode
 
         // $query = "DELETE {".$this->getId()."}";
         $query = QueryBuilder::Delete()
-            ->RelativePath(new UUID($this->getId()))
+            ->RelativePath(new UUID($this->GetNodeID()))
             ->Build();
         return GraphDatabaseConnection::query($actor, $query);
     }
 
     public function is(DeegraphNode $n)
     {
-        if($this->getId() == $n->getId())
+        if($this->GetNodeID() == $n->GetNodeID())
         {
             return true;
         }
@@ -163,7 +160,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "PERMS ON {".$this->getId()."}";
         $query = QueryBuilder::Permission()
-            ->On(new UUID($this->getId()))
+            ->On(new UUID($this->GetNodeID()))
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@permissions"]))
@@ -194,7 +191,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "REFERENCES {".$this->getId()."}";
         $query = QueryBuilder::References()
-            ->RelativePath(new UUID($this->getId()))
+            ->RelativePath(new UUID($this->GetNodeID()))
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@map"]))
@@ -242,7 +239,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "DIRECTORY {".$this->getId()."}";
         $query = QueryBuilder::Directory()
-            ->RelativePath(new UUID($this->getId()))
+            ->RelativePath(new UUID($this->GetNodeID()))
             ->Build();
 
         $response = GraphDatabaseConnection::query($actor, $query);
@@ -295,7 +292,7 @@ class DeegraphNode
             $actor = Session::get_current()->getUser();
         }
 
-        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->getId() . "}", "GET");
+        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->GetNodeID() . "}", "GET");
 
         if(is_array($result))
         {
@@ -350,7 +347,7 @@ class DeegraphNode
             $actor = Session::get_current()->getUser();
         }
 
-        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->getId() . "}", "GET");
+        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->GetNodeID() . "}", "GET");
 
         if(is_array($result))
         {

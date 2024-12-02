@@ -249,7 +249,7 @@ if(isset($uri_components[0]))
 
                 if($target_node != null)
                 {
-                    $form_persistent_data["target_node"] = $target_node->getId();
+                    $form_persistent_data["target_node"] = $target_node->GetNodeID();
                 }
 
                 $as_node = Session::get_current()->getUser();
@@ -289,7 +289,7 @@ if(isset($uri_components[0]))
                                     ];
                                     if(is_a($fvars["property"], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                     {
-                                        $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
+                                        $fvars["property"] = "{" . $fvars["property"]->GetNodeID() . "}";
                                     }
                                     if(substr($fvars["target"], 0, 1) === "\$")
                                     {
@@ -299,7 +299,7 @@ if(isset($uri_components[0]))
                                             {
                                                 if(is_a($prop, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                                 {
-                                                    $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
+                                                    $fvars["target"] = "{" . $prop->GetNodeID() . "}" . substr($fvars["target"], strlen($key) + 1);
                                                 }
                                                 else
                                                 {
@@ -330,7 +330,7 @@ if(isset($uri_components[0]))
                                     }
                                     if(is_a($fvars["property"], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                     {
-                                        $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
+                                        $fvars["property"] = "{" . $fvars["property"]->GetNodeID() . "}";
                                     }
                                     if(substr($fvars["target"], 0, 1) === "\$")
                                     {
@@ -340,7 +340,7 @@ if(isset($uri_components[0]))
                                             {
                                                 if(is_a($prop, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                                 {
-                                                    $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
+                                                    $fvars["target"] = "{" . $prop->GetNodeID() . "}" . substr($fvars["target"], strlen($key) + 1);
                                                 }
                                                 else
                                                 {
@@ -387,7 +387,7 @@ if(isset($uri_components[0]))
                 {
                     if(is_a($export, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                     {
-                        $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($export->getId())));
+                        $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($export->GetNodeID())));
                         $url_metadata->setProperty("exp", null);
                     }
                     else
@@ -425,7 +425,7 @@ if(isset($uri_components[0]))
                     echo htmlentities(json_encode($form_persistent_data, JSON_PRETTY_PRINT));
                     echo "</pre><hr />";
                     echo "<pre>";
-                    echo ($export == null) ? "Nothing to export" : ((is_string($export)) ? $export : $export->getId());
+                    echo ($export == null) ? "Nothing to export" : ((is_string($export)) ? $export : $export->GetNodeID());
                     echo "</pre>";
                     exit();
                 }

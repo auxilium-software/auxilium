@@ -68,7 +68,7 @@ class AuxiliumLFSObject
         {
             $actor = Session::get_current()->getUser();
         }
-        $actorId = ($actor == null) ? null : $actor->getId();
+        $actorId = ($actor == null) ? null : $actor->GetNodeID();
         if($this->getId() == null)
         {
             return false;
@@ -151,7 +151,7 @@ class AuxiliumLFSObject
         {
             $actor = Session::get_current()->getUser();
         }
-        $actorId = ($actor == null) ? null : $actor->getId();
+        $actorId = ($actor == null) ? null : $actor->GetNodeID();
         if(!isset($this->readPermission[$actorId]))
         {
             if($this->getId() == null)

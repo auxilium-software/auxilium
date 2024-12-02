@@ -108,11 +108,11 @@ if(isset($_GET["page"]))
             if(isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
             {
                 $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
-                $user_node = new Auxilium\User($user_node->getId());
+                $user_node = new Auxilium\User($user_node->GetNodeID());
 
                 $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
                 $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
-                $user_node = new Auxilium\User($user_node->getId());
+                $user_node = new Auxilium\User($user_node->GetNodeID());
 
                 $hash_options = [
                     "cost" => 12,
@@ -120,7 +120,7 @@ if(isset($_GET["page"]))
                 $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
 
                 $bind_variables = [
-                    "user_uuid" => $user_node->getId(),
+                    "user_uuid" => $user_node->GetNodeID(),
                     "email_address" => $_POST["email"],
                     "password" => $hashed_password
                 ];
@@ -128,7 +128,7 @@ if(isset($_GET["page"]))
                 $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
 
-                Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
+                Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->GetNodeID() . "}");
 
                 $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
                 $user_node->addProperty("preferred_language", $language_prop, $user_node);

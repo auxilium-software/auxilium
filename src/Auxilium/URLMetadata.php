@@ -62,7 +62,7 @@ class URLMetadata
             {
                 if(isset($payload["sub"]))
                 { // Restriction on who this is valid for
-                    $mdo->jwtMatchedUser = ($payload["sub"] == EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId())));
+                    $mdo->jwtMatchedUser = ($payload["sub"] == EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->GetNodeID())));
                 }
             }
 
@@ -115,7 +115,7 @@ class URLMetadata
         $this->metadata["tn"] = $node;
         if($this->metadata["tn"] != null)
         {
-            $this->metadata["tn"] = URLMetadata::crush_uuid($this->metadata["tn"]->getId());
+            $this->metadata["tn"] = URLMetadata::crush_uuid($this->metadata["tn"]->GetNodeID());
         }
         $this->metadata["rc"] = URLMetadata::standard_metadata_checksum($this->metadata["rp"]);
         return $this;
@@ -137,7 +137,7 @@ class URLMetadata
         {
             return false;
         }
-        return isset($this->metadata["tn"]) ? (URLMetadata::crush_uuid($node->getId()) == $this->metadata["tn"]) : true; // If there isn't a value set match anything
+        return isset($this->metadata["tn"]) ? (URLMetadata::crush_uuid($node->GetNodeID()) == $this->metadata["tn"]) : true; // If there isn't a value set match anything
     }
 
     public function getPath()
@@ -243,7 +243,7 @@ class URLMetadata
         $parent["tn"] = DeegraphNode::FromPath($parent["rp"]);
         if($parent["tn"] != null)
         {
-            $parent["tn"] = URLMetadata::crush_uuid($parent["tn"]->getId());
+            $parent["tn"] = URLMetadata::crush_uuid($parent["tn"]->GetNodeID());
         }
         $parent["rc"] = URLMetadata::standard_metadata_checksum($parent["rp"]);
         $mdo = URLMetadata::from_metadata($parent);
@@ -266,7 +266,7 @@ class URLMetadata
         $childmd["tn"] = DeegraphNode::FromPath($childmd["rp"]);
         if($childmd["tn"] != null)
         {
-            $childmd["tn"] = URLMetadata::crush_uuid($childmd["tn"]->getId());
+            $childmd["tn"] = URLMetadata::crush_uuid($childmd["tn"]->GetNodeID());
         }
         $childmd["rc"] = URLMetadata::standard_metadata_checksum($childmd["rp"]);
         $mdo = URLMetadata::from_metadata($childmd);
@@ -297,7 +297,7 @@ class URLMetadata
         $subject = null;
         if(Session::get_current()->getUser() != null)
         {
-            $subject = EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
+            $subject = EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->GetNodeID()));
         }
         $header = [
             "alg" => "HS256",

@@ -59,7 +59,7 @@ try
         }
         if(count($uri_components) == 0)
         {
-            NavigationUtilities::Redirect(target: "/graph/~" . Session::get_current()->getUser()->getId());
+            NavigationUtilities::Redirect(target: "/graph/~" . Session::get_current()->getUser()->GetNodeID());
             exit();
         }
 
@@ -228,7 +228,7 @@ try
                 {
                     if($node != null)
                     {
-                        NavigationUtilities::Redirect(target: "/graph/~" . $node->getId() . "/@ref_error");
+                        NavigationUtilities::Redirect(target: "/graph/~" . $node->GetNodeID() . "/@ref_error");
                         exit();
                     }
                     $url_metadata = new Auxilium\URLMetadata();
@@ -455,7 +455,7 @@ try
                                 ]
                                 )
                                 ->where(cond: "user_uuid=:user_uuid")
-                                ->bindValue(name: "user_uuid", value: $node->getId())
+                                ->bindValue(name: "user_uuid", value: $node->GetNodeID())
                         );
 
                         if($user_data != null)
@@ -474,7 +474,7 @@ try
                                 ]
                                 )
                                 ->where(cond: "user_uuid=:user_uuid")
-                                ->bindValue(name: "user_uuid", value: $node->getId())
+                                ->bindValue(name: "user_uuid", value: $node->GetNodeID())
                         );
                         foreach($queryResponse as $loginDetails)
                         {
@@ -502,7 +502,7 @@ try
                         }
                         */
 
-                        if($node->getId() == Session::get_current()->getUser()->getId())
+                        if($node->GetNodeID() == Session::get_current()->getUser()->GetNodeID())
                         {
                             $pb->setVariable("is_own_account", true);
                         }
