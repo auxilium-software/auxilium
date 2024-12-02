@@ -1,5 +1,5 @@
-@import url("/assets/branding.css");
-@import url("/assets/icons.css");
+
+@import url("/Static/CSS/Mapper.css");
 
 @font-face {
     font-family: "Atkinson Hyperlegible";
@@ -288,7 +288,7 @@ nav {
 }
 
 .flag-icon-red {
-    background-image: url("/assets/icons/flag_red_48dp.svg");
+    background-image: url("/Static/CSS/Icons/flag_red_48dp.svg");
 }
 
 input[type=submit].icon-submit {
@@ -715,7 +715,7 @@ select {
     background-color: var(--background-color);
     color: var(--foreground-color);
     position: relative;
-    background: url("/assets/icons/arrow_drop_down_black_48dp.svg") no-repeat right var(--background-color);
+    background: url("/Static/CSS/Icons/arrow_drop_down_black_48dp.svg") no-repeat right var(--background-color);
     background-size: contain;
     appearance: none;
     -webkit-appearance: none;
@@ -906,7 +906,7 @@ input[type=checkbox]:checked, input[type=radio]:checked, .fake-checkbox-true  {
 }
 input[type=checkbox]:checked::after, .fake-checkbox-true::after {
     content: "";
-    background-image: url("/assets/icons/check_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/check_white_48dp.svg");
     background-size: contain;
     position: absolute;
     top: 0.2rem;
@@ -917,7 +917,7 @@ input[type=checkbox]:checked::after, .fake-checkbox-true::after {
 }
 input[type=radio]:checked::after {
     content: "";
-    background-image: url("/assets/icons/check_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/check_white_48dp.svg");
     background-size: contain;
     position: absolute;
     top: 0.25rem;
@@ -1534,7 +1534,7 @@ fieldset > .error-toast {
     width: 0;
     box-sizing: border-box;
     padding: 12rem 12rem 0 0;
-    background-image: url("/assets/icons/warning_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/warning_black_48dp.svg");
 }
 
 
@@ -1562,7 +1562,7 @@ fieldset > .error-toast {
     width: 0;
     box-sizing: border-box;
     padding: 12rem 12rem 0 0;
-    background-image: url("/assets/icons/info_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/info_black_48dp.svg");
 }
 
 
@@ -1635,7 +1635,7 @@ dt > .reverse-navigational-link, dd > .reverse-navigational-link {
 
 .action-link::after, .navigational-link::after, .navigational-link-new-tab::after {
     content: "";
-    background-image: url("/assets/icons/internal_link_marker_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/internal_link_marker_black_48dp.svg");
     background-size: contain;
     margin-left: 0.25em;
     vertical-align: top;
@@ -1646,7 +1646,7 @@ dt > .reverse-navigational-link, dd > .reverse-navigational-link {
 
 .reverse-navigational-link::before {
     content: "";
-    background-image: url("/assets/icons/reverse_internal_link_marker_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/reverse_internal_link_marker_black_48dp.svg");
     background-size: contain;
     margin-right: 0.375em;
     margin-left: -0.125em;
@@ -1657,19 +1657,19 @@ dt > .reverse-navigational-link, dd > .reverse-navigational-link {
 }
 
 .navigational-link-new-tab::after {
-    background-image: url("/assets/icons/open_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/open_black_48dp.svg");
 }
 
 .action-link-delete::after {
-    background-image: url("/assets/icons/delete_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/delete_black_48dp.svg");
 }
 
 .action-link-search::after {
-    background-image: url("/assets/icons/search_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/search_black_48dp.svg");
 }
 
 .action-link-close::after {
-    background-image: url("/assets/icons/close_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/close_black_48dp.svg");
 }
 
 
@@ -1730,7 +1730,7 @@ input[type=checkbox].slider::after {
     top: 0.25rem;
     left: 2.75rem;
     z-index: 1;
-    background-image: url("/assets/icons/close_black_48dp.svg");
+    background-image: url("/Static/CSS/Icons/close_black_48dp.svg");
     height: 1.75rem;
     width: 1.75rem;
     color: var(--brand-color-contrast);
@@ -1738,7 +1738,7 @@ input[type=checkbox].slider::after {
 input[type=checkbox].slider:checked::after {
     top: 0.2rem;
     left: 0.2rem;
-    background-image: url("/assets/icons/check_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/check_white_48dp.svg");
 }
 input[type=checkbox].slider::before {
     content: "";

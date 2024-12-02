@@ -73,21 +73,21 @@ body, h1, h2, h3 {
 }
 
 .dark-mode .navigational-link::after {
-    background-image: url("/assets/icons/internal_link_marker_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/internal_link_marker_white_48dp.svg");
 }
 
 .dark-mode .navigational-link-new-tab::after {
-    background-image: url("/assets/icons/open_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/open_white_48dp.svg");
 }
 
 input[type=checkbox]#dark-mode-toggle::after {
     top: 0.25rem;
     left: 2.75rem;
-    background-image: url("/assets/icons/dark_mode_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/dark_mode_white_48dp.svg");
 }
 
 input[type=checkbox]:checked#dark-mode-toggle::after {
     top: 0.25rem;
     left: 0.25rem;
-    background-image: url("/assets/icons/light_mode_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/light_mode_white_48dp.svg");
 }

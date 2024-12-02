@@ -1,4 +1,4 @@
-@import url("/assets/dark-mode-icons.css");
+@import url("/Static/CSS/Elements/Icons-DarkMode.css");
 
 :root {
     --background-color: #121212;
@@ -21,7 +21,7 @@
 }
 
 select {
-    background: url("/assets/icons/arrow_drop_down_white_48dp.svg") no-repeat right var(--background-color);
+    background: url("/Static/CSS/Icons/arrow_drop_down_white_48dp.svg") no-repeat right var(--background-color);
 }
 
 
@@ -30,23 +30,23 @@ select {
 }
 
 .navigational-link::after {
-    background-image: url("/assets/icons/internal_link_marker_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/internal_link_marker_white_48dp.svg");
 }
 
 .navigational-link-new-tab::after {
-    background-image: url("/assets/icons/open_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/open_white_48dp.svg");
 }
 
 .action-link-delete::after {
-    background-image: url("/assets/icons/delete_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/delete_white_48dp.svg");
 }
 
 .action-link-search::after {
-    background-image: url("/assets/icons/search_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/search_white_48dp.svg");
 }
 
 .action-link-close::after {
-    background-image: url("/assets/icons/close_white_48dp.svg");
+    background-image: url("/Static/CSS/Icons/close_white_48dp.svg");
 }
 
 @media only screen and (max-width: 180mm) {
