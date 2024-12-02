@@ -1,7 +1,7 @@
 @font-face {
     font-family: "Roboto";
     font-display: swap;
-    src: url("/assets/Roboto-Medium.ttf") format('truetype');
+    src: url("/Static/Fonts/Roboto-Medium.ttf") format('truetype');
     font-weight: normal;
 }
 

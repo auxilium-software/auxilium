@@ -4,28 +4,28 @@
 @font-face {
     font-family: "Atkinson Hyperlegible";
     font-display: swap;
-    src: url("/assets/AtkinsonHyperlegible-Regular.ttf") format('truetype');
+    src: url("/Static/Fonts/AtkinsonHyperlegible-Regular.ttf") format('truetype');
     font-weight: normal;
 }
 
 @font-face {
     font-family: "Atkinson Hyperlegible";
     font-display: swap;
-    src: url("/assets/AtkinsonHyperlegible-Bold.ttf") format('truetype');
+    src: url("/Static/Fonts/AtkinsonHyperlegible-Bold.ttf") format('truetype');
     font-weight: bold;
 }
 
 @font-face {
     font-family: "IBM Plex Mono";
     font-display: swap;
-    src: url("/assets/IBMPlexMono-Regular.ttf") format('truetype');
+    src: url("/Static/Fonts/IBMPlexMono-Regular.ttf") format('truetype');
     font-weight: normal;
 }
 
 @font-face {
     font-family: "IBM Plex Mono";
     font-display: swap;
-    src: url("/assets/IBMPlexMono-Bold.ttf") format('truetype');
+    src: url("/Static/Fonts/IBMPlexMono-Bold.ttf") format('truetype');
     font-weight: bold;
 }
 
