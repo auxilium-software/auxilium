@@ -29,6 +29,7 @@
         "ext-openssl": "*",
         "ext-dom": "*",
         "ext-sodium": "*",
+        "ext-pdo": "*",
 
         "phpunit/phpunit": "11.4.4",
 
@@ -48,6 +49,8 @@
         "aws/aws-sdk-php": "^3.277",
 
         "ezyang/htmlpurifier": "^4.14",
+
+        "aura/sqlquery": "2.8.1",
 
         "darksparrow/deegraph-interactions": "dev-dev",
         "darksparrow/auxilium-schema-builder": "dev-dev"

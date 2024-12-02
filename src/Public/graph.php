@@ -1,5 +1,8 @@
 <?php
 
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
+use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Schemas\CaseSchema;
 use Auxilium\Schemas\MessageSchema;
@@ -434,6 +437,7 @@ try
                     if($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                     {
                         $login_methods = [];
+                        /*
                         $bind_variables = [
                             "user_uuid" => $node->getId(),
                         ];
@@ -441,14 +445,42 @@ try
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         $user_data = $statement->fetch();
+                        */
+                        $user_data = MariaDBServerConnection::RunOneRowSelect(
+                            SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
+                                ->cols(cols: [
+                                    "email_address",
+                                    "user_uuid",
+                                ])
+                                ->where(cond: "user_uuid=:user_uuid")
+                                ->bindValue(name: "user_uuid", value: $node->getId())
+                        );
+
                         if($user_data != null)
                         {
-                            array_push($login_methods, [
-                                    "type" => "classic"
-                                ]
-                            );
+                            $login_methods[] = [
+                                "type" => "classic"
+                            ];
                         }
 
+
+                        foreach(MariaDBServerConnection::RunSelect(
+                            SQLQueryBuilderWrapper::SELECT(MariaDBTable::OAUTH_LOGINS)
+                                ->cols(cols: [
+                                    "unique_sub",
+                                    "user_uuid",
+                                ])
+                                ->where(cond: "user_uuid=:user_uuid")
+                                ->bindValue(name: "user_uuid", value: $node->getId())
+                        ) as $loginDetails)
+                        {
+                            $login_methods[] = [
+                                "type" => "oauth",
+                                "vendor" => explode("/", $loginDetails["unique_sub"])[0]
+                            ];
+                        }
+
+                        /*
                         $bind_variables = [
                             "user_uuid" => $node->getId()
                         ];
@@ -458,13 +490,13 @@ try
                         $returned_data = $statement->fetch();
                         while($returned_data != null)
                         {
-                            array_push($login_methods, [
-                                    "type" => "oauth",
-                                    "vendor" => explode("/", $returned_data["unique_sub"])[0]
-                                ]
-                            );
+                            $login_methods[] = [
+                                "type" => "oauth",
+                                "vendor" => explode("/", $returned_data["unique_sub"])[0]
+                            ];
                             $returned_data = $statement->fetch();
                         }
+                        */
 
                         if($node->getId() == Session::get_current()->getUser()->getId())
                         {
