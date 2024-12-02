@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
 $pb = PageBuilder::get_instance();
 $pb->requireLogin();
 
-if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()))
+if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->GetPermissions()))
 {
     try
     {

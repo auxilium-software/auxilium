@@ -131,13 +131,13 @@ if(isset($_GET["page"]))
                 Auxilium\GraphDatabaseConnection::query(Auxilium\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->GetNodeID() . "}");
 
                 $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
-                $user_node->addProperty("preferred_language", $language_prop, $user_node);
+                $user_node->AddProperty("preferred_language", $language_prop, $user_node);
                 $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
-                $user_node->addProperty("name", $full_name_prop, $user_node);
+                $user_node->AddProperty("name", $full_name_prop, $user_node);
                 $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
-                $user_node->addProperty("display_name", $name_prop, $user_node);
+                $user_node->AddProperty("display_name", $name_prop, $user_node);
                 $email_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
-                $user_node->addProperty("contact_email", $email_name_prop, $user_node);
+                $user_node->AddProperty("contact_email", $email_name_prop, $user_node);
 
 
                 if(unlink(LOCAL_STORAGE_DIRECTORY . "setup.key"))

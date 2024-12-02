@@ -17,27 +17,47 @@ class DeegraphNode
 
 
     private $RawContent = null;
-    private $RawContentFetched = false;
     private $Metadata = null;
-    private $MetadataFetched = false;
-    private $CachedProperties = null;
-    private $CachedReferences = null;
-    private $CachedPermissions = null;
-    private ?UUID $NodeID = null;
+
+    private ?array $CachedProperties = null;
+    private ?array $CachedReferences = null;
+    private ?array $CachedPermissions = null;
+
+    private bool $HasRawContentBeenFetchedYet = false;
+    private bool $HasMetadataBeenFetchedYet = false;
+
+    private UUID $NodeID;
 
 
     public function __construct(string $id)
     {
         $this->NodeID = new UUID($id);
     }
+    public function __toString()
+    {
+        $temp = $this->GetData();
+        if(is_string($temp))
+            return $temp;
+        return "";
+    }
+
+
+    /**
+     * Returns the UUID of the node.
+     * @return string Node UUID.
+     */
+    public function GetNodeID(): string
+    {
+        return substr($this->NodeID, 1, -1);
+    }
 
 
 
-    public static function FromPath(string $path)
+    public static function FromPath(string $path): ?DeegraphNode
     {
         return GraphDatabaseConnection::node_from_path($path);
     }
-    public static function FromID(string $id = null)
+    public static function FromID(string $id = null): ?DeegraphNode
     {
         if($id == null)
         {
@@ -67,13 +87,7 @@ class DeegraphNode
     }
 
 
-
-    public function GetNodeID()
-    {
-        return substr($this->NodeID, 1, -1);
-    }
-
-    public function addProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
+    public function AddProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
     {
         if($actor == null)
         {
@@ -96,7 +110,7 @@ class DeegraphNode
     }
 
 
-    public function unlinkProperty(string $key, User $actor = null)
+    public function UnlinkProperty(string $key, User $actor = null)
     {
         if($actor == null)
         {
@@ -124,7 +138,7 @@ class DeegraphNode
         }
     }
 
-    public function delete(User $actor = null)
+    public function Delete(User $actor = null)
     {
         if($actor == null)
         {
@@ -138,7 +152,7 @@ class DeegraphNode
         return GraphDatabaseConnection::query($actor, $query);
     }
 
-    public function is(DeegraphNode $n)
+    public function Is(DeegraphNode $n): bool
     {
         if($this->GetNodeID() == $n->GetNodeID())
         {
@@ -147,7 +161,7 @@ class DeegraphNode
         return false;
     }
 
-    public function getPermissions(User $actor = null)
+    public function GetPermissions(User $actor = null): ?array
     {
         if($actor == null)
         {
@@ -178,7 +192,7 @@ class DeegraphNode
         }
     }
 
-    public function getReferences(User $actor = null)
+    public function GetReferences(User $actor = null): ?array
     {
         if($actor == null)
         {
@@ -214,19 +228,19 @@ class DeegraphNode
         }
     }
 
-    public function getProperty(string $property, User $actor = null)
+    public function GetProperty(string $property, User $actor = null)
     {
         if($actor == null)
         {
             $actor = Session::get_current()->getUser();
         }
-        $temp = $this->getProperties($actor);
+        $temp = $this->GetProperties($actor);
         if(isset($temp[$property]))
             return $temp[$property];
         return null;
     }
 
-    public function getProperties(User $actor = null)
+    public function GetProperties(User $actor = null): ?array
     {
         if($actor == null)
         {
@@ -260,29 +274,29 @@ class DeegraphNode
 
     public function getObjectSize()
     {
-        $content = $this->getContent($actor);
+        $content = $this->GetContent($actor);
         return ($content == null) ? 0 : $content->getSize();
     }
 
-    public function getContent(User $actor = null)
+    public function GetContent(User $actor = null): AuxiliumLFSObject|DataURL|null
     {
-        if($this->getRawContent($actor) != null)
+        if($this->GetRawContent($actor) != null)
         {
-            if(substr($this->getRawContent($actor), 0, 5) === "data:")
+            if(substr($this->GetRawContent($actor), 0, 5) === "data:")
             {
-                return new DataURL($this->getRawContent($actor));
+                return new DataURL($this->GetRawContent($actor));
             }
-            elseif(substr($this->getRawContent($actor), 0, 7) === "auxlfs:")
+            elseif(substr($this->GetRawContent($actor), 0, 7) === "auxlfs:")
             {
-                return new AuxiliumLFSObject($this->getRawContent($actor));
+                return new AuxiliumLFSObject($this->GetRawContent($actor));
             }
         }
         return null;
     }
 
-    public function getRawContent(User $actor = null)
+    public function GetRawContent(User $actor = null)
     {
-        if($this->RawContentFetched)
+        if($this->HasRawContentBeenFetchedYet)
         {
             return $this->RawContent;
         }
@@ -302,42 +316,30 @@ class DeegraphNode
             }
         }
 
-        $this->RawContentFetched = true;
+        $this->HasRawContentBeenFetchedYet = true;
         return $this->RawContent;
     }
 
     public function getMimeType()
     {
-        $content = $this->getContent($actor);
+        $content = $this->GetContent($actor);
         return ($content == null) ? null : $content->getMimeType();
     }
 
-    public function __toString()
+    public function GetData(User $actor = null)
     {
-        if(is_string($this->getData()))
-        {
-            return $this->getData();
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    public function getData(User $actor = null)
-    {
-        $content = $this->getContent($actor);
+        $content = $this->GetContent($actor);
         return ($content == null) ? null : $content->getData();
     }
 
-    public function getTimestamp()
+    public function GetTimestamp(): string
     {
-        return date("c", strtotime($this->getNodeMetadata()["@created"]));
+        return date("c", strtotime($this->GetNodeMetadata()["@created"]));
     }
 
-    public function getNodeMetadata(User $actor = null)
+    public function GetNodeMetadata(User $actor = null): ?array
     {
-        if($this->MetadataFetched)
+        if($this->HasMetadataBeenFetchedYet)
         {
             return $this->Metadata;
         }
@@ -354,36 +356,36 @@ class DeegraphNode
             $this->Metadata = $result;
         }
 
-        $this->MetadataFetched = true;
+        $this->HasMetadataBeenFetchedYet = true;
         return $this->Metadata;
     }
 
-    public function getTimestampInt()
+    public function GetTimestampInt(): false|int
     {
-        return strtotime($this->getNodeMetadata()["@created"]);
+        return strtotime($this->GetNodeMetadata()["@created"]);
     }
 
-    public function getSchema()
+    public function GetSchema()
     {
-        return Schema::from_url($this->getSchemaUrl());
+        return Schema::from_url($this->GetSchemaUrl());
     }
 
-    public function getSchemaUrl()
+    public function GetSchemaUrl()
     {
-        return isset($this->getNodeMetadata()["@schema"]) ? $this->getNodeMetadata()["@schema"] : null;
+        return isset($this->GetNodeMetadata()["@schema"]) ? $this->GetNodeMetadata()["@schema"] : null;
     }
 
-    public function getCreator()
+    public function GetCreator(): ?DeegraphNode
     {
-        return DeegraphNode::FromID($this->getNodeMetadata()["@creator"]);
+        return DeegraphNode::FromID($this->GetNodeMetadata()["@creator"]);
     }
 
-    public function extendsOrInstanceOf(string $schema)
+    public function ExtendsOrInstanceOf(string $schema): bool
     {
-        if(!isset($this->getNodeMetadata()["@schema"]))
+        if(!isset($this->GetNodeMetadata()["@schema"]))
         {
             return false;
         }
-        return $this->getNodeMetadata()["@schema"] == $schema;
+        return $this->GetNodeMetadata()["@schema"] == $schema;
     }
 }

@@ -55,7 +55,7 @@ if(isset($_POST["submit"]))
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach($props as $key => &$value)
         {
-            $node->addProperty($key, $value, null, false);
+            $node->AddProperty($key, $value, null, false);
         }
         echo "SN:" . $node->GetNodeID();
         if($import_id != null)
@@ -105,7 +105,7 @@ if(isset($_POST["submit"]))
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach($props as $key => &$value)
         {
-            $node->addProperty($key, $value, null, false);
+            $node->AddProperty($key, $value, null, false);
         }
         echo "UN:" . $node->GetNodeID();
         if($import_id != null)
@@ -155,7 +155,7 @@ if(isset($_POST["submit"]))
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach($props as $key => &$value)
         {
-            $node->addProperty($key, $value, null, false);
+            $node->AddProperty($key, $value, null, false);
         }
         echo "CN:" . $node->GetNodeID();
         if($import_id != null)

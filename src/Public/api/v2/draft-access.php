@@ -213,7 +213,7 @@ elseif($action == "send")
                     {
                         $messages_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
                         $message_party->addProperty("messages", $messages_node);
-                        $messages_node->addProperty("#", $message_node);
+                        $messages_node->AddProperty("#", $message_node);
                     }
                     else
                     {

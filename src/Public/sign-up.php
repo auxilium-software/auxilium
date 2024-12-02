@@ -89,7 +89,7 @@ try
 
                         $user_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($returned_data["user_uuid"]);
                         $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, Auxilium\User::get_system_node());
-                        $user_node->addProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
+                        $user_node->AddProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
                         $bind_variables = [
                             "user_uuid" => $returned_data["user_uuid"]
@@ -246,11 +246,11 @@ try
                     Auxilium\InternetMessageTransport::send($email, "MIME");
 
                     $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
-                    $user_node->addProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
+                    $user_node->AddProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
                     $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($form_values["full_name"], "text/plain", null, $user_node);
-                    $user_node->addProperty("name", $full_name_prop, $user_node);
+                    $user_node->AddProperty("name", $full_name_prop, $user_node);
                     $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $form_values["full_name"])[0], "text/plain", null, $user_node);
-                    $user_node->addProperty("display_name", $name_prop, $user_node); // Create this as default the user's first name - they can change it later if they want
+                    $user_node->AddProperty("display_name", $name_prop, $user_node); // Create this as default the user's first name - they can change it later if they want
 
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
 

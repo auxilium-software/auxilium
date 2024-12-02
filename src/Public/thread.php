@@ -125,11 +125,11 @@ try
             case "@delete_confirm":
                 if($jwt_validation_passed)
                 {
-                    if($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
+                    if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                     {
                         $pb->setTemplate("Pages/delete-views/generic");
                     }
-                    elseif($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
+                    elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                     {
                         $pb->setTemplate("Pages/delete-views/generic");
                     }
@@ -147,7 +147,7 @@ try
             case "@delete":
                 if($jwt_validation_passed)
                 {
-                    $node->delete();
+                    $node->Delete();
                     $path = explode("/", $primary_string_path);
                     array_pop($path);
                     //echo implode("/", $path);
@@ -167,7 +167,7 @@ try
 
                     if(isset($_POST["value"]))
                     {
-                        $refs = $node->getReferences();
+                        $refs = $node->GetReferences();
                         //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
 
                         $data = $_POST["value"];
@@ -207,12 +207,12 @@ try
                     if($url_metadata->getProperty("uln") != null)
                     {
                         //echo "Unlinking: ".$node->getId()." => ".$last_prop."<br />";
-                        $prop = $node->getProperty($last_prop);
+                        $prop = $node->GetProperty($last_prop);
                         if($prop != null)
                         {
                             if($prop->getId() == $url_metadata->getProperty("uln"))
                             { // Make sure the property hasn't changed since when the link was generated - the user expects the thing they clicked to be removed, not some other random thing with the same path.
-                                $node->unlinkProperty($last_prop);
+                                $node->UnlinkProperty($last_prop);
                             }
                         }
                         //exit();
@@ -240,7 +240,7 @@ try
                             //exit();
                             $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                             $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
-                            $query_result = $node->addProperty($_POST["name"], $return_node);
+                            $query_result = $node->AddProperty($_POST["name"], $return_node);
                             if($query_result !== false)
                             {
                                 //var_dump($query_result);
@@ -298,12 +298,12 @@ try
                 $pb->setVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
             case "@view":
             default:
-                if($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
+                if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                 {
                     $pb->setTemplate("Pages/node-views/user");
                     $pb->setVariable("hidden_props", ["cases", "messages", "documents"]);
                 }
-                elseif($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
+                elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                 {
                     $pb->setTemplate("Pages/node-views/case");
                     $pb->setVariable("hidden_props", ["description", "clients", "messages", "documents"]);

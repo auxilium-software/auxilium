@@ -153,18 +153,18 @@ class AuxiliumScript
                     {
                         case "@created":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getTimestamp();
+                            return ($node == null) ? null : $node->GetTimestamp();
                         case "@schema":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getSchemaUrl();
+                            return ($node == null) ? null : $node->GetSchemaUrl();
                         case "@creator":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->getCreator();
+                            return ($node == null) ? null : $node->GetCreator();
                         case "@creator_id":
                             $node = GraphDatabaseConnection::node_from_path($string);
                             if($node != null)
                             {
-                                $node = $node->getCreator();
+                                $node = $node->GetCreator();
                             }
                             return ($node == null) ? null : $node->GetNodeID();
                         case "@id":

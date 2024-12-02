@@ -94,7 +94,7 @@ $pb->setVariable("user_uuid", $target_node->GetNodeID());
 switch($uri_components[1])
 {
     case "add-basic-login":
-        if(in_array("ACT", $target_node->getPermissions()))
+        if(in_array("ACT", $target_node->GetPermissions()))
         {
             if((count($uri_components) > 1) && $jwt_validation_passed)
             {
@@ -145,13 +145,13 @@ switch($uri_components[1])
 
                         $user_name = "";
 
-                        if($target_node->getProperty("display_name") != null)
+                        if($target_node->GetProperty("display_name") != null)
                         {
-                            $user_name = $target_node->getProperty("display_name");
+                            $user_name = $target_node->GetProperty("display_name");
                         }
-                        if($target_node->getProperty("name") != null)
+                        if($target_node->GetProperty("name") != null)
                         {
-                            $user_name = $target_node->getProperty("name");
+                            $user_name = $target_node->GetProperty("name");
                         }
 
                         $email_builder = new EmailBuilder();
@@ -234,7 +234,7 @@ switch($uri_components[1])
         }
         break;
     case "remove-login-method":
-        if(in_array("ACT", $target_node->getPermissions()))
+        if(in_array("ACT", $target_node->GetPermissions()))
         {
             if((count($uri_components) > 2) && $jwt_validation_passed)
             {
@@ -301,7 +301,7 @@ switch($uri_components[1])
         }
         break;
     case "login-methods":
-        if(in_array("ACT", $target_node->getPermissions()))
+        if(in_array("ACT", $target_node->GetPermissions()))
         {
             if($target_node->GetNodeID() == Session::get_current()->getUser()->GetNodeID())
             {
