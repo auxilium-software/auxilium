@@ -107,7 +107,7 @@ try
                         }
                         else
                         {
-                            NavigationUtilities::Redirect(target: "" . $next_location);
+                            NavigationUtilities::Redirect(target:  $next_location);
                         }
                         exit();
                     }

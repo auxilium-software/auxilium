@@ -388,7 +388,7 @@ try
                                         $ret_url = "/graph/" . $primary_string_path;
                                     }
                                     $url_metadata->setProperty("rcn", null);
-                                    NavigationUtilities::Redirect(target: "" . $ret_url . "?" . $url_metadata);
+                                    NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
                                     exit();
                                 }
                                 //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));

@@ -242,7 +242,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                         if(count($form_data["form_stack"]) > 0)
                         {
                             Auxilium\PersistentFormData::set($form_data);
-                            NavigationUtilities::Redirect(target: "" . array_pop($form_data["form_stack"]));
+                            NavigationUtilities::Redirect(target:  array_pop($form_data["form_stack"]));
                         }
                         else
                         {
@@ -264,5 +264,5 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
 }
 
 //$redirect_uri = $openid_config["openid_login_uri"]."&redirect_uri=https%3A%2F%2F".INSTANCE_DOMAIN_NAME."%2Flogin&state=$jwt&nonce=$nonce";
-//\Auxilium\Utilities\NavigationUtilities::Redirect(target: "".$redirect_uri);
+//\Auxilium\Utilities\NavigationUtilities::Redirect(target: $redirect_uri);
 exit();
