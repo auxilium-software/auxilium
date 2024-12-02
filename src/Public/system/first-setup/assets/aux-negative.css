@@ -17,9 +17,9 @@
 }
 
 .navigational-link::after {
-    background-image: url("/Static/CSS/Icons/internal_link_marker_white_48dp.svg");
+    background-image: url("/Static/Icons/internal_link_marker_white_48dp.svg");
 }
 
 .navigational-link-new-tab::after {
-    background-image: url("/Static/CSS/Icons/open_white_48dp.svg");
+    background-image: url("/Static/Icons/open_white_48dp.svg");
 }

@@ -105,7 +105,7 @@ select {
     background-color: var(--background-color);
     color: var(--foreground-color);
     position: relative;
-    background: url("/Static/CSS/Icons/arrow_drop_down_black_48dp.svg") no-repeat right var(--background-color);
+    background: url("/Static/Icons/arrow_drop_down_black_48dp.svg") no-repeat right var(--background-color);
     background-size: contain;
     appearance: none;
     -webkit-appearance: none;
@@ -209,7 +209,7 @@ input[type=checkbox]:checked, input[type=radio]:checked, .fake-checkbox-true  {
 }
 input[type=checkbox]:checked::after, .fake-checkbox-true::after {
     content: "";
-    background-image: url("/Static/CSS/Icons/check_white_48dp.svg");
+    background-image: url("/Static/Icons/check_white_48dp.svg");
     background-size: contain;
     position: absolute;
     top: 0.2rem;
@@ -220,7 +220,7 @@ input[type=checkbox]:checked::after, .fake-checkbox-true::after {
 }
 input[type=radio]:checked::after {
     content: "";
-    background-image: url("/Static/CSS/Icons/check_white_48dp.svg");
+    background-image: url("/Static/Icons/check_white_48dp.svg");
     background-size: contain;
     position: absolute;
     top: 0.25rem;
@@ -261,7 +261,7 @@ input[type=checkbox].slider::after {
     top: 0.25rem;
     left: 2.75rem;
     z-index: 1;
-    background-image: url("/Static/CSS/Icons/close_black_48dp.svg");
+    background-image: url("/Static/Icons/close_black_48dp.svg");
     height: 1.75rem;
     width: 1.75rem;
     color: var(--brand-color-contrast);
@@ -269,7 +269,7 @@ input[type=checkbox].slider::after {
 input[type=checkbox].slider:checked::after {
     top: 0.2rem;
     left: 0.2rem;
-    background-image: url("/Static/CSS/Icons/check_white_48dp.svg");
+    background-image: url("/Static/Icons/check_white_48dp.svg");
 }
 input[type=checkbox].slider::before {
     content: "";

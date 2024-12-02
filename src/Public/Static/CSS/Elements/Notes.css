@@ -68,7 +68,7 @@
     width: 0;
     box-sizing: border-box;
     padding: 12rem 12rem 0 0;
-    background-image: url("/Static/CSS/Icons/warning_black_48dp.svg");
+    background-image: url("/Static/Icons/warning_black_48dp.svg");
 }
 
 
@@ -96,7 +96,7 @@
     width: 0;
     box-sizing: border-box;
     padding: 12rem 12rem 0 0;
-    background-image: url("/Static/CSS/Icons/info_black_48dp.svg");
+    background-image: url("/Static/Icons/info_black_48dp.svg");
 }
 
 

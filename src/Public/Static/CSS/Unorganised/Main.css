@@ -131,7 +131,7 @@ dialog {
 }
 
 .flag-icon-red {
-    background-image: url("/Static/CSS/Icons/flag_red_48dp.svg");
+    background-image: url("/Static/Icons/flag_red_48dp.svg");
 }
 
 input[type=submit].icon-submit {
@@ -641,7 +641,7 @@ dt > .reverse-navigational-link, dd > .reverse-navigational-link {
 
 .action-link::after, .navigational-link::after, .navigational-link-new-tab::after {
     content: "";
-    background-image: url("/Static/CSS/Icons/internal_link_marker_black_48dp.svg");
+    background-image: url("/Static/Icons/internal_link_marker_black_48dp.svg");
     background-size: contain;
     margin-left: 0.25em;
     vertical-align: top;
@@ -652,7 +652,7 @@ dt > .reverse-navigational-link, dd > .reverse-navigational-link {
 
 .reverse-navigational-link::before {
     content: "";
-    background-image: url("/Static/CSS/Icons/reverse_internal_link_marker_black_48dp.svg");
+    background-image: url("/Static/Icons/reverse_internal_link_marker_black_48dp.svg");
     background-size: contain;
     margin-right: 0.375em;
     margin-left: -0.125em;
@@ -663,19 +663,19 @@ dt > .reverse-navigational-link, dd > .reverse-navigational-link {
 }
 
 .navigational-link-new-tab::after {
-    background-image: url("/Static/CSS/Icons/open_black_48dp.svg");
+    background-image: url("/Static/Icons/open_black_48dp.svg");
 }
 
 .action-link-delete::after {
-    background-image: url("/Static/CSS/Icons/delete_black_48dp.svg");
+    background-image: url("/Static/Icons/delete_black_48dp.svg");
 }
 
 .action-link-search::after {
-    background-image: url("/Static/CSS/Icons/search_black_48dp.svg");
+    background-image: url("/Static/Icons/search_black_48dp.svg");
 }
 
 .action-link-close::after {
-    background-image: url("/Static/CSS/Icons/close_black_48dp.svg");
+    background-image: url("/Static/Icons/close_black_48dp.svg");
 }
 
 
