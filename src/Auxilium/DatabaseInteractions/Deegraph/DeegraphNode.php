@@ -9,10 +9,15 @@ use Auxilium\Schema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\User;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
+use Darksparrow\DeegraphInteractions\Exceptions\InvalidUUIDFormatException;
 use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
 
 class DeegraphNode
 {
+    /**
+     * Static cache for storing already instantiated nodes.
+     * @var array
+     */
     private static $cached_nodes = [];
 
 
@@ -28,11 +33,21 @@ class DeegraphNode
 
     private UUID $NodeID;
 
-
+    /**
+     * Constructor to initialise a DeegraphNode with a given ID.
+     * @param string $id The unique identifier for the node.
+     * @throws InvalidUUIDFormatException
+     */
     public function __construct(string $id)
     {
         $this->NodeID = new UUID($id);
     }
+
+    /**
+     * Converts the Node to a string by fetching its data.
+     * If the data is a string, it returns that string; otherwise, it returns an empty string.
+     * @return string
+     */
     public function __toString()
     {
         $temp = $this->GetData();
@@ -43,7 +58,7 @@ class DeegraphNode
 
 
     /**
-     * Returns the UUID of the node.
+     * Returns the UUID of the Node as a string.
      * @return string Node UUID.
      */
     public function GetNodeID(): string
@@ -52,11 +67,32 @@ class DeegraphNode
     }
 
 
+    /**
+     * Returns the UUID of the node as a UUID object.
+     * @return UUID Node UUID.
+     */
+    public function GetNodeUUID(): UUID
+    {
+        return $this->NodeID;
+    }
 
+
+    /**
+     * Fetches a Node from the database by its path.
+     * @param string $path The path to the Node.
+     * @return DeegraphNode|null The Node if found, otherwise null.
+     */
     public static function FromPath(string $path): ?DeegraphNode
     {
         return GraphDatabaseConnection::node_from_path($path);
     }
+
+    /**
+     * Fetches a Node by its ID, using a static cache for optimisation.
+     * @param string|null $id The ID of the Node.
+     * @return DeegraphNode|null The Node if found or created, null otherwise.
+     * @throws InvalidUUIDFormatException
+     */
     public static function FromID(string $id = null): ?DeegraphNode
     {
         if($id == null)
@@ -87,6 +123,15 @@ class DeegraphNode
     }
 
 
+    /**
+     * Adds a property (link) between this Node and another Node.
+     * @param string $key The key representing the property.
+     * @param DeegraphNode $node The Node to link as a property.
+     * @param User|null $actor The User performing the operation.
+     * @param bool $force Whether to force the link creation.
+     * @return mixed The result of the graph database query.
+     * @throws InvalidUUIDFormatException
+     */
     public function AddProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
     {
         if($actor == null)
@@ -109,7 +154,13 @@ class DeegraphNode
         }
     }
 
-
+    /**
+     * Removes a property link from this Node.
+     * @param string $key The key of the property to unlink.
+     * @param User|null $actor The user performing the operation.
+     * @return mixed The result of the graph database query.
+     * @throws InvalidUUIDFormatException
+     */
     public function UnlinkProperty(string $key, User $actor = null)
     {
         if($actor == null)
@@ -138,6 +189,12 @@ class DeegraphNode
         }
     }
 
+    /**
+     * Deletes this Node from the graph database.
+     * @param User|null $actor The user performing the operation.
+     * @return mixed The result of the graph database query.
+     * @throws InvalidUUIDFormatException
+     */
     public function Delete(User $actor = null)
     {
         if($actor == null)
@@ -152,6 +209,11 @@ class DeegraphNode
         return GraphDatabaseConnection::query($actor, $query);
     }
 
+    /**
+     * Checks if this Node is the same as another.
+     * @param DeegraphNode $n Another Node to compare.
+     * @return bool True if they are the same, false otherwise.
+     */
     public function Is(DeegraphNode $n): bool
     {
         if($this->GetNodeID() == $n->GetNodeID())
@@ -161,6 +223,12 @@ class DeegraphNode
         return false;
     }
 
+    /**
+     * Fetches the permissions of the Node from the database.
+     * @param User|null $actor The user performing the operation.
+     * @return array|null Permissions data or null if not fetched.
+     * @throws InvalidUUIDFormatException
+     */
     public function GetPermissions(User $actor = null): ?array
     {
         if($actor == null)
@@ -192,6 +260,12 @@ class DeegraphNode
         }
     }
 
+    /**
+     * Fetches references to other Nodes.
+     * @param User|null $actor The user performing the operation.
+     * @return array|null References data or null if not fetched.
+     * @throws InvalidUUIDFormatException
+     */
     public function GetReferences(User $actor = null): ?array
     {
         if($actor == null)
@@ -228,6 +302,12 @@ class DeegraphNode
         }
     }
 
+    /**
+     * Retrieves a property of the Node by its key.
+     * @param string $property Property name to fetch.
+     * @param User|null $actor The user performing the operation.
+     * @return mixed|null Property value or null if not found.
+     */
     public function GetProperty(string $property, User $actor = null)
     {
         if($actor == null)
@@ -326,6 +406,10 @@ class DeegraphNode
         return ($content == null) ? null : $content->getMimeType();
     }
 
+    /**
+     * Retrieves raw content data associated with the node.
+     * @return mixed Raw content or null if not fetched.
+     */
     public function GetData(User $actor = null)
     {
         $content = $this->GetContent($actor);
@@ -337,6 +421,10 @@ class DeegraphNode
         return date("c", strtotime($this->GetNodeMetadata()["@created"]));
     }
 
+    /**
+     * Retrieves metadata associated with the node.
+     * @return mixed Metadata or null if not fetched.
+     */
     public function GetNodeMetadata(User $actor = null): ?array
     {
         if($this->HasMetadataBeenFetchedYet)
