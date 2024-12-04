@@ -8,8 +8,11 @@ use Auxilium\Schemas\CaseSchema;
 use Auxilium\Schemas\MessageSchema;
 use Auxilium\Schemas\OrganisationSchema;
 use Auxilium\Schemas\UserSchema;
+use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\URLMetadata;
 use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
@@ -508,7 +511,7 @@ try
                         //    "type" => "oauth",
                         //    "vendor" => "microsoft"
                         //]
-                        //$pb->setVariable("permissions", true);
+                        //PageBuilder2::AddVariable("permissions", true);
                         $pb->setTemplate("Pages/node-views/user");
                         PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
 
