@@ -316,11 +316,11 @@ try
                     //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                     //$query_result = $node->addProperty($_POST["name"], $return_node);
                 }
-                else
-                {
-                    $pb->setTemplate("Pages/edit-views/text-plain");
-                }
-                break;
+
+                PageBuilder2::Render(
+                    template: "Pages/edit-views/text-plain",
+                    variables: []
+                );
             case "@unlink":
                 if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
 
@@ -343,62 +343,72 @@ try
                 }
                 break;
             case "@new_property":
-                if($jwt_validation_passed)
-                {
-                    if($url_metadata->getProperty("rcn") != null)
-                    {
-                        if(isset($_POST["name"]))
-                        {
-                            //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
 
-                            //exit();
-                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                            $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
-                            $query_result = $node->AddProperty($_POST["name"], $return_node);
-                            if($query_result !== false)
-                            {
-                                //var_dump($query_result);
-                                //exit();
-                                $ret_url = $url_metadata->popFromReturnStack();
-                                if($ret_url == null)
-                                {
-                                    $ret_url = "/graph/" . $primary_string_path;
-                                }
-                                $url_metadata->setProperty("rcn", null);
-                                NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
-                            }
-                            //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                            //exit();
-                            PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
-                            $pb->setTemplate("Pages/node-views/name-new-property");
-                        }
-                        else
+                if(!$jwt_validation_passed)
+                {
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/generic",
+                        variables: []
+                    );
+                }
+                if($url_metadata->getProperty("rcn") != null)
+                {
+                    if(isset($_POST["name"]))
+                    {
+                        //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+
+                        //exit();
+                        $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                        $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
+                        $query_result = $node->AddProperty($_POST["name"], $return_node);
+                        if($query_result !== false)
                         {
-                            $pb->setTemplate("Pages/node-views/name-new-property");
+                            //var_dump($query_result);
+                            //exit();
+                            $ret_url = $url_metadata->popFromReturnStack();
+                            if($ret_url == null)
+                            {
+                                $ret_url = "/graph/" . $primary_string_path;
+                            }
+                            $url_metadata->setProperty("rcn", null);
+                            NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
                         }
+                        //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                        //exit();
+                        PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
+                        PageBuilder2::Render(
+                            template: "Pages/node-views/name-new-property",
+                            variables: []
+                        );
                     }
                     else
                     {
-                        $url_metadata->pushCurrentToReturnStack();
-
-                        $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
-                        $form_list = json_decode($form_list, true);
-
-                        /*
-                        // Now handled in URLMetadata class
-                        $url_metadata_with_tgn = clone $url_metadata;
-                        $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
-                        PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
-                        */
-
-                        PageBuilder2::AddVariable("form_list", $form_list);
-
-                        $pb->setTemplate("Pages/node-views/new-property");
+                        PageBuilder2::Render(
+                            template: "Pages/node-views/name-new-property",
+                            variables: []
+                        );
                     }
                 }
                 else
                 {
-                    $pb->setTemplate("Pages/node-views/generic");
+                    $url_metadata->pushCurrentToReturnStack();
+
+                    $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
+                    $form_list = json_decode($form_list, true);
+
+                    /*
+                    // Now handled in URLMetadata class
+                    $url_metadata_with_tgn = clone $url_metadata;
+                    $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
+                    PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
+                    */
+
+                    PageBuilder2::AddVariable("form_list", $form_list);
+
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/new-property",
+                        variables: []
+                    );
                 }
                 break;
             case "@search":
@@ -495,28 +505,41 @@ try
                     //    "vendor" => "microsoft"
                     //]
                     //PageBuilder2::AddVariable("permissions", true);
-                    $pb->setTemplate("Pages/node-views/user");
                     PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/user",
+                        variables: []
+                    );
 
                     //PageBuilder2::AddVariable("traditional_login_method", []);
                 }
                 elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                 {
-                    $pb->setTemplate("Pages/node-views/case");
                     PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/case",
+                        variables: []
+                    );
                 }
                 elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
                 {
-                    $pb->setTemplate("Pages/node-views/group");
                     PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/group",
+                        variables: []
+                    );
                 }
                 else
                 {
-                    $pb->setTemplate("Pages/node-views/generic");
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/generic",
+                        variables: []
+                    );
                 }
         }
 
-        $pb->render();
+        var_dump("!!graph switching error!!");
+        die();
 
     }
     catch(DatabaseConnectionException $e)
