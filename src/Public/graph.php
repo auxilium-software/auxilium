@@ -75,7 +75,7 @@ try
             }
             else
             {
-                if(substr($uri_component, 0, 1) === "@")
+                if(str_starts_with($uri_component, "@"))
                 {
                     if(mb_strtolower($uri_component) == "@creator")
                     {
@@ -105,7 +105,7 @@ try
         $path_parsed = [];
         for($i = 0; $i < count($path_primary); $i++)
         {
-            if(strpos(urldecode($path_primary[$i]), "~") === 0)
+            if(str_starts_with(urldecode($path_primary[$i]), "~"))
             {
                 $path_parsed[$i] = "{" . strtoupper(substr(urldecode($path_primary[$i]), 1)) . "}";
             }
@@ -130,7 +130,7 @@ try
                 $pth_prim = $path_primary[$i];
                 $absolute_path = $absolute_path . "/" . $path_primary[$i];
 
-                if((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim))
+                if((str_starts_with($pth_prim, "~")) || preg_match('/^[0-9]*$/', $pth_prim))
                 {
                     $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
                 }
@@ -150,7 +150,7 @@ try
                 $primary_node_path_order[] = $np;
                 $pth_prim = $path_primary[$i];
 
-                if((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim))
+                if((str_starts_with($pth_prim, "~")) || preg_match('/^[0-9]*$/', $pth_prim))
                 {
                     $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
                     $primary_node_path_nodes[$np] = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromPath($absolute_path);
