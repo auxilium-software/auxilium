@@ -140,7 +140,7 @@ class DeegraphNode
         }
         if(preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key) || $key == "#")
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
-            // $query = "LINK {".$node->getId()."} AS ".$key." OF {".$this->getId()."}".($force ? " FORCE" : "");
+            // $query = "LINK {".$node->GetNodeID()."} AS ".$key." OF {".$this->GetNodeID()."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
                 ->LinkOfRelativePath($node->GetNodeUUID(), $this->GetNodeUUID())
                 ->As($key);
@@ -169,7 +169,7 @@ class DeegraphNode
         }
         if(preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key))
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
-            // $query = "UNLINK ".$key." FROM {".$this->getId()."}";
+            // $query = "UNLINK ".$key." FROM {".$this->GetNodeID()."}";
             $query = QueryBuilder::Unlink()
                 ->UnlinkWhat($key)
                 ->From($this->GetNodeUUID())
@@ -202,7 +202,7 @@ class DeegraphNode
             $actor = Session::get_current()->getUser();
         }
 
-        // $query = "DELETE {".$this->getId()."}";
+        // $query = "DELETE {".$this->GetNodeID()."}";
         $query = QueryBuilder::Delete()
             ->RelativePath($this->GetNodeUUID())
             ->Build();
@@ -240,7 +240,7 @@ class DeegraphNode
             return $this->CachedPermissions;
         }
         $outputMap = [];
-        // $query = "PERMS ON {".$this->getId()."}";
+        // $query = "PERMS ON {".$this->GetNodeID()."}";
         $query = QueryBuilder::Permission()
             ->On($this->GetNodeUUID())
             ->Build();
@@ -277,7 +277,7 @@ class DeegraphNode
             return $this->CachedReferences;
         }
         $outputMap = [];
-        // $query = "REFERENCES {".$this->getId()."}";
+        // $query = "REFERENCES {".$this->GetNodeID()."}";
         $query = QueryBuilder::References()
             ->RelativePath($this->GetNodeUUID())
             ->Build();
@@ -331,7 +331,7 @@ class DeegraphNode
             return $this->CachedProperties;
         }
         $outputMap = [];
-        // $query = "DIRECTORY {".$this->getId()."}";
+        // $query = "DIRECTORY {".$this->GetNodeID()."}";
         $query = QueryBuilder::Directory()
             ->RelativePath($this->GetNodeUUID())
             ->Build();

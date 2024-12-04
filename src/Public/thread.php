@@ -178,7 +178,7 @@ try
                             foreach($ref_nodes as &$ref_node)
                             {
                                 $ref_node->addProperty($ref_name, $new_node, null, true);
-                                //echo $ref_node->getId()." ==[".$ref_name."]=> ".$node->getId()."<br />";
+                                //echo $ref_node->GetNodeID()." ==[".$ref_name."]=> ".$node->GetNodeID()."<br />";
                             }
                         }
                         $path = explode("/", $primary_string_path);
@@ -202,15 +202,15 @@ try
             case "@unlink":
                 if($jwt_validation_passed)
                 {
-                    //echo "Unlinking: ".$node->getId()." => ".$last_prop;
+                    //echo "Unlinking: ".$node->GetNodeID()." => ".$last_prop;
                     //exit();
                     if($url_metadata->getProperty("uln") != null)
                     {
-                        //echo "Unlinking: ".$node->getId()." => ".$last_prop."<br />";
+                        //echo "Unlinking: ".$node->GetNodeID()." => ".$last_prop."<br />";
                         $prop = $node->GetProperty($last_prop);
                         if($prop != null)
                         {
-                            if($prop->getId() == $url_metadata->getProperty("uln"))
+                            if($prop->GetNodeID() == $url_metadata->getProperty("uln"))
                             { // Make sure the property hasn't changed since when the link was generated - the user expects the thing they clicked to be removed, not some other random thing with the same path.
                                 $node->UnlinkProperty($last_prop);
                             }
@@ -235,7 +235,7 @@ try
                     {
                         if(isset($_POST["name"]))
                         {
-                            //echo $node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                            //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
 
                             //exit();
                             $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
@@ -254,7 +254,7 @@ try
                                 NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
                                 exit();
                             }
-                            //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                            //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                             //exit();
                             $pb->setVariable("duplicate_property_name", $_POST["name"]);
                             $pb->setTemplate("Pages/node-views/name-new-property");
@@ -274,7 +274,7 @@ try
                         /* 
                         // Now handled in URLMetadata class
                         $url_metadata_with_tgn = clone $url_metadata;
-                        $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->getId())));
+                        $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
                         $pb->setVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
                         */
 

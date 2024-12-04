@@ -380,7 +380,7 @@ if(isset($uri_components[0]))
                 }
 
                 //echo "<pre>";
-                //echo ($export == null) ? "Nothing to export" : ((is_string($export)) ? $export : $export->getId());
+                //echo ($export == null) ? "Nothing to export" : ((is_string($export)) ? $export : $export->GetNodeID());
                 //echo "</pre>";
 
                 if($export != null)

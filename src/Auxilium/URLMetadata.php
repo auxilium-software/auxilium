@@ -27,7 +27,7 @@ class URLMetadata
                 return $mdo;
             }
 
-            //$userId = \Auxilium\EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
+            //$userId = \Auxilium\EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->GetNodeID()));
 
             $valid = true;
 

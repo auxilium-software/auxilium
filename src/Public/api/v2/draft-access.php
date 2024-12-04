@@ -204,7 +204,7 @@ elseif($action == "send")
 
         foreach($message_parties as &$message_party)
         {
-            if(!in_array($message_party->getId(), $notified_parties))
+            if(!in_array($message_party->GetNodeID(), $notified_parties))
             {
                 try
                 {
@@ -219,11 +219,11 @@ elseif($action == "send")
                     {
                         $message_party->getProperty("messages")->addProperty("#", $message_node);
                     }
-                    array_push($notified_parties, $message_party->getId());
+                    array_push($notified_parties, $message_party->GetNodeID());
                 }
                 catch(Exception $e)
                 {
-                    array_push($attach_failures, $message_party->getId());
+                    array_push($attach_failures, $message_party->GetNodeID());
                 }
             }
         }
