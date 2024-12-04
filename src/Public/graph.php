@@ -71,7 +71,7 @@ try
         {
             if($sec_toggle)
             {
-                array_push($path_secondary, $uri_component);
+                $path_secondary[] = $uri_component;
             }
             else
             {
@@ -79,7 +79,7 @@ try
                 {
                     if(mb_strtolower($uri_component) == "@creator")
                     {
-                        array_push($path_primary, $uri_component);
+                        $path_primary[] = $uri_component;
                     }
                     else
                     {
@@ -88,7 +88,7 @@ try
                 }
                 else
                 {
-                    array_push($path_primary, $uri_component);
+                    $path_primary[] = $uri_component;
                 }
             }
         }
@@ -126,7 +126,7 @@ try
             for($i = 0; $i < count($path_primary); $i++)
             {
                 $np = implode("/", array_slice($path_primary, 0, $i + 1));
-                array_push($primary_node_path_order, $np);
+                $primary_node_path_order[] = $np;
                 $pth_prim = $path_primary[$i];
                 $absolute_path = $absolute_path . "/" . $path_primary[$i];
 
@@ -147,7 +147,7 @@ try
             for($i = 0; $i < count($path_primary); $i++)
             {
                 $np = implode("/", array_slice($path_primary, 0, $i + 1));
-                array_push($primary_node_path_order, $np);
+                $primary_node_path_order[] = $np;
                 $pth_prim = $path_primary[$i];
 
                 if((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim))
