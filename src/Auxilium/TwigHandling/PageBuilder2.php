@@ -6,10 +6,12 @@ use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\Extensions\CommonFilters;
 use Auxilium\TwigHandling\Extensions\CommonFunctions;
+use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use Throwable;
 use Twig\Environment;
 use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
@@ -23,9 +25,10 @@ class PageBuilder2
     {
         $this->loader = new FilesystemLoader(dirname($_SERVER["DOCUMENT_ROOT"]) . "/Templates/");
         $this->twig = new Environment($this->loader, [
-            "debug" => true,
-            "cache" => false,
-        ]);
+                "debug" => true,
+                "cache" => false,
+            ]
+        );
 
 
         $this->twig->addGlobal('style_options', []);
@@ -54,7 +57,7 @@ class PageBuilder2
         // Serve the correct language *if* the cookie is set
         if(isset($_COOKIE["lang"]))
         {
-            switch ($_COOKIE["lang"])
+            switch($_COOKIE["lang"])
             {
                 case "cy":
                     $this->twig->addGlobal('selected_lang', "cy");
@@ -73,15 +76,104 @@ class PageBuilder2
         }
 
         // Grab style options if present
-        if(isset($_COOKIE["style"])) {
+        if(isset($_COOKIE["style"]))
+        {
             $this->twig->addGlobal('head_asset_options', explode(" ", $_COOKIE["style"]));
         }
 
-        try {
+        try
+        {
             $this->twig->addGlobal('current_user', Session::get_current()->getUser());
-        } catch (\Exception $e) {
+        }
+        catch(Exception $e)
+        {
             $this->twig->addGlobal('current_user', null);
         }
+
+
+        foreach(self::$AdditionalVariables as $key=>$value)
+            $this->twig->addGlobal($key, $value);
+    }
+
+    /**
+     * Will figure out which twig template to render, and render it.
+     * You can also pass through variables.
+     *
+     * @param array $variables Any variables you want to pass through to the template.
+     * @return void
+     */
+    #[NoReturn] public static function AutoRender(array $variables = []): void
+    {
+        PageBuilder2::Render(
+            template : PageBuilder2::GuessTargetTwigFile(),
+            variables: $variables,
+        );
+    }
+
+    #[NoReturn] public static function Render(string $template, array $variables = []): void
+    {
+        try
+        {
+            echo (new PageBuilder2())->twig->render($template, $variables);
+            exit();
+        }
+        catch(RuntimeError $e)
+        {
+            $e = $e->getPrevious();
+            PageBuilder2::RenderInternalSystemError($e);
+        }
+        catch(LoaderError $e)
+        {
+            throw $e;
+            die();
+        }
+        catch(SyntaxError $e)
+        {
+        }
+    }
+
+    #[NoReturn] public static function RenderInternalSystemError(Throwable $ex): void
+    {
+        http_response_code(500);
+
+        if($ex instanceof DatabaseConnectionException)
+        {
+            $technicalDetails = "Exception Type:\n    " . get_class($ex);
+            $technicalDetails .= "\nMessage:\n    " . $ex->getMessage();
+            $technicalDetails .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+
+            self::Render(
+                template : "ErrorPages/InternalSystemError.html.twig",
+                variables: [
+                    "technical_details" => $technicalDetails,
+                ],
+            );
+        }
+        else
+        {
+            throw $ex;
+            die();
+
+
+
+            echo "<pre>";
+            echo get_class($ex) . "\n";
+            echo htmlentities($ex->getMessage()) . "\n";
+            echo htmlentities(json_encode($ex->getTrace(), JSON_PRETTY_PRINT)) . "\n";
+            echo htmlentities(json_encode(get_class_methods($ex), JSON_PRETTY_PRINT));
+            echo "</pre>";
+        }
+        die();
+    }
+
+    #[NoReturn] public static function Render404(): void
+    {
+        http_response_code(404);
+        self::Render(
+            template : "Pages/node-views/404",
+            variables: [
+            ],
+        );
     }
 
     /**
@@ -90,11 +182,11 @@ class PageBuilder2
      *
      * @return string The relative path of the template to load.
      */
-    private static function GuessTargetTwigFile() : string
+    private static function GuessTargetTwigFile(): string
     {
         $phpPage = $_SERVER["REQUEST_URI"];
 
-        $twigFile = str_replace(search: ".php", replace: ".html.twig",subject: $phpPage);
+        $twigFile = str_replace(search: ".php", replace: ".html.twig", subject: $phpPage);
         if(!str_ends_with(haystack: $twigFile, needle: ".html.twig")) $twigFile .= ".html.twig";
 
         $pageTemplateDirectory = __DIR__ . "/../../Templates/Pages";
@@ -108,62 +200,15 @@ class PageBuilder2
         return "Pages" . $twigFile;
     }
 
-    #[NoReturn] public static function Render(string $template, array $variables = []) : void
+
+
+    private static array $AdditionalVariables = [];
+    public static function AddVariable(string $variableName, string|array $variableValue): void
     {
-        try
-        {
-            echo (new PageBuilder2())->twig->render($template, $variables);
-            exit();
-        } catch (\Twig\Error\RuntimeError $e)
-        {
-            $e = $e->getPrevious();
-            PageBuilder2::RenderInternalSystemError($e);
-        } catch (LoaderError $e) {
-        } catch (SyntaxError $e) {
-        }
+        self::$AdditionalVariables[$variableName] = $variableValue;
     }
-
-    /**
-     * Will figure out which twig template to render, and render it.
-     * You can also pass through variables.
-     *
-     * @param array $variables Any variables you want to pass through to the template.
-     * @return void
-     */
-    #[NoReturn] public static function AutoRender(array $variables = []) : void
+    public static function GetVariable(string $variableName): string
     {
-        PageBuilder2::Render(
-            template: PageBuilder2::GuessTargetTwigFile(),
-            variables: $variables,
-        );
-    }
-
-    #[NoReturn] public static function RenderInternalSystemError(Throwable $ex): void
-    {
-        http_response_code(500);
-
-        if ($ex instanceof DatabaseConnectionException)
-        {
-            $technicalDetails = "Exception Type:\n    ".get_class($ex);
-            $technicalDetails .= "\nMessage:\n    ".$ex->getMessage();
-            $technicalDetails .= "\nURI:\n    ".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
-
-            self::Render(
-                template: "ErrorPages/InternalSystemError.html.twig",
-                variables: [
-                    "technical_details" => $technicalDetails,
-                ],
-            );
-        }
-        else
-        {
-            echo "<pre>";
-            echo get_class($ex)."\n";
-            echo htmlentities($ex->getMessage())."\n";
-            echo htmlentities(json_encode($ex->getTrace(), JSON_PRETTY_PRINT))."\n";
-            echo htmlentities(json_encode(get_class_methods($ex), JSON_PRETTY_PRINT));
-            echo "</pre>";
-        }
-        die();
+        return self::$AdditionalVariables[$variableName] ?? die();
     }
 }
