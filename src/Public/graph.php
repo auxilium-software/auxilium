@@ -16,19 +16,19 @@ use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
-$pb = PageBuilder::get_instance();
+
 try
 {
     try
     {
         $pb->requireLogin();
 
-        $pb->setVariable("progressive_load", false);
+        PageBuilder2::AddVariable("progressive_load", false);
         if(isset($_COOKIE["progressiveload"]))
         {
             if($_COOKIE["progressiveload"] == "true")
             {
-                $pb->setVariable("progressive_load", true);
+                PageBuilder2::AddVariable("progressive_load", true);
             }
         }
 
@@ -100,7 +100,7 @@ try
         }
 
         $primary_string_path = implode("/", $path_primary);
-        $pb->setVariable("primary_string_path", $primary_string_path);
+        PageBuilder2::AddVariable("primary_string_path", $primary_string_path);
 
         $path_parsed = [];
         for($i = 0; $i < count($path_primary); $i++)
@@ -116,7 +116,7 @@ try
         }
 
         $deegraph_path = implode("/", $path_parsed);
-        $pb->setVariable("deegraph_path", $deegraph_path);
+        PageBuilder2::AddVariable("deegraph_path", $deegraph_path);
 
         if($pb->getVariable("progressive_load"))
         {
@@ -136,8 +136,8 @@ try
                 }
                 $primary_node_deegraph_paths[$np] = $absolute_path;
             }
-            $pb->setVariable("primary_node_path_order", $primary_node_path_order);
-            $pb->setVariable("primary_node_deegraph_paths", $primary_node_deegraph_paths);
+            PageBuilder2::AddVariable("primary_node_path_order", $primary_node_path_order);
+            PageBuilder2::AddVariable("primary_node_deegraph_paths", $primary_node_deegraph_paths);
         }
         else
         {
@@ -161,7 +161,7 @@ try
                             if($primary_node_path_nodes[$np]->Is(Session::get_current()->getUser()))
                             {
                                 $primary_node_path_names[$np] = "::auxpckstr:ui_heading/my_account::";
-                                $pb->setVariable("is_own_account", true);
+                                PageBuilder2::AddVariable("is_own_account", true);
                             }
                             else
                             {
@@ -194,10 +194,10 @@ try
                     }
                 }
             }
-            $pb->setVariable("primary_node_path_order", $primary_node_path_order);
-            $pb->setVariable("primary_node_path_names", $primary_node_path_names);
-            $pb->setVariable("primary_node_path_nodes", $primary_node_path_nodes);
-            $pb->setVariable("primary_node_path_name", end($primary_node_path_names));
+            PageBuilder2::AddVariable("primary_node_path_order", $primary_node_path_order);
+            PageBuilder2::AddVariable("primary_node_path_names", $primary_node_path_names);
+            PageBuilder2::AddVariable("primary_node_path_nodes", $primary_node_path_nodes);
+            PageBuilder2::AddVariable("primary_node_path_name", end($primary_node_path_names));
         }
 
         $node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromPath($primary_string_path);
@@ -241,9 +241,9 @@ try
                 $url_metadata->setPath($primary_string_path);
             }
         }
-        $pb->setVariable("url_metadata", $url_metadata);
-        $pb->setVariable("root_url_metadata", new Auxilium\URLMetadata());
-        $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
+        PageBuilder2::AddVariable("url_metadata", $url_metadata);
+        PageBuilder2::AddVariable("root_url_metadata", new URLMetadata());
+        PageBuilder2::AddVariable("jwt_validation_passed", $jwt_validation_passed);
 
         //$node->getProperties();
 
@@ -256,7 +256,7 @@ try
         }
         else
         {
-            $pb->setVariable("node", $node);
+            PageBuilder2::AddVariable("node", $node);
             switch($action)
             {
                 case "@delete_confirm":
@@ -393,7 +393,7 @@ try
                                 }
                                 //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                                 //exit();
-                                $pb->setVariable("duplicate_property_name", $_POST["name"]);
+                                PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
                                 $pb->setTemplate("Pages/node-views/name-new-property");
                             }
                             else
@@ -412,10 +412,10 @@ try
                             // Now handled in URLMetadata class
                             $url_metadata_with_tgn = clone $url_metadata;
                             $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
-                            $pb->setVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
+                            PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
                             */
 
-                            $pb->setVariable("form_list", $form_list);
+                            PageBuilder2::AddVariable("form_list", $form_list);
 
                             $pb->setTemplate("Pages/node-views/new-property");
                         }
@@ -432,7 +432,7 @@ try
                     $pb->setTemplate("Pages/node-views/references");
                     break;
                 case "@ref_error":
-                    $pb->setVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
+                    PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
                 case "@view":
                 default:
                     if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
@@ -504,29 +504,28 @@ try
 
                         if($node->GetNodeID() == Session::get_current()->getUser()->GetNodeID())
                         {
-                            $pb->setVariable("is_own_account", true);
+                            PageBuilder2::AddVariable("is_own_account", true);
                         }
 
-                        $pb->setVariable("login_methods", $login_methods);
                         //[
                         //    "type" => "oauth",
                         //    "vendor" => "microsoft"
                         //]
                         //$pb->setVariable("permissions", true);
                         $pb->setTemplate("Pages/node-views/user");
-                        $pb->setVariable("hidden_props", ["cases", "messages", "documents"]);
+                        PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
 
-                        //$pb->setVariable("traditional_login_method", []);
+                        //PageBuilder2::AddVariable("traditional_login_method", []);
                     }
                     elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                     {
                         $pb->setTemplate("Pages/node-views/case");
-                        $pb->setVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
+                        PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
                     }
                     elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
                     {
                         $pb->setTemplate("Pages/node-views/group");
-                        $pb->setVariable("hidden_props", ["departments", "cases", "staff"]);
+                        PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
                     }
                     else
                     {
@@ -545,7 +544,7 @@ try
         $technical_details = "Exception Type:\n    " . get_class($e);
         $technical_details .= "\nMessage:\n    " . $e->getMessage();
         $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-        $pb->setVariable("technical_details", $technical_details);
+        PageBuilder2::AddVariable("technical_details", $technical_details);
         http_response_code(500);
         $pb->render();
     }
@@ -556,7 +555,7 @@ catch(Exception $e)
     $pb->setTemplate("ErrorPages/InternalSystemError");
     $technical_details = "Exception Type:\n    " . get_class($e);
     $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-    $pb->setVariable("technical_details", $technical_details);
+    PageBuilder2::AddVariable("technical_details", $technical_details);
     http_response_code(500);
     $pb->render();
 }
