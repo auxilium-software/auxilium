@@ -61,7 +61,6 @@ try
         if(count($uri_components) == 0)
         {
             NavigationUtilities::Redirect(target: "/graph/~" . Session::get_current()->getUser()->GetNodeID());
-            exit();
         }
 
         $path_primary = [];
@@ -230,7 +229,6 @@ try
                     if($node != null)
                     {
                         NavigationUtilities::Redirect(target: "/graph/~" . $node->GetNodeID() . "/@ref_error");
-                        exit();
                     }
                     $url_metadata = new Auxilium\URLMetadata();
                     $url_metadata->setPath($primary_string_path);
@@ -290,12 +288,10 @@ try
                         array_pop($path);
                         //echo implode("/", $path);
                         NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
-                        exit();
                     }
                     else
                     {
                         NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                        exit();
                     }
                     break;
                 case "@edit":
@@ -390,7 +386,6 @@ try
                                     }
                                     $url_metadata->setProperty("rcn", null);
                                     NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
-                                    exit();
                                 }
                                 //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                                 //exit();
