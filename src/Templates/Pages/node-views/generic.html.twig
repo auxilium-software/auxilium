@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<span id="object_uuid" style="display: none;">{{ node.id }}</span>
+<span id="object_uuid" style="display: none;">{{ node.NodeID }}</span>
 <span id="lfs_instance_fqdn" style="display: none;">{{ INSTANCE_BRANDING_DOMAIN_NAME }}</span>
 <script src="/Static/JS/General/NodePage.js"></script>
 
@@ -16,9 +16,9 @@
             <h1 href="/graph/{{ parent_node_path }}" id="dynamic_node_name_title"><script>document.getElementById("dynamic_node_name_title").appendChild((new PathNameView("{{ deegraph_path }}")).render())</script></h1>
         {% else %}
             {% if node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json") %}
-                <h1><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if node.properties.name %}{{ node.properties.name }}{% else %}{{ "{" ~ node.id ~ "}" }}{% endif %}</h1>
+                <h1><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if node.properties.name %}{{ node.properties.name }}{% else %}{{ "{" ~ node.NodeID ~ "}" }}{% endif %}</h1>
             {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json") %}
-                <h1><span class="inline-icon-shift-left inline-icon-low-margin work-icon" title="Case"></span>{% if node.properties.title %}{{ node.properties.title }}{% else %}{{ "{" ~ node.id ~ "}" }}{% endif %}</h1>
+                <h1><span class="inline-icon-shift-left inline-icon-low-margin work-icon" title="Case"></span>{% if node.properties.title %}{{ node.properties.title }}{% else %}{{ "{" ~ node.NodeID ~ "}" }}{% endif %}</h1>
             {% elseif node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
                 <h1><span class="inline-icon-shift-left inline-icon-low-margin format-list-bulleted-icon" title="Collection"></span>{% if primary_node_path_name | trim | length %}{{ primary_node_path_name | unpack_string | ndtitle }}{% else %}<em>{{ "unnamed_node" | uitxt | ndtitle }}</em>{% endif %}</h1>
             {% else %}
@@ -51,7 +51,7 @@
             {% endif %}
             
             <div class="marked-section">
-                <h2>{{ "node_page_text/generic/properties" | uitxtrt | ndsentence }} <a href="javascript:{let win = new NewPropertyPopup('PLAIN_TEXT', '{{ "{" ~ node.id ~ "}" }}/*' ,true);document.getElementById('main-content').after(win.render());win.focus();win.onSuccess(() => {nodePropertyList.reload()})};" class="inline-icon add-icon" title="{{ "add_entry" | uitxt | ndsentence }}"></a></h2><br />
+                <h2>{{ "node_page_text/generic/properties" | uitxtrt | ndsentence }} <a href="javascript:{let win = new NewPropertyPopup('PLAIN_TEXT', '{{ "{" ~ node.NodeID ~ "}" }}/*' ,true);document.getElementById('main-content').after(win.render());win.focus();win.onSuccess(() => {nodePropertyList.reload()})};" class="inline-icon add-icon" title="{{ "add_entry" | uitxt | ndsentence }}"></a></h2><br />
                 {% if progressive_load %}
                     <span id="dynamic_properties"></span>
                     
@@ -84,7 +84,7 @@
                 <div id="hidden_box_ext_props" class="logical-box">
                     <dl>
                         <dt>{{ "node_id" | uiprop | ndtitle }}</dt>
-                        <dd>{{ "{" ~ node.id ~ "}" }}</dd>
+                        <dd>{{ "{" ~ node.NodeID ~ "}" }}</dd>
                         <dt>{{ "created_at" | uiprop | ndtitle }}</dt>
                         <dd>{{ node.timestamp | date("jS F Y, g:ia T") }}</dd>
                         {% if node.creator %}

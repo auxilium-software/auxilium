@@ -47,6 +47,11 @@ class User extends DeegraphNode
         return null;
     }
 
+    public function getId(): string
+    {
+        return $this->GetNodeID();
+    }
+
     public function __toString()
     {
         if($this->GetProperty("name") == null)

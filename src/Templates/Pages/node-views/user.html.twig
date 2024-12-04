@@ -33,11 +33,11 @@
 </div>
 
 <div class="marked-section">
-    <h2>{{ "node_page_text/generic/documents" | uitxtrt | ndsentence }} <a href="javascript:{let win = new NewPropertyPopup('FILE_UPLOAD', '{{ "{" ~ node.id ~ "}" }}/documents/#', true);document.getElementById('main-content').after(win.render());};" class="inline-icon upload-icon" title="{{ "upload_file" | uitxt | ndsentence }}"></a></h2>
+    <h2>{{ "node_page_text/generic/documents" | uitxtrt | ndsentence }} <a href="javascript:{let win = new NewPropertyPopup('FILE_UPLOAD', '{{ "{" ~ node.NodeID ~ "}" }}/documents/#', true);document.getElementById('main-content').after(win.render());};" class="inline-icon upload-icon" title="{{ "upload_file" | uitxt | ndsentence }}"></a></h2>
     <ul class="collection-list" id="documentsContainer">
     {% if progressive_load %}
         <script>
-            let documentInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.id ~ "}") | raw }}/documents/# DESC", document.getElementById("documentsContainer"));
+            let documentInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.NodeID ~ "}") | raw }}/documents/# DESC", document.getElementById("documentsContainer"));
         </script>
     {% else %}
         {% if node.properties.documents %}
@@ -80,16 +80,16 @@
     </ul>
     
     <div class="small-spacer"></div>
-    <a class="navigational-link" href="/users/{{ node.id }}/login-methods">{% if is_own_account %}{{ "add_or_remove_login_methods" | uitxt | ndsentence }}{% else %}{{ ui_template("add_or_remove_login_methods_for", {"user":address_user_as}) }}{% endif %}</a><br />
+    <a class="navigational-link" href="/users/{{ node.NodeID }}/login-methods">{% if is_own_account %}{{ "add_or_remove_login_methods" | uitxt | ndsentence }}{% else %}{{ ui_template("add_or_remove_login_methods_for", {"user":address_user_as}) }}{% endif %}</a><br />
     {% endif %}
 </div>
 
 <div class="marked-section">
-    <h2>{{ "node_page_text/user/messages" | uitxtrt | ndsentence }} <a href="/chats/new-message?to={{ node.id }}" class="inline-icon add-comment-icon" title="{{ "new_message" | uitxt | ndsentence }}"></a></h2>
+    <h2>{{ "node_page_text/user/messages" | uitxtrt | ndsentence }} <a href="/chats/new-message?to={{ node.NodeID }}" class="inline-icon add-comment-icon" title="{{ "new_message" | uitxt | ndsentence }}"></a></h2>
     <ul class="collection-list" id="messagesContainer">
     {% if progressive_load %}
         <script>
-            let messagesInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.id ~ "}") | raw }}/messages/# DESC", document.getElementById("messagesContainer"));
+            let messagesInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.NodeID ~ "}") | raw }}/messages/# DESC", document.getElementById("messagesContainer"));
         </script>
     {% else %}
         {% if node.properties.messages %}

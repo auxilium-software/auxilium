@@ -3,7 +3,7 @@
 {% endif %}
 {% if inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json") %}
     {% if inline_node_expanded %}
-        <h3 class="low-margin-heading"><a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %}class="navigational-link" href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if inline_node.properties.name %}{{ inline_node.properties.name }}{% else %}{{ "{" ~ inline_node.id ~ "}" }}{% endif %}</a></h3>
+        <h3 class="low-margin-heading"><a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %}class="navigational-link" href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if inline_node.properties.name %}{{ inline_node.properties.name }}{% else %}{{ "{" ~ inline_node.NodeID ~ "}" }}{% endif %}</a></h3>
         <div class="small-spacer"></div>
         <dl>
         {% for key,element in inline_node.properties %}
@@ -29,10 +29,10 @@
         {% endfor %}
         </dl>
     {% else %}
-        <a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %}class="navigational-link" href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if inline_node.properties.name %}{{ inline_node.properties.name }}{% else %}{{ "{" ~ inline_node.id ~ "}" }}{% endif %}</a>
+        <a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %}class="navigational-link" href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if inline_node.properties.name %}{{ inline_node.properties.name }}{% else %}{{ "{" ~ inline_node.NodeID ~ "}" }}{% endif %}</a>
     {% endif %}
 {% elseif inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json") %}
-    <a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %} href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin work-icon" title="Case"></span>{% if inline_node.properties.title %}{{ inline_node.properties.title }}{% else %}{{ "{" ~ inline_node.id ~ "}" }}{% endif %}{% if inline_node.properties.clients %} - {% for client_number,client in inline_node.properties.clients.properties %}{{ client.properties.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</a>
+    <a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %} href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin work-icon" title="Case"></span>{% if inline_node.properties.title %}{{ inline_node.properties.title }}{% else %}{{ "{" ~ inline_node.NodeID ~ "}" }}{% endif %}{% if inline_node.properties.clients %} - {% for client_number,client in inline_node.properties.clients.properties %}{{ client.properties.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</a>
 {% elseif inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
     <ul class="collection-list">
         {% set list_temp_counter = 0 %}
@@ -49,7 +49,7 @@
             <li>
                 {% set inline_node = element %}
                 {{ include("/Pages/node-views/inline-node-view.html") }}
-                {% if not hide_edit_button %}<a class="playlist-remove-icon inline-icon" title="Remove item from list" href="{{ inline_node_path | raw }}/@unlink?{{ url_metadata.copy().setProperty("uln", inline_node.id).setPath(old_inline_node_paths[inline_node_level - 1] | slice(7)) }}"></a>{% endif %}
+                {% if not hide_edit_button %}<a class="playlist-remove-icon inline-icon" title="Remove item from list" href="{{ inline_node_path | raw }}/@unlink?{{ url_metadata.copy().setProperty("uln", inline_node.NodeID).setPath(old_inline_node_paths[inline_node_level - 1] | slice(7)) }}"></a>{% endif %}
             </li>
             {% set inline_node_level = inline_node_level - 1 %}
             {% set inline_node = old_inline_nodes[inline_node_level] %}

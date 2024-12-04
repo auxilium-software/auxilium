@@ -10,7 +10,7 @@
     <ul class="collection-list" id="departmentsContainer">
     {% if progressive_load %}
         <script>
-            let departmentsInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.id ~ "}") | raw }}/departments/# DESC", document.getElementById("departmentsContainer"));
+            let departmentsInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.NodeID ~ "}") | raw }}/departments/# DESC", document.getElementById("departmentsContainer"));
         </script>
     {% else %}
         {% if node.properties.departments %}
@@ -31,7 +31,7 @@
     <ul class="collection-list" id="casesContainer">
     {% if progressive_load %}
         <script>
-            let casesInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.id ~ "}") | raw }}/cases/# DESC", document.getElementById("casesContainer"));
+            let casesInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.NodeID ~ "}") | raw }}/cases/# DESC", document.getElementById("casesContainer"));
         </script>
     {% else %}
         {% if node.properties.cases %}
@@ -61,11 +61,11 @@
 </div>
 
 <div class="marked-section">
-    <h2>{{ "node_page_text/group/staff" | uitxtrt | ndsentence }} <a href="javascript:attachToObject('{{ ("{" ~ node.id ~ "}/staff/#") | raw }}', 'users');" class="inline-icon group-add-icon" title="{{ "add_person" | uitxt | ndsentence }}"></a></h2>
+    <h2>{{ "node_page_text/group/staff" | uitxtrt | ndsentence }} <a href="javascript:attachToObject('{{ ("{" ~ node.NodeID ~ "}/staff/#") | raw }}', 'users');" class="inline-icon group-add-icon" title="{{ "add_person" | uitxt | ndsentence }}"></a></h2>
     <ul class="collection-list" id="staffContainer">
     {% if progressive_load %}
         <script>
-            let messagesInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.id ~ "}") | raw }}/staff/# DESC", document.getElementById("staffContainer"), true);
+            let messagesInfiniteScroller = new InfiniteScroller("SELECT @path FROM  {{ ("{" ~ node.NodeID ~ "}") | raw }}/staff/# DESC", document.getElementById("staffContainer"), true);
         </script>
     {% else %}
         {% if node.properties.staff %}

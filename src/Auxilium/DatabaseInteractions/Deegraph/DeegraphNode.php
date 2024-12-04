@@ -63,7 +63,7 @@ class DeegraphNode
      */
     public function GetNodeID(): string
     {
-        return substr($this->NodeID, 1, -1);
+        return $this->NodeID->GetPlainUUID();
     }
 
 
@@ -142,7 +142,7 @@ class DeegraphNode
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "LINK {".$node->getId()."} AS ".$key." OF {".$this->getId()."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
-                ->LinkOfRelativePath(new UUID($node->GetNodeID()), new UUID($this->GetNodeID()))
+                ->LinkOfRelativePath($node->GetNodeUUID(), $this->GetNodeUUID())
                 ->As($key);
             if($force) $query = $query->Force();
             $query = $query->Build();
@@ -172,7 +172,7 @@ class DeegraphNode
             // $query = "UNLINK ".$key." FROM {".$this->getId()."}";
             $query = QueryBuilder::Unlink()
                 ->UnlinkWhat($key)
-                ->From(new UUID($this->GetNodeID()))
+                ->From($this->GetNodeUUID())
                 ->Build();
             if($this->CachedProperties != null)
             {
@@ -204,7 +204,7 @@ class DeegraphNode
 
         // $query = "DELETE {".$this->getId()."}";
         $query = QueryBuilder::Delete()
-            ->RelativePath(new UUID($this->GetNodeID()))
+            ->RelativePath($this->GetNodeUUID())
             ->Build();
         return GraphDatabaseConnection::query($actor, $query);
     }
@@ -242,7 +242,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "PERMS ON {".$this->getId()."}";
         $query = QueryBuilder::Permission()
-            ->On(new UUID($this->GetNodeID()))
+            ->On($this->GetNodeUUID())
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@permissions"]))
@@ -279,7 +279,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "REFERENCES {".$this->getId()."}";
         $query = QueryBuilder::References()
-            ->RelativePath(new UUID($this->GetNodeID()))
+            ->RelativePath($this->GetNodeUUID())
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@map"]))
@@ -333,7 +333,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "DIRECTORY {".$this->getId()."}";
         $query = QueryBuilder::Directory()
-            ->RelativePath(new UUID($this->GetNodeID()))
+            ->RelativePath($this->GetNodeUUID())
             ->Build();
 
         $response = GraphDatabaseConnection::query($actor, $query);
@@ -386,7 +386,7 @@ class DeegraphNode
             $actor = Session::get_current()->getUser();
         }
 
-        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->GetNodeID() . "}", "GET");
+        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/" . $this->GetNodeUUID(), "GET");
 
         if(is_array($result))
         {
