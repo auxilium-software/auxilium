@@ -249,6 +249,7 @@ try
 
         //$node->getProperties();
 
+
         if($node == null)
         {
             PageBuilder2::Render404();
@@ -375,42 +376,36 @@ try
                         }
                         //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                         //exit();
-                        PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
                         PageBuilder2::Render(
                             template : "Pages/node-views/name-new-property.html.twig",
-                            variables: []
+                            variables: [
+                                "duplicate_property_name" => $_POST["name"],
+                            ]
                         );
                     }
-                    else
-                    {
-                        PageBuilder2::Render(
-                            template : "Pages/node-views/name-new-property.html.twig",
-                            variables: []
-                        );
-                    }
-                }
-                else
-                {
-                    $url_metadata->pushCurrentToReturnStack();
-
-                    $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
-                    $form_list = json_decode($form_list, true);
-
-                    /*
-                    // Now handled in URLMetadata class
-                    $url_metadata_with_tgn = clone $url_metadata;
-                    $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
-                    PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
-                    */
-
-                    PageBuilder2::AddVariable("form_list", $form_list);
-
                     PageBuilder2::Render(
-                        template : "Pages/node-views/new-property.html.twig",
+                        template : "Pages/node-views/name-new-property.html.twig",
                         variables: []
                     );
                 }
-                break;
+                $url_metadata->pushCurrentToReturnStack();
+
+                $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
+                $form_list = json_decode($form_list, true);
+
+                /*
+                // Now handled in URLMetadata class
+                $url_metadata_with_tgn = clone $url_metadata;
+                $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
+                PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
+                */
+
+                PageBuilder2::Render(
+                    template : "Pages/node-views/new-property.html.twig",
+                    variables: [
+                        "form_list" => $form_list,
+                    ]
+                );
             case "@search":
                 PageBuilder2::Render(
                     template : "Pages/node-views/search.html.twig",
@@ -499,7 +494,6 @@ try
                         PageBuilder2::AddVariable("is_own_account", true);
                     }
 
-                    PageBuilder2::AddVariable("login_methods", $login_methods);
                     //[
                     //    "type" => "oauth",
                     //    "vendor" => "microsoft"
@@ -508,25 +502,29 @@ try
                     PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
                     PageBuilder2::Render(
                         template : "Pages/node-views/user.html.twig",
-                        variables: []
+                        variables: [
+                            "login_methods" => $login_methods
+                        ]
                     );
 
                     //PageBuilder2::AddVariable("traditional_login_method", []);
                 }
                 elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                 {
-                    PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
                     PageBuilder2::Render(
                         template : "Pages/node-views/case.html.twig",
-                        variables: []
+                        variables: [
+                            "hidden_props" => ["description", "clients", "messages", "documents", "todos", "timeline", "workers"],
+                        ]
                     );
                 }
                 elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
                 {
-                    PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
                     PageBuilder2::Render(
                         template : "Pages/node-views/group.html.twig",
-                        variables: []
+                        variables: [
+                            "hidden_props" => ["departments", "cases", "staff"],
+                        ]
                     );
                 }
                 else
