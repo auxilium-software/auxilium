@@ -121,7 +121,7 @@ try
         $deegraph_path = implode("/", $path_parsed);
         PageBuilder2::AddVariable("deegraph_path", $deegraph_path);
 
-        if($pb->getVariable("progressive_load"))
+        if(PageBuilder2::GetVariable("progressive_load"))
         {
             $primary_node_path_order = [];
             $primary_node_deegraph_paths = [];
@@ -264,7 +264,7 @@ try
                 if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                 {
                     PageBuilder2::Render(
-                        template: "Pages/delete-views/generic",
+                        template: "Pages/delete-views/generic.html.twig",
                         variables: []
                     );
                 }
@@ -272,13 +272,13 @@ try
                 if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                 {
                     PageBuilder2::Render(
-                        template: "Pages/delete-views/generic",
+                        template: "Pages/delete-views/generic.html.twig",
                         variables: []
                     );
                 }
 
                 PageBuilder2::Render(
-                    template: "Pages/delete-views/generic",
+                    template: "Pages/delete-views/generic.html.twig",
                     variables: []
                 );
             case "@delete":
@@ -318,7 +318,7 @@ try
                 }
 
                 PageBuilder2::Render(
-                    template: "Pages/edit-views/text-plain",
+                    template: "Pages/edit-views/text-plain.html.twig",
                     variables: []
                 );
             case "@unlink":
@@ -347,7 +347,7 @@ try
                 if(!$jwt_validation_passed)
                 {
                     PageBuilder2::Render(
-                        template: "Pages/node-views/generic",
+                        template: "Pages/node-views/generic.html.twig",
                         variables: []
                     );
                 }
@@ -377,14 +377,14 @@ try
                         //exit();
                         PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
                         PageBuilder2::Render(
-                            template: "Pages/node-views/name-new-property",
+                            template: "Pages/node-views/name-new-property.html.twig",
                             variables: []
                         );
                     }
                     else
                     {
                         PageBuilder2::Render(
-                            template: "Pages/node-views/name-new-property",
+                            template: "Pages/node-views/name-new-property.html.twig",
                             variables: []
                         );
                     }
@@ -406,19 +406,19 @@ try
                     PageBuilder2::AddVariable("form_list", $form_list);
 
                     PageBuilder2::Render(
-                        template: "Pages/node-views/new-property",
+                        template: "Pages/node-views/new-property.html.twig",
                         variables: []
                     );
                 }
                 break;
             case "@search":
                 PageBuilder2::Render(
-                    template: "Pages/node-views/search",
+                    template: "Pages/node-views/search.html.twig",
                     variables: []
                 );
             case "@references":
                 PageBuilder2::Render(
-                    template: "Pages/node-views/references",
+                    template: "Pages/node-views/references.html.twig",
                     variables: []
                 );
 
@@ -507,7 +507,7 @@ try
                     //PageBuilder2::AddVariable("permissions", true);
                     PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
                     PageBuilder2::Render(
-                        template: "Pages/node-views/user",
+                        template: "Pages/node-views/user.html.twig",
                         variables: []
                     );
 
@@ -517,7 +517,7 @@ try
                 {
                     PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
                     PageBuilder2::Render(
-                        template: "Pages/node-views/case",
+                        template: "Pages/node-views/case.html.twig",
                         variables: []
                     );
                 }
@@ -525,14 +525,14 @@ try
                 {
                     PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
                     PageBuilder2::Render(
-                        template: "Pages/node-views/group",
+                        template: "Pages/node-views/group.html.twig",
                         variables: []
                     );
                 }
                 else
                 {
                     PageBuilder2::Render(
-                        template: "Pages/node-views/generic",
+                        template: "Pages/node-views/generic.html.twig",
                         variables: []
                     );
                 }
