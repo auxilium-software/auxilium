@@ -503,6 +503,7 @@ try
                             PageBuilder2::AddVariable("is_own_account", true);
                         }
 
+                        PageBuilder2::AddVariable("login_methods", $login_methods);
                         //[
                         //    "type" => "oauth",
                         //    "vendor" => "microsoft"
