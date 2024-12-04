@@ -539,23 +539,10 @@ try
     }
     catch(DatabaseConnectionException $e)
     {
-        $pb->setDefaultVariables();
-        $pb->setTemplate("ErrorPages/InternalSystemError");
-        $technical_details = "Exception Type:\n    " . get_class($e);
-        $technical_details .= "\nMessage:\n    " . $e->getMessage();
-        $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-        PageBuilder2::AddVariable("technical_details", $technical_details);
-        http_response_code(500);
-        $pb->render();
+        PageBuilder2::RenderInternalSystemError($e);
     }
 }
 catch(Exception $e)
 {
-    $pb->setDefaultVariables();
-    $pb->setTemplate("ErrorPages/InternalSystemError");
-    $technical_details = "Exception Type:\n    " . get_class($e);
-    $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-    PageBuilder2::AddVariable("technical_details", $technical_details);
-    http_response_code(500);
-    $pb->render();
+    PageBuilder2::RenderInternalSystemError($e);
 }
