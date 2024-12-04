@@ -205,7 +205,7 @@ try
 
         $node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromPath($primary_string_path);
 
-        $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated. 
+        $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated.
         //This is not the current state of the url_metadata, rather the state it was in when we received the request
 
         $url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
@@ -251,287 +251,269 @@ try
 
         if($node == null)
         {
-            http_response_code(404);
-            $pb->setTemplate("Pages/node-views/404");
-            $pb->render();
-            exit();
+            PageBuilder2::Render404();
         }
-        else
+
+
+        PageBuilder2::AddVariable("node", $node);
+        switch($action)
         {
-            PageBuilder2::AddVariable("node", $node);
-            switch($action)
-            {
-                case "@delete_confirm":
-                    if($jwt_validation_passed)
-                    {
-                        if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
-                        {
-                            $pb->setTemplate("Pages/delete-views/generic");
-                        }
-                        elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
-                        {
-                            $pb->setTemplate("Pages/delete-views/generic");
-                        }
-                        else
-                        {
-                            $pb->setTemplate("Pages/delete-views/generic");
-                        }
-                    }
-                    else
-                    {
-                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                        exit();
-                    }
-                    break;
-                case "@delete":
-                    if($jwt_validation_passed)
-                    {
-                        $node->Delete();
-                        $path = explode("/", $primary_string_path);
-                        array_pop($path);
-                        //echo implode("/", $path);
-                        NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
-                    }
-                    else
-                    {
-                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                    }
-                    break;
-                case "@edit":
-                    if($jwt_validation_passed)
-                    {
-                        //echo "EDIT";
+            case "@delete_confirm":
+                if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
 
-                        if(isset($_POST["value"]))
-                        {
-                            $refs = $node->GetReferences();
-                            //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
+                if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
+                {
+                    PageBuilder2::Render(
+                        template: "Pages/delete-views/generic",
+                        variables: []
+                    );
+                }
 
-                            $data = $_POST["value"];
-                            $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+                if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
+                {
+                    PageBuilder2::Render(
+                        template: "Pages/delete-views/generic",
+                        variables: []
+                    );
+                }
 
-                            foreach($refs as $ref_name => &$ref_nodes)
-                            {
-                                foreach($ref_nodes as &$ref_node)
-                                {
-                                    $ref_node->addProperty($ref_name, $new_node, null, true);
-                                    //echo $ref_node->GetNodeID()." ==[".$ref_name."]=> ".$node->GetNodeID()."<br />";
-                                }
-                            }
-                            $path = explode("/", $primary_string_path);
-                            array_pop($path);
-                            NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
-                            exit();
-                            //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
-                            //$query_result = $node->addProperty($_POST["name"], $return_node);
-                        }
-                        else
+                PageBuilder2::Render(
+                    template: "Pages/delete-views/generic",
+                    variables: []
+                );
+            case "@delete":
+                if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+
+                $node->Delete();
+                $path = explode("/", $primary_string_path);
+                array_pop($path);
+                //echo implode("/", $path);
+                NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
+            case "@edit":
+                if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+
+                //echo "EDIT";
+
+                if(isset($_POST["value"]))
+                {
+                    $refs = $node->GetReferences();
+                    //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
+
+                    $data = $_POST["value"];
+                    $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+
+                    foreach($refs as $ref_name => &$ref_nodes)
+                    {
+                        foreach($ref_nodes as &$ref_node)
                         {
-                            $pb->setTemplate("Pages/edit-views/text-plain");
+                            $ref_node->addProperty($ref_name, $new_node, null, true);
+                            //echo $ref_node->GetNodeID()." ==[".$ref_name."]=> ".$node->GetNodeID()."<br />";
                         }
                     }
-                    else
+                    $path = explode("/", $primary_string_path);
+                    array_pop($path);
+                    NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
+                    //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+                    //$query_result = $node->addProperty($_POST["name"], $return_node);
+                }
+                else
+                {
+                    $pb->setTemplate("Pages/edit-views/text-plain");
+                }
+                break;
+            case "@unlink":
+                if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+
+                //echo "Unlinking: ".$node->GetNodeID()." => ".$last_prop;
+                //exit();
+                if($url_metadata->getProperty("uln") != null)
+                {
+                    //echo "Unlinking: ".$node->GetNodeID()." => ".$last_prop."<br />";
+                    $prop = $node->GetProperty($last_prop);
+                    if($prop != null)
                     {
-                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                        exit();
+                        if($prop->GetNodeID() == $url_metadata->getProperty("uln"))
+                        { // Make sure the property hasn't changed since when the link was generated - the user expects the thing they clicked to be removed, not some other random thing with the same path.
+                            $node->UnlinkProperty($last_prop);
+                        }
                     }
-                    break;
-                case "@unlink":
-                    if($jwt_validation_passed)
+                    //exit();
+                    //$node->unlinkProperty($last_prop);
+                    NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
+                }
+                break;
+            case "@new_property":
+                if($jwt_validation_passed)
+                {
+                    if($url_metadata->getProperty("rcn") != null)
                     {
-                        //echo "Unlinking: ".$node->GetNodeID()." => ".$last_prop;
-                        //exit();
-                        if($url_metadata->getProperty("uln") != null)
+                        if(isset($_POST["name"]))
                         {
-                            //echo "Unlinking: ".$node->GetNodeID()." => ".$last_prop."<br />";
-                            $prop = $node->GetProperty($last_prop);
-                            if($prop != null)
-                            {
-                                if($prop->GetNodeID() == $url_metadata->getProperty("uln"))
-                                { // Make sure the property hasn't changed since when the link was generated - the user expects the thing they clicked to be removed, not some other random thing with the same path.
-                                    $node->UnlinkProperty($last_prop);
-                                }
-                            }
+                            //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+
                             //exit();
-                            //$node->unlinkProperty($last_prop);
-                            NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                            exit();
-                        }
-                    }
-                    else
-                    {
-                        NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                        exit();
-                        //$action = "@view";
-                    }
-                    break;
-                case "@new_property":
-                    if($jwt_validation_passed)
-                    {
-                        if($url_metadata->getProperty("rcn") != null)
-                        {
-                            if(isset($_POST["name"]))
+                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                            $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
+                            $query_result = $node->AddProperty($_POST["name"], $return_node);
+                            if($query_result !== false)
                             {
-                                //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-
+                                //var_dump($query_result);
                                 //exit();
-                                $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                                $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
-                                $query_result = $node->AddProperty($_POST["name"], $return_node);
-                                if($query_result !== false)
+                                $ret_url = $url_metadata->popFromReturnStack();
+                                if($ret_url == null)
                                 {
-                                    //var_dump($query_result);
-                                    //exit();
-                                    $ret_url = $url_metadata->popFromReturnStack();
-                                    if($ret_url == null)
-                                    {
-                                        $ret_url = "/graph/" . $primary_string_path;
-                                    }
-                                    $url_metadata->setProperty("rcn", null);
-                                    NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
+                                    $ret_url = "/graph/" . $primary_string_path;
                                 }
-                                //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                                //exit();
-                                PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
-                                $pb->setTemplate("Pages/node-views/name-new-property");
+                                $url_metadata->setProperty("rcn", null);
+                                NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
                             }
-                            else
-                            {
-                                $pb->setTemplate("Pages/node-views/name-new-property");
-                            }
+                            //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                            //exit();
+                            PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
+                            $pb->setTemplate("Pages/node-views/name-new-property");
                         }
                         else
                         {
-                            $url_metadata->pushCurrentToReturnStack();
-
-                            $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
-                            $form_list = json_decode($form_list, true);
-
-                            /* 
-                            // Now handled in URLMetadata class
-                            $url_metadata_with_tgn = clone $url_metadata;
-                            $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
-                            PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
-                            */
-
-                            PageBuilder2::AddVariable("form_list", $form_list);
-
-                            $pb->setTemplate("Pages/node-views/new-property");
+                            $pb->setTemplate("Pages/node-views/name-new-property");
                         }
                     }
                     else
                     {
-                        $pb->setTemplate("Pages/node-views/generic");
-                    }
-                    break;
-                case "@search":
-                    $pb->setTemplate("Pages/node-views/search");
-                    break;
-                case "@references":
-                    $pb->setTemplate("Pages/node-views/references");
-                    break;
-                case "@ref_error":
-                    PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
-                case "@view":
-                default:
-                    if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
-                    {
-                        $login_methods = [];
+                        $url_metadata->pushCurrentToReturnStack();
+
+                        $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
+                        $form_list = json_decode($form_list, true);
+
                         /*
-                        $bind_variables = [
-                            "user_uuid" => $node->GetNodeID(),
-                        ];
-                        $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                        $statement->execute($bind_variables);
-                        $user_data = $statement->fetch();
+                        // Now handled in URLMetadata class
+                        $url_metadata_with_tgn = clone $url_metadata;
+                        $url_metadata_with_tgn->setProperty("tgn", \auxilium\EncodingTools::base64_encode_url_safe(\auxilium\URLMetadata::crush_uuid($node->GetNodeID())));
+                        PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
                         */
-                        $user_data = MariaDBServerConnection::RunOneRowSelect(
-                            SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
-                                ->cols(cols: [
-                                    "email_address",
-                                    "user_uuid",
-                                ]
-                                )
-                                ->where(cond: "user_uuid=:user_uuid")
-                                ->bindValue(name: "user_uuid", value: $node->GetNodeID())
-                        );
 
-                        if($user_data != null)
-                        {
-                            $login_methods[] = [
-                                "type" => "classic"
-                            ];
-                        }
+                        PageBuilder2::AddVariable("form_list", $form_list);
+
+                        $pb->setTemplate("Pages/node-views/new-property");
+                    }
+                }
+                else
+                {
+                    $pb->setTemplate("Pages/node-views/generic");
+                }
+                break;
+            case "@search":
+                PageBuilder2::Render(
+                    template: "Pages/node-views/search",
+                    variables: []
+                );
+            case "@references":
+                PageBuilder2::Render(
+                    template: "Pages/node-views/references",
+                    variables: []
+                );
 
 
-                        $queryResponse = MariaDBServerConnection::RunSelect(
-                            SQLQueryBuilderWrapper::SELECT(MariaDBTable::OAUTH_LOGINS)
-                                ->cols(cols: [
-                                    "unique_sub",
-                                    "user_uuid",
-                                ]
-                                )
-                                ->where(cond: "user_uuid=:user_uuid")
-                                ->bindValue(name: "user_uuid", value: $node->GetNodeID())
-                        );
-                        foreach($queryResponse as $loginDetails)
-                        {
-                            $login_methods[] = [
-                                "type" => "oauth",
-                                "vendor" => explode("/", $loginDetails["unique_sub"])[0]
-                            ];
-                        }
+            case "@ref_error":
+                PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
+            case "@view":
+            default:
+                if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
+                {
+                    $login_methods = [];
+                    /*
+                    $bind_variables = [
+                        "user_uuid" => $node->GetNodeID(),
+                    ];
+                    $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement->execute($bind_variables);
+                    $user_data = $statement->fetch();
+                    */
+                    $user_data = MariaDBServerConnection::RunOneRowSelect(
+                        SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
+                            ->cols(cols: [
+                                "email_address",
+                                "user_uuid",
+                            ]
+                            )
+                            ->where(cond: "user_uuid=:user_uuid")
+                            ->bindValue(name: "user_uuid", value: $node->GetNodeID())
+                    );
 
-                        /*
-                        $bind_variables = [
-                            "user_uuid" => $node->GetNodeID()
+                    if($user_data != null)
+                    {
+                        $login_methods[] = [
+                            "type" => "classic"
                         ];
-                        $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                        $statement->execute($bind_variables);
+                    }
+
+
+                    $queryResponse = MariaDBServerConnection::RunSelect(
+                        SQLQueryBuilderWrapper::SELECT(MariaDBTable::OAUTH_LOGINS)
+                            ->cols(cols: [
+                                "unique_sub",
+                                "user_uuid",
+                            ]
+                            )
+                            ->where(cond: "user_uuid=:user_uuid")
+                            ->bindValue(name: "user_uuid", value: $node->GetNodeID())
+                    );
+                    foreach($queryResponse as $loginDetails)
+                    {
+                        $login_methods[] = [
+                            "type" => "oauth",
+                            "vendor" => explode("/", $loginDetails["unique_sub"])[0]
+                        ];
+                    }
+
+                    /*
+                    $bind_variables = [
+                        "user_uuid" => $node->GetNodeID()
+                    ];
+                    $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
+                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement->execute($bind_variables);
+                    $returned_data = $statement->fetch();
+                    while($returned_data != null)
+                    {
+                        $login_methods[] = [
+                            "type" => "oauth",
+                            "vendor" => explode("/", $returned_data["unique_sub"])[0]
+                        ];
                         $returned_data = $statement->fetch();
-                        while($returned_data != null)
-                        {
-                            $login_methods[] = [
-                                "type" => "oauth",
-                                "vendor" => explode("/", $returned_data["unique_sub"])[0]
-                            ];
-                            $returned_data = $statement->fetch();
-                        }
-                        */
+                    }
+                    */
 
-                        if($node->GetNodeID() == Session::get_current()->getUser()->GetNodeID())
-                        {
-                            PageBuilder2::AddVariable("is_own_account", true);
-                        }
+                    if($node->GetNodeID() == Session::get_current()->getUser()->GetNodeID())
+                    {
+                        PageBuilder2::AddVariable("is_own_account", true);
+                    }
 
-                        PageBuilder2::AddVariable("login_methods", $login_methods);
-                        //[
-                        //    "type" => "oauth",
-                        //    "vendor" => "microsoft"
-                        //]
-                        //PageBuilder2::AddVariable("permissions", true);
-                        $pb->setTemplate("Pages/node-views/user");
-                        PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
+                    PageBuilder2::AddVariable("login_methods", $login_methods);
+                    //[
+                    //    "type" => "oauth",
+                    //    "vendor" => "microsoft"
+                    //]
+                    //PageBuilder2::AddVariable("permissions", true);
+                    $pb->setTemplate("Pages/node-views/user");
+                    PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
 
-                        //PageBuilder2::AddVariable("traditional_login_method", []);
-                    }
-                    elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
-                    {
-                        $pb->setTemplate("Pages/node-views/case");
-                        PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
-                    }
-                    elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
-                    {
-                        $pb->setTemplate("Pages/node-views/group");
-                        PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
-                    }
-                    else
-                    {
-                        $pb->setTemplate("Pages/node-views/generic");
-                    }
-            }
+                    //PageBuilder2::AddVariable("traditional_login_method", []);
+                }
+                elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
+                {
+                    $pb->setTemplate("Pages/node-views/case");
+                    PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
+                }
+                elseif($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
+                {
+                    $pb->setTemplate("Pages/node-views/group");
+                    PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
+                }
+                else
+                {
+                    $pb->setTemplate("Pages/node-views/generic");
+                }
         }
 
         $pb->render();
