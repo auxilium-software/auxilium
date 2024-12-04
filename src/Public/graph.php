@@ -21,7 +21,8 @@ try
 {
     try
     {
-        $pb->requireLogin();
+        Security::RequireLogin();
+
 
         PageBuilder2::AddVariable("progressive_load", false);
         if(isset($_COOKIE["progressiveload"]))
