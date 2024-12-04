@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Schemas\CaseSchema;
 use Auxilium\Schemas\UserSchema;
@@ -239,7 +240,7 @@ try
 
                             //exit();
                             $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                            $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
+                            $return_node = DeegraphNode::FromID($return_node_id);
                             $query_result = $node->AddProperty($_POST["name"], $return_node);
                             if($query_result !== false)
                             {
@@ -251,7 +252,7 @@ try
                                     $ret_url = "/graph/" . $primary_string_path;
                                 }
                                 $url_metadata->setProperty("rcn", null);
-                                NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
+                                NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
                                 exit();
                             }
                             //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));

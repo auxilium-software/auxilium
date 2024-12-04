@@ -55,7 +55,7 @@ if(isset($_SERVER["HTTP_REFERER"]))
 {
     if(!str_contains($_SERVER["HTTP_REFERER"], "/style"))
     {
-        NavigationUtilities::Redirect(target:  $_SERVER["HTTP_REFERER"]);
+        NavigationUtilities::Redirect(target: $_SERVER["HTTP_REFERER"]);
         exit();
     }
 }

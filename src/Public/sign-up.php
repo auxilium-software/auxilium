@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\EmailHandling\EmailBuilder;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\MessageSendException;
@@ -87,7 +88,7 @@ try
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
 
-                        $user_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($returned_data["user_uuid"]);
+                        $user_node = DeegraphNode::FromID($returned_data["user_uuid"]);
                         $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, Auxilium\User::get_system_node());
                         $user_node->AddProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
@@ -107,7 +108,7 @@ try
                         }
                         else
                         {
-                            NavigationUtilities::Redirect(target:  $next_location);
+                            NavigationUtilities::Redirect(target: $next_location);
                         }
                         exit();
                     }

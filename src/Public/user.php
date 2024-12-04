@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\EmailHandling\EmailBuilder;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
@@ -87,7 +88,7 @@ else
         exit();
     }
 }
-$target_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($target_node);
+$target_node = DeegraphNode::FromID($target_node);
 
 $pb->setVariable("user_uuid", $target_node->GetNodeID());
 

@@ -242,7 +242,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                         if(count($form_data["form_stack"]) > 0)
                         {
                             Auxilium\PersistentFormData::set($form_data);
-                            NavigationUtilities::Redirect(target:  array_pop($form_data["form_stack"]));
+                            NavigationUtilities::Redirect(target: array_pop($form_data["form_stack"]));
                         }
                         else
                         {

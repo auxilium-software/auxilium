@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\NavigationUtilities;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
@@ -57,7 +58,7 @@ if(isset($_GET["for"]))
     }
 }
 
-$target_node = new \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode($target_user_id);
+$target_node = new DeegraphNode($target_user_id);
 if(in_array("ACT", $target_node->GetPermissions()))
 {
     $target_user_id = $target_node->GetNodeID();
@@ -87,5 +88,5 @@ $token = $token_builder->getToken($algorithm, $signing_key);
 $jwt = $token->toString();
 
 $redirect_uri = $openid_config["openid_login_uri"] . "&redirect_uri=https%3A%2F%2F" . INSTANCE_DOMAIN_NAME . "%2Fapi%2Fv2%2Finbound-oauth-login&state=$jwt&nonce=$nonce";
-NavigationUtilities::Redirect(target:  $redirect_uri);
+NavigationUtilities::Redirect(target: $redirect_uri);
 

@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
 use Auxilium\Utilities\NavigationUtilities;
@@ -52,7 +53,7 @@ $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 $target_node = $url_metadata->getProperty("tn");
 if($target_node != null)
 {
-    $target_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID(Auxilium\URLMetadata::expand_crushed_uuid($target_node));
+    $target_node = DeegraphNode::FromID(Auxilium\URLMetadata::expand_crushed_uuid($target_node));
 }
 
 if(isset($uri_components[0]))

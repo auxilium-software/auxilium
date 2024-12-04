@@ -13,7 +13,6 @@ use Auxilium\Schemas\OrganisationSchema;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\Session;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
-use Darksparrow\DeegraphInteractions\DataStructures\DeegraphNodeDetails;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 
 require_once CREDENTIALS_FILE_LOCATION;
@@ -248,7 +247,7 @@ class GraphDatabaseConnection
 
         $rawNode = DeegraphServerConnection::GetConnection()->GetRawNode(
             actorID: new UUID($actor->GetNodeID()),
-            nodeID: $uuid,
+            nodeID : $uuid,
         );
         return json_decode($rawNode->AsJSON(), true);
 
@@ -295,7 +294,7 @@ class GraphDatabaseConnection
         $temp = DeegraphServerConnection::GetConnection()->CreateNewNode(
             actorID: new UUID($creator),
             dataURL: $data_url,
-            schema: $schema,
+            schema : $schema,
             creator: null,
         );
         return new DeegraphNode($temp->ID);

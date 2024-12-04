@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
@@ -10,7 +11,6 @@ use Auxilium\Schemas\OrganisationSchema;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
-use Auxilium\TwigHandling\PageBuilder;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\URLMetadata;
 use Auxilium\Utilities\NavigationUtilities;
@@ -156,7 +156,7 @@ try
                 if((str_starts_with($pth_prim, "~")) || preg_match('/^[0-9]*$/', $pth_prim))
                 {
                     $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
-                    $primary_node_path_nodes[$np] = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromPath($absolute_path);
+                    $primary_node_path_nodes[$np] = DeegraphNode::FromPath($absolute_path);
                     if($primary_node_path_nodes[$np] != null)
                     {
                         if($primary_node_path_nodes[$np]->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
@@ -203,7 +203,7 @@ try
             PageBuilder2::AddVariable("primary_node_path_name", end($primary_node_path_names));
         }
 
-        $node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromPath($primary_string_path);
+        $node = DeegraphNode::FromPath($primary_string_path);
 
         $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated.
         //This is not the current state of the url_metadata, rather the state it was in when we received the request
@@ -264,7 +264,7 @@ try
                 if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                 {
                     PageBuilder2::Render(
-                        template: "Pages/delete-views/generic.html.twig",
+                        template : "Pages/delete-views/generic.html.twig",
                         variables: []
                     );
                 }
@@ -272,13 +272,13 @@ try
                 if($node->ExtendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                 {
                     PageBuilder2::Render(
-                        template: "Pages/delete-views/generic.html.twig",
+                        template : "Pages/delete-views/generic.html.twig",
                         variables: []
                     );
                 }
 
                 PageBuilder2::Render(
-                    template: "Pages/delete-views/generic.html.twig",
+                    template : "Pages/delete-views/generic.html.twig",
                     variables: []
                 );
             case "@delete":
@@ -318,7 +318,7 @@ try
                 }
 
                 PageBuilder2::Render(
-                    template: "Pages/edit-views/text-plain.html.twig",
+                    template : "Pages/edit-views/text-plain.html.twig",
                     variables: []
                 );
             case "@unlink":
@@ -347,7 +347,7 @@ try
                 if(!$jwt_validation_passed)
                 {
                     PageBuilder2::Render(
-                        template: "Pages/node-views/generic.html.twig",
+                        template : "Pages/node-views/generic.html.twig",
                         variables: []
                     );
                 }
@@ -359,7 +359,7 @@ try
 
                         //exit();
                         $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                        $return_node = \Auxilium\DatabaseInteractions\Deegraph\DeegraphNode::FromID($return_node_id);
+                        $return_node = DeegraphNode::FromID($return_node_id);
                         $query_result = $node->AddProperty($_POST["name"], $return_node);
                         if($query_result !== false)
                         {
@@ -371,20 +371,20 @@ try
                                 $ret_url = "/graph/" . $primary_string_path;
                             }
                             $url_metadata->setProperty("rcn", null);
-                            NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
+                            NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
                         }
                         //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                         //exit();
                         PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
                         PageBuilder2::Render(
-                            template: "Pages/node-views/name-new-property.html.twig",
+                            template : "Pages/node-views/name-new-property.html.twig",
                             variables: []
                         );
                     }
                     else
                     {
                         PageBuilder2::Render(
-                            template: "Pages/node-views/name-new-property.html.twig",
+                            template : "Pages/node-views/name-new-property.html.twig",
                             variables: []
                         );
                     }
@@ -406,19 +406,19 @@ try
                     PageBuilder2::AddVariable("form_list", $form_list);
 
                     PageBuilder2::Render(
-                        template: "Pages/node-views/new-property.html.twig",
+                        template : "Pages/node-views/new-property.html.twig",
                         variables: []
                     );
                 }
                 break;
             case "@search":
                 PageBuilder2::Render(
-                    template: "Pages/node-views/search.html.twig",
+                    template : "Pages/node-views/search.html.twig",
                     variables: []
                 );
             case "@references":
                 PageBuilder2::Render(
-                    template: "Pages/node-views/references.html.twig",
+                    template : "Pages/node-views/references.html.twig",
                     variables: []
                 );
 
@@ -507,7 +507,7 @@ try
                     //PageBuilder2::AddVariable("permissions", true);
                     PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
                     PageBuilder2::Render(
-                        template: "Pages/node-views/user.html.twig",
+                        template : "Pages/node-views/user.html.twig",
                         variables: []
                     );
 
@@ -517,7 +517,7 @@ try
                 {
                     PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
                     PageBuilder2::Render(
-                        template: "Pages/node-views/case.html.twig",
+                        template : "Pages/node-views/case.html.twig",
                         variables: []
                     );
                 }
@@ -525,14 +525,14 @@ try
                 {
                     PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
                     PageBuilder2::Render(
-                        template: "Pages/node-views/group.html.twig",
+                        template : "Pages/node-views/group.html.twig",
                         variables: []
                     );
                 }
                 else
                 {
                     PageBuilder2::Render(
-                        template: "Pages/node-views/generic.html.twig",
+                        template : "Pages/node-views/generic.html.twig",
                         variables: []
                     );
                 }

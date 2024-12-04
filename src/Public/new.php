@@ -56,7 +56,7 @@ switch($action)
         $ret_url = $url_metadata->popFromReturnStack();
         $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->GetNodeID())));
         //echo $ret_url."?".$url_metadata;
-        NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
+        NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
         exit();
         break;
     case "file":
@@ -71,7 +71,7 @@ switch($action)
             $ret_url = $url_metadata->popFromReturnStack();
             $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->GetNodeID())));
             //echo $ret_url."?".$url_metadata;
-            NavigationUtilities::Redirect(target:  $ret_url . "?" . $url_metadata);
+            NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
             exit();
         }
         break;
