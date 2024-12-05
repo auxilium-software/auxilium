@@ -2,9 +2,11 @@
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\EncodingTools;
+use Auxilium\Enumerators\CookieKey;
 use Auxilium\GraphDatabaseConnection;
 use Auxilium\MicroTemplate;
 use Auxilium\RelationalDatabaseConnection;
+use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder2;
@@ -16,15 +18,13 @@ require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 
 Security::RequireLogin();
-
-PageBuilder2::AddVariable("progressive_load", false);
-if(isset($_COOKIE["progressiveload"]))
-{
-    if($_COOKIE["progressiveload"] == "true")
-    {
-        PageBuilder2::AddVariable("progressive_load", true);
-    }
-}
+PageBuilder2::AddVariable(
+    variableName: "progressive_load",
+    variableValue: CookieHandling::GetBooleanCookie(
+        targetCookie: CookieKey::PROGRESSIVE_LOAD,
+        default: false,
+    ),
+);
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components));

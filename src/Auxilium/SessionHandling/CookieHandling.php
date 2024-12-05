@@ -2,11 +2,13 @@
 
 namespace Auxilium\SessionHandling;
 
+use Auxilium\Enumerators\CookieKey;
+
 class CookieHandling
 {
-    public static function GetBooleanCookie(string $cookieName, bool $default = false): bool
+    public static function GetBooleanCookie(CookieKey $targetCookie, bool $default = false): bool
     {
-        $cookieValue = self::GetCookieValue($cookieName);
+        $cookieValue = self::GetCookieValue($targetCookie, "false");
 
         if(!$cookieValue)
             return $default;
@@ -15,18 +17,21 @@ class CookieHandling
         return false;
     }
 
-    public static function GetCookieValue(string $cookieName): bool|string
+    public static function GetCookieValue(CookieKey $targetCookie, string $default = ""): bool|string
     {
-        if(!isset($_COOKIE[$cookieName]))
+        if(!isset($_COOKIE[$targetCookie->value]))
         {
-            switch($cookieName)
+            /*
+            switch($targetCookie)
             {
-                case "lang":
+                case CookieKey::LANGUAGE:
                     return "en";
-                case "progressive_load":
+                case CookieKey::PROGRESSIVE_LOAD:
                     return "true";
             }
+            */
+            return $default;
         }
-        return $_COOKIE[$cookieName];
+        return $_COOKIE[$targetCookie->value];
     }
 }

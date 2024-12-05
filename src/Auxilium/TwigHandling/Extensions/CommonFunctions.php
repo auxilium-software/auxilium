@@ -2,6 +2,7 @@
 
 namespace Auxilium\TwigHandling\Extensions;
 
+use Auxilium\Enumerators\CookieKey;
 use Auxilium\MicroTemplate;
 use Auxilium\SessionHandling\CookieHandling;
 use Twig\Extension\AbstractExtension;
@@ -40,7 +41,7 @@ class CommonFunctions extends AbstractExtension
             new MicroTemplate(
                 "ui_templates/" . $path,
                 // $this->twigVariables["selected_lang"],
-                CookieHandling::GetCookieValue("lang"),
+                CookieHandling::GetCookieValue(CookieKey::LANGUAGE),
                 $template_variables,
                 false
             )
