@@ -202,12 +202,13 @@ class PageBuilder2
 
 
 
-    private static array $AdditionalVariables = [];
-    public static function AddVariable(string $variableName, string|array $variableValue): void
+
+    public static function AddVariable(string $variableName, mixed $variableValue): void
     {
         self::$AdditionalVariables[$variableName] = $variableValue;
     }
-    public static function GetVariable(string $variableName): string
+
+    public static function GetVariable(string $variableName): mixed
     {
         return self::$AdditionalVariables[$variableName] ?? die();
     }
