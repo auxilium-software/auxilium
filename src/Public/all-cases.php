@@ -12,7 +12,7 @@ $pb = PageBuilder::get_instance();
 try
 {
     $pb->requireLogin();
-    if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->GetPermissions()))
+    if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()))
     {
         $pb->setVariable("is_admin", true);
     }

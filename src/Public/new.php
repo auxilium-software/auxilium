@@ -54,7 +54,7 @@ switch($action)
     case "collection":
         $new_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
         $ret_url = $url_metadata->popFromReturnStack();
-        $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->GetNodeID())));
+        $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->getId())));
         //echo $ret_url."?".$url_metadata;
         NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
         exit();
@@ -69,7 +69,7 @@ switch($action)
             $data = trim($_POST["text"]);
             $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
             $ret_url = $url_metadata->popFromReturnStack();
-            $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->GetNodeID())));
+            $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($new_node->getId())));
             //echo $ret_url."?".$url_metadata;
             NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
             exit();

@@ -88,9 +88,9 @@ try
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
 
-                        $user_node = DeegraphNode::FromID($returned_data["user_uuid"]);
+                        $user_node = DeegraphNode::from_id($returned_data["user_uuid"]);
                         $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, Auxilium\User::get_system_node());
-                        $user_node->AddProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
+                        $user_node->addProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
                         $bind_variables = [
                             "user_uuid" => $returned_data["user_uuid"]
@@ -214,7 +214,7 @@ try
                     // NOTE: BCrypt has a max input of 72 chars, so in order to mitigate attacks on sentence based passwords, that are long but lower complexity, we must pre-hash the password and then base64 encode to get down to 44 chars, which is under the limit. These 44 chars still have plenty of entropy thanks to sha256 being a robust hash algorithm.
 
                     $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
-                    $user_node = new Auxilium\User($user_node->GetNodeID());
+                    $user_node = new Auxilium\User($user_node->getId());
 
                     $hash_options = [
                         "cost" => 12,
@@ -227,7 +227,7 @@ try
 
                     $verification_code = $word_list[ord($garbage_data[0])] . " " . $word_list[ord($garbage_data[1])] . " " . $word_list[ord($garbage_data[2])] . " " . $word_list[ord($garbage_data[3])];
                     $temporary_data = [
-                        "user_uuid" => $user_node->GetNodeID(),
+                        "user_uuid" => $user_node->getId(),
                         "email_address" => strtolower($_POST["email_address"]),
                         "verification_code" => str_replace(" ", "", $verification_code),
                     ];
@@ -247,18 +247,18 @@ try
                     Auxilium\InternetMessageTransport::send($email, "MIME");
 
                     $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
-                    $user_node->AddProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
+                    $user_node->addProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
                     $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($form_values["full_name"], "text/plain", null, $user_node);
-                    $user_node->AddProperty("name", $full_name_prop, $user_node);
+                    $user_node->addProperty("name", $full_name_prop, $user_node);
                     $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $form_values["full_name"])[0], "text/plain", null, $user_node);
-                    $user_node->AddProperty("display_name", $name_prop, $user_node); // Create this as default the user's first name - they can change it later if they want
+                    $user_node->addProperty("display_name", $name_prop, $user_node); // Create this as default the user's first name - they can change it later if they want
 
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
 
                     $session_info = [
                         "session_uuid" => Auxilium\EncodingTools::generate_new_uuid(),
                         "session_key" => $session_key,
-                        "user_uuid" => $user_node->GetNodeID(),
+                        "user_uuid" => $user_node->getId(),
                         "ip_address" => $_SERVER["REMOTE_ADDR"],
                         "sub" => "auxilium/" . strtolower($_POST["email_address"]),
                         "active" => 1,
@@ -267,7 +267,7 @@ try
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
 
-                    $form_data["user_uuid"] = $user_node->GetNodeID();
+                    $form_data["user_uuid"] = $user_node->getId();
                     $form_data["session_key"] = $session_info["session_key"];
                     $form_data["email_address"] = strtolower($_POST["email_address"]);
                     $form_data["hashed_password"] = $hashed_password;

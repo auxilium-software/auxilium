@@ -142,7 +142,7 @@ class AuxiliumScript
             {
                 if(is_a($vars[$st], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                 {
-                    array_unshift($pth, "{" . $vars[$st]->GetNodeID() . "}");
+                    array_unshift($pth, "{" . $vars[$st]->getId() . "}");
                     $fcn = "@view";
                     if(substr(end($pth), 0, 1) === "@")
                     {
@@ -153,23 +153,23 @@ class AuxiliumScript
                     {
                         case "@created":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->GetTimestamp();
+                            return ($node == null) ? null : $node->getTimestamp();
                         case "@schema":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->GetSchemaUrl();
+                            return ($node == null) ? null : $node->getSchemaUrl();
                         case "@creator":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->GetCreator();
+                            return ($node == null) ? null : $node->getCreator();
                         case "@creator_id":
                             $node = GraphDatabaseConnection::node_from_path($string);
                             if($node != null)
                             {
-                                $node = $node->GetCreator();
+                                $node = $node->getCreator();
                             }
-                            return ($node == null) ? null : $node->GetNodeID();
+                            return ($node == null) ? null : $node->getId();
                         case "@id":
                             $node = GraphDatabaseConnection::node_from_path($string);
-                            return ($node == null) ? null : $node->GetNodeID();
+                            return ($node == null) ? null : $node->getId();
                         case "@view":
                             return GraphDatabaseConnection::node_from_path($string);
                     }

@@ -63,7 +63,6 @@ class NewPropertyPopup {
     
 
     constructor(types = null, targetPath = null, floating = false, makeParents = true) {
-
         this.#rootContainer = document.createElement("div");
         console.log(targetPath);
         

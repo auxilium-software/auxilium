@@ -204,7 +204,8 @@ class PageBuilder
 
     public function render()
     {
-        $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
+        // $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
+        $twigLoader = new FilesystemLoader(dirname($_SERVER["DOCUMENT_ROOT"]) . "/Templates/");
         $twig = new Environment($twigLoader, [
                 "cache" => false,
             ]

@@ -55,9 +55,9 @@ if(isset($_POST["submit"]))
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach($props as $key => &$value)
         {
-            $node->AddProperty($key, $value, null, false);
+            $node->addProperty($key, $value, null, false);
         }
-        echo "SN:" . $node->GetNodeID();
+        echo "SN:" . $node->getId();
         if($import_id != null)
         {
             $import_id_deegraph_id_map[$import_id] = $node;
@@ -105,9 +105,9 @@ if(isset($_POST["submit"]))
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach($props as $key => &$value)
         {
-            $node->AddProperty($key, $value, null, false);
+            $node->addProperty($key, $value, null, false);
         }
-        echo "UN:" . $node->GetNodeID();
+        echo "UN:" . $node->getId();
         if($import_id != null)
         {
             $import_id_deegraph_id_map[$import_id] = $node;
@@ -155,9 +155,9 @@ if(isset($_POST["submit"]))
         $node = Auxilium\GraphDatabaseConnection::new_node_raw($data, $schema, null);
         foreach($props as $key => &$value)
         {
-            $node->AddProperty($key, $value, null, false);
+            $node->addProperty($key, $value, null, false);
         }
-        echo "CN:" . $node->GetNodeID();
+        echo "CN:" . $node->getId();
         if($import_id != null)
         {
             $import_id_deegraph_id_map[$import_id] = $node;

@@ -68,20 +68,20 @@ class AuxiliumLFSObject
         {
             $actor = Session::get_current()->getUser();
         }
-        $actorId = ($actor == null) ? null : $actor->GetNodeID();
-        if($this->GetObjectID() == null)
+        $actorId = ($actor == null) ? null : $actor->getId();
+        if($this->getId() == null)
         {
             return false;
         }
         else
         {
-            $query = "SELECT {" . $this->GetObjectID() . "}/@creator/@id";
+            $query = "SELECT {" . $this->getId() . "}/@creator/@id";
             $response = GraphDatabaseConnection::query($actor, $query);
             if(isset($response["@rows"]))
             {
                 if(count($response["@rows"]) > 0)
                 {
-                    if($response["@rows"][0]["{" . $this->GetObjectID() . "}/@creator/@id"]["{" . $this->GetObjectID() . "}/@creator/@id"] == "{" . $actorId . "}")
+                    if($response["@rows"][0]["{" . $this->getId() . "}/@creator/@id"]["{" . $this->getId() . "}/@creator/@id"] == "{" . $actorId . "}")
                     {
                         return true;
                     }
@@ -93,14 +93,14 @@ class AuxiliumLFSObject
 
     public function exists()
     {
-        if(file_exists(LOCAL_STORAGE_DIRECTORY . $this->GetObjectID()))
+        if(file_exists(LOCAL_STORAGE_DIRECTORY . $this->getId()))
         {
             return true;
         }
         return false;
     }
 
-    public function GetObjectID()
+    public function getId()
     {
         return $this->uuid;
     }
@@ -137,7 +137,7 @@ class AuxiliumLFSObject
             {
                 if($this->exists())
                 {
-                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . $this->GetObjectID());
+                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . $this->getId());
                 }
             }
             return $this->data;
@@ -151,23 +151,23 @@ class AuxiliumLFSObject
         {
             $actor = Session::get_current()->getUser();
         }
-        $actorId = ($actor == null) ? null : $actor->GetNodeID();
+        $actorId = ($actor == null) ? null : $actor->getId();
         if(!isset($this->readPermission[$actorId]))
         {
-            if($this->GetObjectID() == null)
+            if($this->getId() == null)
             {
                 $this->readPermission[$actorId] = false;
             }
             else
             {
-                $query = "SELECT {" . $this->GetObjectID() . "}";
+                $query = "SELECT {" . $this->getId() . "}";
                 $response = GraphDatabaseConnection::query($actor, $query);
                 $this->readPermission[$actorId] = false;
                 if(isset($response["@rows"]))
                 {
                     if(count($response["@rows"]) > 0)
                     {
-                        $query = "PERMS ON {" . $this->GetObjectID() . "}";
+                        $query = "PERMS ON {" . $this->getId() . "}";
                         $response = GraphDatabaseConnection::query($actor, $query);
                         if(isset($response["@permissions"]))
                         {

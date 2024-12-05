@@ -88,14 +88,14 @@ else
         exit();
     }
 }
-$target_node = DeegraphNode::FromID($target_node);
+$target_node = DeegraphNode::from_id($target_node);
 
-$pb->setVariable("user_uuid", $target_node->GetNodeID());
+$pb->setVariable("user_uuid", $target_node->getId());
 
 switch($uri_components[1])
 {
     case "add-basic-login":
-        if(in_array("ACT", $target_node->GetPermissions()))
+        if(in_array("ACT", $target_node->getPermissions()))
         {
             if((count($uri_components) > 1) && $jwt_validation_passed)
             {
@@ -130,7 +130,7 @@ switch($uri_components[1])
 
                         $verification_code = $word_list[ord($garbage_data[0])] . " " . $word_list[ord($garbage_data[1])] . " " . $word_list[ord($garbage_data[2])] . " " . $word_list[ord($garbage_data[3])];
                         $temporary_data = [
-                            "user_uuid" => $target_node->GetNodeID(),
+                            "user_uuid" => $target_node->getId(),
                             "email_address" => strtolower($_POST["email_address"]),
                             "verification_code" => str_replace(" ", "", $verification_code),
                         ];
@@ -146,13 +146,13 @@ switch($uri_components[1])
 
                         $user_name = "";
 
-                        if($target_node->GetProperty("display_name") != null)
+                        if($target_node->getProperty("display_name") != null)
                         {
-                            $user_name = $target_node->GetProperty("display_name");
+                            $user_name = $target_node->getProperty("display_name");
                         }
-                        if($target_node->GetProperty("name") != null)
+                        if($target_node->getProperty("name") != null)
                         {
-                            $user_name = $target_node->GetProperty("name");
+                            $user_name = $target_node->getProperty("name");
                         }
 
                         $email_builder = new EmailBuilder();
@@ -174,7 +174,7 @@ switch($uri_components[1])
                 {
                     $bind_variables = [
                         "verification_code" => strtolower(str_replace(" ", "", $_POST["email_address_verification_code"])),
-                        "user_uuid" => $target_node->GetNodeID(),
+                        "user_uuid" => $target_node->getId(),
                     ];
                     $sql = "SELECT user_uuid, email_address FROM email_verification_codes WHERE verification_code=:verification_code AND user_uuid=:user_uuid";
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
@@ -193,7 +193,7 @@ switch($uri_components[1])
                     else
                     {
                         $bind_variables = [
-                            "user_uuid" => $target_node->GetNodeID(),
+                            "user_uuid" => $target_node->getId(),
                             "email_address" => $returned_data["email_address"],
                             "password" => base64_decode($_POST["encoded_password_hash"])
                         ];
@@ -201,7 +201,7 @@ switch($uri_components[1])
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
 
-                        NavigationUtilities::Redirect(target: "/users/" . $target_node->GetNodeID() . "/login-methods");
+                        NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     }
                 }
@@ -235,7 +235,7 @@ switch($uri_components[1])
         }
         break;
     case "remove-login-method":
-        if(in_array("ACT", $target_node->GetPermissions()))
+        if(in_array("ACT", $target_node->getPermissions()))
         {
             if((count($uri_components) > 2) && $jwt_validation_passed)
             {
@@ -244,13 +244,13 @@ switch($uri_components[1])
                     case "oauth":
                         $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
                         $bind_variables = [
-                            "user_uuid" => $target_node->GetNodeID(),
+                            "user_uuid" => $target_node->getId(),
                             "unique_sub" => $sub
                         ];
                         $sql = "DELETE FROM oauth_logins WHERE user_uuid=:user_uuid AND unique_sub=:unique_sub";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        NavigationUtilities::Redirect(target: "/users/" . $target_node->GetNodeID() . "/login-methods");
+                        NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     case "standard":
                         $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
@@ -258,13 +258,13 @@ switch($uri_components[1])
                         array_shift($email);
                         $email = implode("/", $email);
                         $bind_variables = [
-                            "user_uuid" => $target_node->GetNodeID(),
+                            "user_uuid" => $target_node->getId(),
                             "email_address" => $email
                         ];
                         $sql = "DELETE FROM standard_logins WHERE user_uuid=:user_uuid AND email_address=:email_address";
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
-                        NavigationUtilities::Redirect(target: "/users/" . $target_node->GetNodeID() . "/login-methods");
+                        NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     default:
                         $pb->setDefaultVariables();
@@ -302,9 +302,9 @@ switch($uri_components[1])
         }
         break;
     case "login-methods":
-        if(in_array("ACT", $target_node->GetPermissions()))
+        if(in_array("ACT", $target_node->getPermissions()))
         {
-            if($target_node->GetNodeID() == Session::get_current()->getUser()->GetNodeID())
+            if($target_node->getId() == Session::get_current()->getUser()->getId())
             {
                 $pb->setVariable("is_own_account", true);
             }
@@ -313,7 +313,7 @@ switch($uri_components[1])
             $sub_map = [];
 
             $bind_variables = [
-                "user_uuid" => $target_node->GetNodeID()
+                "user_uuid" => $target_node->getId()
             ];
             $sql = "SELECT session_uuid, ip_address, unique_sub, session_key, active, start_timestamp FROM portal_sessions WHERE user_uuid=:user_uuid";
             $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
@@ -342,7 +342,7 @@ switch($uri_components[1])
 
             $login_methods = [];
             $bind_variables = [
-                "user_uuid" => $target_node->GetNodeID(),
+                "user_uuid" => $target_node->getId(),
             ];
             $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
             $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
@@ -366,7 +366,7 @@ switch($uri_components[1])
             }
 
             $bind_variables = [
-                "user_uuid" => $target_node->GetNodeID()
+                "user_uuid" => $target_node->getId()
             ];
             $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
             $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);

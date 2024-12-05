@@ -178,7 +178,7 @@ class GraphDatabaseConnection
         curl_setopt($curl_handle, CURLOPT_HTTPHEADER, [
                 "Content-Type: text/plain",
                 "Authorization: Bearer " . INSTANCE_CREDENTIAL_DDS_TOKEN,
-                "X-Auxilium-Actor: " . $actor->GetNodeID()
+                "X-Auxilium-Actor: " . $actor->getId()
             ]
         );
         if($method == "POST" || $method == "PUT")
@@ -234,7 +234,7 @@ class GraphDatabaseConnection
         {
             if(isset($result["@id"]))
             {
-                return DeegraphNode::FromID($result["@id"]);
+                return DeegraphNode::from_id($result["@id"]);
             }
         }
         return null;
@@ -246,7 +246,7 @@ class GraphDatabaseConnection
             $actor = Session::get_current()->getUser();
 
         $rawNode = DeegraphServerConnection::GetConnection()->GetRawNode(
-            actorID: new UUID($actor->GetNodeID()),
+            actorID: new UUID($actor->getId()),
             nodeID : $uuid,
         );
         return json_decode($rawNode->AsJSON(), true);
@@ -288,7 +288,7 @@ class GraphDatabaseConnection
     {
         if($creator == null)
         {
-            $creator = Session::get_current()->getUser()->GetNodeID();
+            $creator = Session::get_current()->getUser()->getId();
         }
 
         $temp = DeegraphServerConnection::GetConnection()->CreateNewNode(

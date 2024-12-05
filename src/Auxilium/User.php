@@ -18,44 +18,44 @@ class User extends DeegraphNode
 
     public function getDisplayName()
     {
-        if($this->GetProperty("display_name") != null)
+        if($this->getProperty("display_name") != null)
         {
-            return $this->GetProperty("display_name");
+            return $this->getProperty("display_name");
         }
-        if($this->GetProperty("name") != null)
+        if($this->getProperty("name") != null)
         {
-            return $this->GetProperty("name");
+            return $this->getProperty("name");
         }
         return null;
     }
 
     public function getFullName()
     {
-        if($this->GetProperty("name") != null)
+        if($this->getProperty("name") != null)
         {
-            return $this->GetProperty("name");
+            return $this->getProperty("name");
         }
         return null;
     }
 
     public function getContactEmail()
     {
-        if($this->GetProperty("contact_email") != null)
+        if($this->getProperty("contact_email") != null)
         {
-            return $this->GetProperty("contact_email");
+            return $this->getProperty("contact_email");
         }
         return null;
     }
 
     public function __toString()
     {
-        if($this->GetProperty("name") == null)
+        if($this->getProperty("name") == null)
         {
             return "";
         }
         else
         {
-            return strval($this->GetProperty("name"));
+            return strval($this->getProperty("name"));
         }
     }
 }

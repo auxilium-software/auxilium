@@ -42,7 +42,7 @@ $token_builder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
 $algorithm = new Eddsa();
 $signing_key = InMemory::base64Encoded(INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PRIVATE_KEY);
 
-$target_user_id = Session::get_current()->getUser()->GetNodeID();
+$target_user_id = Session::get_current()->getUser()->getId();
 
 if(isset($_GET["for"]))
 {
@@ -59,9 +59,9 @@ if(isset($_GET["for"]))
 }
 
 $target_node = new DeegraphNode($target_user_id);
-if(in_array("ACT", $target_node->GetPermissions()))
+if(in_array("ACT", $target_node->getPermissions()))
 {
-    $target_user_id = $target_node->GetNodeID();
+    $target_user_id = $target_node->getId();
 }
 else
 {
