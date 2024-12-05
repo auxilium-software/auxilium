@@ -79,7 +79,7 @@ PageBuilder2::AddVariable("primary_string_path", $primary_string_path);
 
 $path_parsed = [];
 for ($i = 0; $i < count($path_primary); $i++) {
-    if (strpos(urldecode($path_primary[$i]), "~") === 0) {
+    if (str_starts_with(urldecode($path_primary[$i]), "~")) {
         $path_parsed[$i] = "{".strtoupper(substr(urldecode($path_primary[$i]), 1))."}";
     } else {
         $path_parsed[$i] = urldecode($path_primary[$i]);
@@ -95,7 +95,7 @@ if (PageBuilder2::GetVariable("progressive_load")) {
     $absolute_path = "";
     for ($i = 0; $i < count($path_primary); $i++) {
         $np = implode("/", array_slice($path_primary, 0, $i + 1));
-        array_push($primary_node_path_order, $np);
+        $primary_node_path_order[] = $np;
         $pth_prim = $path_primary[$i];
         $absolute_path = $absolute_path."/".$path_primary[$i];
 
@@ -112,7 +112,7 @@ if (PageBuilder2::GetVariable("progressive_load")) {
     $primary_node_path_nodes = [];
     for ($i = 0; $i < count($path_primary); $i++) {
         $np = implode("/", array_slice($path_primary, 0, $i + 1));
-        array_push($primary_node_path_order, $np);
+        $primary_node_path_order[] = $np;
         $pth_prim = $path_primary[$i];
 
         if ((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim)) {
@@ -168,7 +168,6 @@ if ($url_metadata == null) {
         } else {
             if ($node != null) {
                 NavigationUtilities::Redirect(target: " /graph/~".$node->getUuid()."/@ref_error");
-                exit();
             }
             $url_metadata = new URLMetadata();
             $url_metadata->setPath($primary_string_path);
@@ -267,7 +266,9 @@ switch ($action) {
                     variables: []
                 );
             }
-        } else {
+        }
+        else
+        {
             NavigationUtilities::Redirect(target: " /graph/".$primary_string_path);
         }
         break;
@@ -383,9 +384,9 @@ switch ($action) {
             $statement->execute($bind_variables);
             $user_data = $statement->fetch();
             if ($user_data != null) {
-                array_push($login_methods, [
+                $login_methods[] = [
                     "type" => "classic"
-                ]);
+                ];
             }
 
             $bind_variables = [
@@ -396,10 +397,10 @@ switch ($action) {
             $statement->execute($bind_variables);
             $returned_data = $statement->fetch();
             while ($returned_data != null) {
-                array_push($login_methods, [
+                $login_methods[] = [
                     "type" => "oauth",
                     "vendor" => explode("/", $returned_data["unique_sub"])[0]
-                ]);
+                ];
                 $returned_data = $statement->fetch();
             }
 
