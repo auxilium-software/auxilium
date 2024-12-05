@@ -1,4 +1,4 @@
-{% extends "/Pages/node-views/generic.html.twig" %}
+{% extends "/Bases/StandardWebPage/GenericNodeViews.html.twig" %}
 
 {% set address_user_as = "this user" %}
 
@@ -23,7 +23,7 @@
             {% else %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/cases/" ~ (prop_name | url_encode) %}
-                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Partials/NodeViews/Utilities/InlineNodeView.html.twig") }}</li>
             {% endif %}
         {% endfor %}
     {% endif %}
@@ -45,7 +45,7 @@
             {% for prop_name, prop in node.properties.documents.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/documents/" ~ (prop_name | url_encode) %}
-                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Partials/NodeViews/Utilities/InlineNodeView.html.twig") }}</li>
             {% endfor %}
         {% endif %}
     {% endif %}
@@ -96,7 +96,7 @@
             {% for prop_name, prop in node.properties.messages.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/messages/" ~ (prop_name | url_encode) %}
-                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Partials/NodeViews/Utilities/InlineNodeView.html.twig") }}</li>
             {% endfor %}
         {% endif %}
     {% endif %}

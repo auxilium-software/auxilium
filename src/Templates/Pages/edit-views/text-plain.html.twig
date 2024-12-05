@@ -3,7 +3,7 @@
 
 <div>
     <div class="inner-content">
-        {% include "/Pages/node-views/node-view-breadcrumbs.html.twig" %}
+        {% include "/Partials/NodeViews/Utilities/NodeViewBreadcrumbs.html.twig" %}
     
         <h1>Editing {% if primary_node_path_name | trim | length %}{{ primary_node_path_name | unpack_string | ndtitle }}{% else %}<em>{{ "unnamed_node" | uitxt }}</em>{% endif %}</h1>
         

@@ -1,4 +1,4 @@
-{% extends "/Pages/node-views/generic.html.twig" %}
+{% extends "/Bases/StandardWebPage/GenericNodeViews.html.twig" %}
 
 
 {% block primary_content %}
@@ -17,7 +17,7 @@
             {% for prop_name, prop in node.properties.departments.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/departments/" ~ (prop_name | url_encode) %}
-                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Partials/NodeViews/Utilities/InlineNodeView.html.twig") }}</li>
             {% endfor %}
         {% endif %}
     {% endif %}
@@ -38,7 +38,7 @@
             {% for prop_name, prop in node.properties.cases.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/cases/" ~ (prop_name | url_encode) %}
-                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Partials/NodeViews/Utilities/InlineNodeView.html.twig") }}</li>
             {% endfor %}
         {% endif %}
     {% endif %}
@@ -72,7 +72,7 @@
             {% for prop_name, prop in node.properties.staff.properties %}
                 {% set inline_node = prop %}
                 {% set inline_node_path = "/graph/" ~ primary_string_path ~ "/staff/" ~ (prop_name | url_encode) %}
-                <li>{{ include("/Pages/node-views/inline-node-view.html.twig") }}</li>
+                <li>{{ include("/Partials/NodeViews/Utilities/InlineNodeView.html.twig") }}</li>
             {% endfor %}
         {% endif %}
     {% endif %}

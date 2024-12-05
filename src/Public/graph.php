@@ -243,7 +243,7 @@ if($node == null)
 {
     http_response_code(404);
     PageBuilder2::Render(
-        template : "Pages/node-views/404.html.twig",
+        template : "Partials/NodeViews/MiscViews/404.html.twig",
         variables: []
     );
 }
@@ -333,7 +333,7 @@ switch($action)
     case "@new_property":
         if($jwt_validation_passed)
             PageBuilder2::Render(
-                template : "Pages/node-views/generic.html.twig",
+                template : "Bases/StandardWebPage/GenericNodeViews.html.twig",
                 variables: []
             );
 
@@ -363,13 +363,13 @@ switch($action)
                 //exit();
                 PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
                 PageBuilder2::Render(
-                    template : "Pages/node-views/name-new-property.html.twig",
+                    template : "Partials/NodeViews/MiscViews/NameNewProperty.html.twig",
                     variables: []
                 );
             }
 
             PageBuilder2::Render(
-                template : "Pages/node-views/name-new-property.html.twig",
+                template : "Partials/NodeViews/MiscViews/NameNewProperty.html.twig",
                 variables: []
             );
         }
@@ -388,7 +388,7 @@ switch($action)
 
         PageBuilder2::AddVariable("form_list", $form_list);
         PageBuilder2::Render(
-            template : "Pages/node-views/new-property.html.twig",
+            template : "Partials/NodeViews/MiscViews/NewProperty.html.twig",
             variables: []
         );
     case "@search":
@@ -399,7 +399,7 @@ switch($action)
         break;
     case "@references":
         PageBuilder2::Render(
-            template : "Pages/node-views/references.html.twig",
+            template : "Partials/NodeViews/MiscViews/References.html.twig",
             variables: []
         );
         break;
@@ -453,7 +453,7 @@ switch($action)
             //PageBuilder2::AddVariable("permissions", true);
             PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
             PageBuilder2::Render(
-                template : "Pages/node-views/user.html.twig",
+                template : "Partials/NodeViews/Views/User.html.twig",
                 variables: []
             );
 
@@ -465,7 +465,7 @@ switch($action)
             //var_dump($node);
             //die();
             PageBuilder2::Render(
-                template : "Pages/node-views/case.html.twig",
+                template : "Partials/NodeViews/Views/Case.html.twig",
                 variables: [
                 ]
             );
@@ -474,14 +474,14 @@ switch($action)
         {
             PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
             PageBuilder2::Render(
-                template : "Pages/node-views/group.html.twig",
+                template : "Partials/NodeViews/Views/Group.html.twig",
                 variables: []
             );
         }
         else
         {
             PageBuilder2::Render(
-                template : "Pages/node-views/generic.html.twig",
+                template : "Partials/NodeViews/Views/Generic.html.twig",
                 variables: []
             );
         }
