@@ -5,21 +5,23 @@ use Auxilium\EncodingTools;
 use Auxilium\GraphDatabaseConnection;
 use Auxilium\MicroTemplate;
 use Auxilium\RelationalDatabaseConnection;
+use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\URLMetadata;
+use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
-$pb = PageBuilder::get_instance();
 
-$pb->requireLogin();
+Security::RequireLogin();
 
-$pb->setVariable("progressive_load", false);
+PageBuilder2::AddVariable("progressive_load", false);
 if(isset($_COOKIE["progressiveload"])) {
     if ($_COOKIE["progressiveload"] == "true") {
-        $pb->setVariable("progressive_load", true);
+        PageBuilder2::AddVariable("progressive_load", true);
     }
 }
 
@@ -44,8 +46,7 @@ if (count($uri_components) > 0) {
     }
 }
 if (count($uri_components) == 0) {
-    header("Location: /graph/~".Session::get_current()->getUser()->getUuid());
-    exit();
+    NavigationUtilities::Redirect(target: " /graph/~".Session::get_current()->getUser()->getUuid());
 }
 
 $path_primary = [];
@@ -74,7 +75,7 @@ if ($action == "@unlink") { // Remove the last element of the url
 }
 
 $primary_string_path = implode("/", $path_primary);
-$pb->setVariable("primary_string_path", $primary_string_path);
+PageBuilder2::AddVariable("primary_string_path", $primary_string_path);
 
 $path_parsed = [];
 for ($i = 0; $i < count($path_primary); $i++) {
@@ -86,9 +87,9 @@ for ($i = 0; $i < count($path_primary); $i++) {
 }
 
 $deegraph_path = implode("/", $path_parsed);
-$pb->setVariable("deegraph_path", $deegraph_path);
+PageBuilder2::AddVariable("deegraph_path", $deegraph_path);
 
-if ($pb->getVariable("progressive_load")) {
+if (PageBuilder2::GetVariable("progressive_load")) {
     $primary_node_path_order = [];
     $primary_node_deegraph_paths = [];
     $absolute_path = "";
@@ -103,8 +104,8 @@ if ($pb->getVariable("progressive_load")) {
         }
         $primary_node_deegraph_paths[$np] = $absolute_path;
     }
-    $pb->setVariable("primary_node_path_order", $primary_node_path_order);
-    $pb->setVariable("primary_node_deegraph_paths", $primary_node_deegraph_paths);
+    PageBuilder2::AddVariable("primary_node_path_order", $primary_node_path_order);
+    PageBuilder2::AddVariable("primary_node_deegraph_paths", $primary_node_deegraph_paths);
 } else {
     $primary_node_path_order = [];
     $primary_node_path_names = [];
@@ -121,7 +122,7 @@ if ($pb->getVariable("progressive_load")) {
                 if ($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
                     if ($primary_node_path_nodes[$np]->is(Session::get_current()->getUser())) {
                         $primary_node_path_names[$np] = "::auxpckstr:ui_heading/my_account::";
-                        $pb->setVariable("is_own_account", true);
+                        PageBuilder2::AddVariable("is_own_account", true);
                     } else {
                         $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("name");
                     }
@@ -141,10 +142,10 @@ if ($pb->getVariable("progressive_load")) {
             }
         }
     }
-    $pb->setVariable("primary_node_path_order", $primary_node_path_order);
-    $pb->setVariable("primary_node_path_names", $primary_node_path_names);
-    $pb->setVariable("primary_node_path_nodes", $primary_node_path_nodes);
-    $pb->setVariable("primary_node_path_name", end($primary_node_path_names));
+    PageBuilder2::AddVariable("primary_node_path_order", $primary_node_path_order);
+    PageBuilder2::AddVariable("primary_node_path_names", $primary_node_path_names);
+    PageBuilder2::AddVariable("primary_node_path_nodes", $primary_node_path_nodes);
+    PageBuilder2::AddVariable("primary_node_path_name", end($primary_node_path_names));
 }
 
 $node = DeegraphNode::from_path($primary_string_path);
@@ -166,7 +167,7 @@ if ($url_metadata == null) {
             }
         } else {
             if ($node != null) {
-                header("Location: /graph/~".$node->getUuid()."/@ref_error");
+                NavigationUtilities::Redirect(target: " /graph/~".$node->getUuid()."/@ref_error");
                 exit();
             }
             $url_metadata = new URLMetadata();
@@ -177,217 +178,269 @@ if ($url_metadata == null) {
         $url_metadata->setPath($primary_string_path);
     }
 }
-$pb->setVariable("url_metadata", $url_metadata);
-$pb->setVariable("root_url_metadata", new URLMetadata());
-$pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
+PageBuilder2::AddVariable("url_metadata", $url_metadata);
+PageBuilder2::AddVariable("root_url_metadata", new URLMetadata());
+PageBuilder2::AddVariable("jwt_validation_passed", $jwt_validation_passed);
 
 //$node->getProperties();
 
 if ($node == null) {
     http_response_code(404);
-    $pb->setTemplate("Pages/node-views/404.html.twig");
-    $pb->render();
-    exit();
-} else {
-    $pb->setVariable("node", $node);
-    switch ($action) {
-        case "@delete_confirm":
-            if ($jwt_validation_passed) {
-                if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
-                    $pb->setTemplate("Pages/delete-views/generic.html.twig");
-                } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
-                    $pb->setTemplate("Pages/delete-views/generic.html.twig");
-                } else {
-                    $pb->setTemplate("Pages/delete-views/generic.html.twig");
-                }
-            } else {
-                header("Location: /graph/".$primary_string_path);
-                exit();
-            }
-            break;
-        case "@delete":
-            if ($jwt_validation_passed) {
-                $node->delete();
-                $path = explode("/", $primary_string_path);
-                array_pop($path);
-                //echo implode("/", $path);
-                header("Location: /graph/".implode("/", $path));
-                exit();
-            } else {
-                header("Location: /graph/".$primary_string_path);
-                exit();
-            }
-            break;
-        case "@edit":
-            if ($jwt_validation_passed) {
-                //echo "EDIT";
-
-                if (isset($_POST["value"])) {
-                    $refs = $node->getReferences();
-                    //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
-
-                    $data = $_POST["value"];
-                    $new_node = GraphDatabaseConnection::new_node($data, "text/plain");
-
-                    foreach ($refs as $ref_name => &$ref_nodes) {
-                        foreach ($ref_nodes as &$ref_node) {
-                            $ref_node->addProperty($ref_name, $new_node, null, true);
-                            //echo $ref_node->getId()." ==[".$ref_name."]=> ".$node->getId()."<br />";
-                        }
-                    }
-                    $path = explode("/", $primary_string_path);
-                    array_pop($path);
-                    header("Location: /graph/".implode("/", $path));
-                    exit();
-                    //$new_node = GraphDatabaseConnection::new_node($data, "text/plain");
-                    //$query_result = $node->addProperty($_POST["name"], $return_node);
-                } else {
-                    $pb->setTemplate("Pages/edit-views/text-plain.html.twig");
-                }
-            } else {
-                header("Location: /graph/".$primary_string_path);
-                exit();
-            }
-            break;
-        case "@unlink":
-            if ($jwt_validation_passed) {
-                //echo "Unlinking: ".$node->getId()." => ".$last_prop;
-                //exit();
-                if ($url_metadata->getProperty("uln") != null) {
-                    //echo "Unlinking: ".$node->getId()." => ".$last_prop."<br />";
-                    $prop = $node->getProperty($last_prop);
-                    if ($prop != null) {
-                        if ($prop->getId() == $url_metadata->getProperty("uln")) { // Make sure the property hasn't changed since when the link was generated - the user expects the thing they clicked to be removed, not some other random thing with the same path.
-                            $node->unlinkProperty($last_prop);
-                        }
-                    }
-                    //exit();
-                    //$node->unlinkProperty($last_prop);
-                    header("Location: /graph/".$primary_string_path);
-                    exit();
-                }
-            } else {
-                header("Location: /graph/".$primary_string_path);
-                exit();
-                //$action = "@view";
-            }
-            break;
-        case "@new_property":
-            if ($jwt_validation_passed) {
-                if ($url_metadata->getProperty("rcn") != null) {
-                    if (isset($_POST["name"])) {
-                        //echo $node->getId()." => ".$_POST["name"]." => ".URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-
-                        //exit();
-                        $return_node_id = URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                        $return_node = DeegraphNode::from_id($return_node_id);
-                        $query_result = $node->addProperty($_POST["name"], $return_node);
-                        if ($query_result !== false) {
-                            //var_dump($query_result);
-                            //exit();
-                            $ret_url = $url_metadata->popFromReturnStack();
-                            if ($ret_url == null) {
-                                $ret_url = "/graph/".$primary_string_path;
-                            }
-                            $url_metadata->setProperty("rcn", null);
-                            header("Location: ".$ret_url."?".$url_metadata);
-                            exit();
-                        }
-                        //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
-                        //exit();
-                        $pb->setVariable("duplicate_property_name", $_POST["name"]);
-                        $pb->setTemplate("Pages/node-views/name-new-property.html.twig");
-                    } else {
-                        $pb->setTemplate("Pages/node-views/name-new-property.html.twig");
-                    }
-                } else {
-                    $url_metadata->pushCurrentToReturnStack();
-
-                    $form_list = file_get_contents(WEB_ROOT_DIRECTORY."/property-forms.json");
-                    $form_list = json_decode($form_list, true);
-
-                    /*
-                    // Now handled in URLMetadata class
-                    $url_metadata_with_tgn = clone $url_metadata;
-                    $url_metadata_with_tgn->setProperty("tgn", EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid($node->getId())));
-                    $pb->setVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
-                    */
-
-                    $pb->setVariable("form_list", $form_list);
-
-                    $pb->setTemplate("Pages/node-views/new-property.html.twig");
-                }
-            } else {
-                $pb->setTemplate("Pages/node-views/generic.html.twig");
-            }
-            break;
-        case "@search":
-            $pb->setTemplate("Pages/node-views/search.html.twig");
-            break;
-        case "@references":
-            $pb->setTemplate("Pages/node-views/references.html.twig");
-            break;
-        case "@ref_error":
-            $pb->setVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
-        case "@view":
-        default:
-            if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
-                $login_methods = [];
-                $bind_variables = [
-                    "user_uuid" => $node->getUuid(),
-                ];
-                $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
-                $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                $statement->execute($bind_variables);
-                $user_data = $statement->fetch();
-                if ($user_data != null) {
-                    array_push($login_methods, [
-                        "type" => "classic"
-                    ]);
-                }
-
-                $bind_variables = [
-                    "user_uuid" => $node->getUuid()
-                ];
-                $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
-                $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                $statement->execute($bind_variables);
-                $returned_data = $statement->fetch();
-                while ($returned_data != null) {
-                    array_push($login_methods, [
-                        "type" => "oauth",
-                        "vendor" => explode("/", $returned_data["unique_sub"])[0]
-                    ]);
-                    $returned_data = $statement->fetch();
-                }
-
-                if ($node->getUuid() == Session::get_current()->getUser()->getUuid()) {
-                    $pb->setVariable("is_own_account", true);
-                }
-
-                $pb->setVariable("login_methods", $login_methods);
-                //[
-                //    "type" => "oauth",
-                //    "vendor" => "microsoft"
-                //]
-                //$pb->setVariable("permissions", true);
-                $pb->setTemplate("Pages/node-views/user.html.twig");
-                $pb->setVariable("hidden_props", ["cases", "messages", "documents"]);
-
-                //$pb->setVariable("traditional_login_method", []);
-            } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
-                $pb->setTemplate("Pages/node-views/case.html.twig");
-                $pb->setVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
-                //var_dump($node);
-                //die();
-            } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json")) {
-                $pb->setTemplate("Pages/node-views/group.html.twig");
-                $pb->setVariable("hidden_props", ["departments", "cases", "staff"]);
-            } else {
-                $pb->setTemplate("Pages/node-views/generic.html.twig");
-            }
-    }
+    PageBuilder2::Render(
+        template: "Pages/node-views/404.html.twig",
+        variables: []
+    );
 }
 
-$pb->render();
+PageBuilder2::AddVariable("node", $node);
+switch ($action) {
+    case "@delete_confirm":
+        if ($jwt_validation_passed)
+        {
+            if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json"))
+            {
+                PageBuilder2::Render(
+                    template: "Pages/delete-views/generic.html.twig",
+                    variables: []
+                );
+            }
+            elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json"))
+            {
+                PageBuilder2::Render(
+                    template: "Pages/delete-views/generic.html.twig",
+                    variables: []
+                );
+            }
+            else
+            {
+                PageBuilder2::Render(
+                    template: "Pages/delete-views/generic.html.twig",
+                    variables: []
+                );
+            }
+        }
+        else
+        {
+            NavigationUtilities::Redirect(target: " /graph/".$primary_string_path);
+        }
+        break;
+    case "@delete":
+        if ($jwt_validation_passed) {
+            $node->delete();
+            $path = explode("/", $primary_string_path);
+            array_pop($path);
+            //echo implode("/", $path);
+            NavigationUtilities::Redirect(target: " /graph/".implode("/", $path));
+        }
+        else
+        {
+            NavigationUtilities::Redirect(target: " /graph/".$primary_string_path);
+        }
+        break;
+    case "@edit":
+        if ($jwt_validation_passed) {
+            //echo "EDIT";
+
+            if (isset($_POST["value"])) {
+                $refs = $node->getReferences();
+                //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
+
+                $data = $_POST["value"];
+                $new_node = GraphDatabaseConnection::new_node($data, "text/plain");
+
+                foreach ($refs as $ref_name => &$ref_nodes) {
+                    foreach ($ref_nodes as &$ref_node) {
+                        $ref_node->addProperty($ref_name, $new_node, null, true);
+                        //echo $ref_node->getId()." ==[".$ref_name."]=> ".$node->getId()."<br />";
+                    }
+                }
+                $path = explode("/", $primary_string_path);
+                array_pop($path);
+                NavigationUtilities::Redirect(target: " /graph/".implode("/", $path));
+                //$new_node = GraphDatabaseConnection::new_node($data, "text/plain");
+                //$query_result = $node->addProperty($_POST["name"], $return_node);
+            }
+            else
+            {
+                PageBuilder2::Render(
+                    template: "Pages/edit-views/text-plain.html.twig",
+                    variables: []
+                );
+            }
+        } else {
+            NavigationUtilities::Redirect(target: " /graph/".$primary_string_path);
+        }
+        break;
+    case "@unlink":
+        if ($jwt_validation_passed) {
+            //echo "Unlinking: ".$node->getId()." => ".$last_prop;
+            //exit();
+            if ($url_metadata->getProperty("uln") != null) {
+                //echo "Unlinking: ".$node->getId()." => ".$last_prop."<br />";
+                $prop = $node->getProperty($last_prop);
+                if ($prop != null) {
+                    if ($prop->getId() == $url_metadata->getProperty("uln")) { // Make sure the property hasn't changed since when the link was generated - the user expects the thing they clicked to be removed, not some other random thing with the same path.
+                        $node->unlinkProperty($last_prop);
+                    }
+                }
+                //exit();
+                //$node->unlinkProperty($last_prop);
+                NavigationUtilities::Redirect(target: " /graph/".$primary_string_path);
+                exit();
+            }
+        } else {
+            NavigationUtilities::Redirect(target: " /graph/".$primary_string_path);
+            exit();
+            //$action = "@view";
+        }
+        break;
+    case "@new_property":
+        if ($jwt_validation_passed) {
+            if ($url_metadata->getProperty("rcn") != null) {
+                if (isset($_POST["name"])) {
+                    //echo $node->getId()." => ".$_POST["name"]." => ".URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+
+                    //exit();
+                    $return_node_id = URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                    $return_node = DeegraphNode::from_id($return_node_id);
+                    $query_result = $node->addProperty($_POST["name"], $return_node);
+                    if ($query_result !== false) {
+                        //var_dump($query_result);
+                        //exit();
+                        $ret_url = $url_metadata->popFromReturnStack();
+                        if ($ret_url == null) {
+                            $ret_url = "/graph/".$primary_string_path;
+                        }
+                        $url_metadata->setProperty("rcn", null);
+                        NavigationUtilities::Redirect(target: " ".$ret_url."?".$url_metadata);
+                    }
+                    //echo "Could not link: ".$node->getId()." => ".$_POST["name"]." => ".URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                    //exit();
+                    PageBuilder2::AddVariable("duplicate_property_name", $_POST["name"]);
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/name-new-property.html.twig",
+                        variables: []
+                    );
+                }
+                else
+                {
+                    PageBuilder2::Render(
+                        template: "Pages/node-views/name-new-property.html.twig",
+                        variables: []
+                    );
+                }
+            } else {
+                $url_metadata->pushCurrentToReturnStack();
+
+                $form_list = file_get_contents(WEB_ROOT_DIRECTORY."/property-forms.json");
+                $form_list = json_decode($form_list, true);
+
+                /*
+                // Now handled in URLMetadata class
+                $url_metadata_with_tgn = clone $url_metadata;
+                $url_metadata_with_tgn->setProperty("tgn", EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid($node->getId())));
+                PageBuilder2::AddVariable("url_metadata_with_tgn", $url_metadata_with_tgn);
+                */
+
+                PageBuilder2::AddVariable("form_list", $form_list);
+                PageBuilder2::Render(
+                    template: "Pages/node-views/new-property.html.twig",
+                    variables: []
+                );
+            }
+        }
+        else
+        {
+            PageBuilder2::Render(
+                template: "Pages/node-views/generic.html.twig",
+                variables: []
+            );
+        }
+        break;
+    case "@search":
+        PageBuilder2::Render(
+            template: "Pages/node-views/search.html.twig",
+            variables: []
+        );
+        break;
+    case "@references":
+        PageBuilder2::Render(
+            template: "Pages/node-views/references.html.twig",
+            variables: []
+        );
+        break;
+    case "@ref_error":
+        PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
+    case "@view":
+    default:
+        if ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json")) {
+            $login_methods = [];
+            $bind_variables = [
+                "user_uuid" => $node->getUuid(),
+            ];
+            $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
+            $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement->execute($bind_variables);
+            $user_data = $statement->fetch();
+            if ($user_data != null) {
+                array_push($login_methods, [
+                    "type" => "classic"
+                ]);
+            }
+
+            $bind_variables = [
+                "user_uuid" => $node->getUuid()
+            ];
+            $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
+            $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement->execute($bind_variables);
+            $returned_data = $statement->fetch();
+            while ($returned_data != null) {
+                array_push($login_methods, [
+                    "type" => "oauth",
+                    "vendor" => explode("/", $returned_data["unique_sub"])[0]
+                ]);
+                $returned_data = $statement->fetch();
+            }
+
+            if ($node->getUuid() == Session::get_current()->getUser()->getUuid()) {
+                PageBuilder2::AddVariable("is_own_account", true);
+            }
+
+            PageBuilder2::AddVariable("login_methods", $login_methods);
+            //[
+            //    "type" => "oauth",
+            //    "vendor" => "microsoft"
+            //]
+            //PageBuilder2::AddVariable("permissions", true);
+            PageBuilder2::AddVariable("hidden_props", ["cases", "messages", "documents"]);
+            PageBuilder2::Render(
+                template: "Pages/node-views/user.html.twig",
+                variables: []
+            );
+
+            //PageBuilder2::AddVariable("traditional_login_method", []);
+        } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json")) {
+            PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
+            //var_dump($node);
+            //die();
+            PageBuilder2::Render(
+                template: "Pages/node-views/case.html.twig",
+                variables: [
+                ]
+            );
+        } elseif ($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json")) {
+            PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
+            PageBuilder2::Render(
+                template: "Pages/node-views/group.html.twig",
+                variables: []
+            );
+        } else {
+            PageBuilder2::Render(
+                template: "Pages/node-views/generic.html.twig",
+                variables: []
+            );
+        }
+}
+
 
