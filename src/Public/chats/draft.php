@@ -23,7 +23,7 @@ else
     http_response_code(400);
     exit();
 }
-$ret_url = Auxilium\EncodingTools::base64_encode_url_safe(explode("?", $_SERVER["REQUEST_URI"])[0]);
+$ret_url = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(explode("?", $_SERVER["REQUEST_URI"])[0]);
 $pb->setVariable("encoded_return_url", $ret_url);
 
 $message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getId() . "/" . $message_uuid . ".json";

@@ -62,7 +62,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
 
     $trusted_jwks = [];
 
-    $jwt_header = json_decode(Auxilium\EncodingTools::base64_decode_url_safe(explode(".", $id_token)[0]), true);
+    $jwt_header = json_decode(\Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe(explode(".", $id_token)[0]), true);
     $jwt_alg = $jwt_header["alg"];
 
     $token_valid = false;
@@ -223,7 +223,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // Taken from /login
 
                     $session_info = [
-                        "session_uuid" => Auxilium\EncodingTools::generate_new_uuid("sessions"),
+                        "session_uuid" => \Auxilium\Utilities\EncodingTools::GenerateNewUUID("sessions"),
                         "session_key" => $session_key,
                         "user_uuid" => $returned_data["user_uuid"],
                         "unique_sub" => $combined_id,

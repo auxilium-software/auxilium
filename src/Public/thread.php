@@ -239,7 +239,7 @@ try
                             //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
 
                             //exit();
-                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(Auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(\Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe($url_metadata->getProperty("rcn")));
                             $return_node = DeegraphNode::from_id($return_node_id);
                             $query_result = $node->addProperty($_POST["name"], $return_node);
                             if($query_result !== false)

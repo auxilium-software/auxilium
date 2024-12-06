@@ -31,7 +31,7 @@ if(count($uri_components) > 5)
 }
 if($draft_id == "new")
 {
-    $draft_id = Auxilium\EncodingTools::generate_new_uuid();
+    $draft_id = \Auxilium\Utilities\EncodingTools::GenerateNewUUID();
     $draft_content = [];
     $put_data = true;
 }
@@ -82,7 +82,7 @@ elseif($action == "send")
     $build_content = "X-Auxilium-Message-Version: 2.0\r\n";
     $build_content .= "MIME-Version: 1.0\r\n";
     $build_content .= "Message-ID: $draft_id." . Session::get_current()->getUser()->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . "\r\n";
-    $boundary = Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(48));
+    $boundary = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(48));
 
     $message_parties = [];
 
@@ -90,7 +90,7 @@ elseif($action == "send")
     $from_user_name = Session::get_current()->getUser()->getDisplayName();
     if($from_user_name != null)
     {
-        $build_content .= "From: \"" . Auxilium\EncodingTools::rfc2047_encode($from_user_name) . "\" <auxiliuminbox+" . Session::get_current()->getUser()->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . ">\r\n";
+        $build_content .= "From: \"" . \Auxilium\Utilities\EncodingTools::RC2047Encode($from_user_name) . "\" <auxiliuminbox+" . Session::get_current()->getUser()->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . ">\r\n";
     }
     else
     {
@@ -126,7 +126,7 @@ elseif($action == "send")
             $to_user_name = $recipient->getDisplayName();
             if($to_user_name != null)
             {
-                $build_content .= "\"" . Auxilium\EncodingTools::rfc2047_encode($to_user_name) . "\" <auxiliuminbox+" . $recipient->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . ">";
+                $build_content .= "\"" . \Auxilium\Utilities\EncodingTools::RC2047Encode($to_user_name) . "\" <auxiliuminbox+" . $recipient->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . ">";
             }
             else
             {

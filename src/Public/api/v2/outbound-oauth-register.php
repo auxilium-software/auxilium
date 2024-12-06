@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 $at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
-$nonce = Auxilium\EncodingTools::base64_encode_url_safe(openssl_random_pseudo_bytes(16));
+$nonce = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(16));
 
 $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
 $last_uri_component = explode("?", end($uri_components))[0];

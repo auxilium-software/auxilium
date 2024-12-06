@@ -90,7 +90,7 @@ if(isset($uri_components[0]))
                 $fpth = null;
                 do
                 {
-                    $fpid = Auxilium\EncodingTools::generate_new_uuid();
+                    $fpid = \Auxilium\Utilities\EncodingTools::GenerateNewUUID();
                     $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress/" . $fpid . ".json";
                 } while(file_exists($fpth));
                 $url_metadata->setProperty("fpid", $fpid);
@@ -388,7 +388,7 @@ if(isset($uri_components[0]))
                 {
                     if(is_a($export, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                     {
-                        $url_metadata->setProperty("rcn", Auxilium\EncodingTools::base64_encode_url_safe(Auxilium\URLMetadata::crush_uuid($export->getId())));
+                        $url_metadata->setProperty("rcn", \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(Auxilium\URLMetadata::crush_uuid($export->getId())));
                         $url_metadata->setProperty("exp", null);
                     }
                     else

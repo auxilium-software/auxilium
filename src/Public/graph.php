@@ -1,7 +1,6 @@
 <?php
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
-use Auxilium\EncodingTools;
 use Auxilium\Enumerators\CookieKey;
 use Auxilium\GraphDatabaseConnection;
 use Auxilium\MicroTemplate;
@@ -11,6 +10,7 @@ use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\URLMetadata;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -344,7 +344,7 @@ switch($action)
                 //echo $node->getId()." => ".$_POST["name"]." => ".URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
 
                 //exit();
-                $return_node_id = URLMetadata::expand_crushed_uuid(EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
+                $return_node_id = URLMetadata::expand_crushed_uuid(EncodingTools::Base64DecodeURLSafe($url_metadata->getProperty("rcn")));
                 $return_node = DeegraphNode::from_id($return_node_id);
                 $query_result = $node->addProperty($_POST["name"], $return_node);
                 if($query_result !== false)

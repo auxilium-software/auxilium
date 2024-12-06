@@ -242,7 +242,7 @@ switch($uri_components[1])
                 switch($uri_components[2])
                 {
                     case "oauth":
-                        $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
+                        $sub = \Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe($uri_components[3]);
                         $bind_variables = [
                             "user_uuid" => $target_node->getId(),
                             "unique_sub" => $sub
@@ -253,7 +253,7 @@ switch($uri_components[1])
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                         exit();
                     case "standard":
-                        $sub = Auxilium\EncodingTools::base64_decode_url_safe($uri_components[3]);
+                        $sub = \Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe($uri_components[3]);
                         $email = explode("/", $sub);
                         array_shift($email);
                         $email = implode("/", $email);
@@ -359,7 +359,7 @@ switch($uri_components[1])
                 array_push($login_methods, [
                         "type" => "classic",
                         "is_current" => ($current_sub == $unique_sub),
-                        "sub" => Auxilium\EncodingTools::base64_encode_url_safe($unique_sub),
+                        "sub" => \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe($unique_sub),
                         "sessions" => $sessions
                     ]
                 );
@@ -382,7 +382,7 @@ switch($uri_components[1])
                 array_push($login_methods, [
                         "type" => "oauth",
                         "vendor" => explode("/", $returned_data["unique_sub"])[0],
-                        "sub" => Auxilium\EncodingTools::base64_encode_url_safe($returned_data["unique_sub"]),
+                        "sub" => \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe($returned_data["unique_sub"]),
                         "is_current" => ($current_sub == $returned_data["unique_sub"]),
                         "sessions" => $sessions
                     ]

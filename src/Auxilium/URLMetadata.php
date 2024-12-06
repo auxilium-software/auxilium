@@ -4,6 +4,7 @@ namespace Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\SessionHandling\Session;
+use Auxilium\Utilities\EncodingTools;
 
 class URLMetadata
 {
@@ -19,8 +20,8 @@ class URLMetadata
 
         if(count($components) == 3)
         {
-            $header = json_decode(EncodingTools::base64_decode_url_safe($components[0]), true);
-            $payload = json_decode(EncodingTools::base64_decode_url_safe($components[1]), true);
+            $header = json_decode(EncodingTools::Base64DecodeURLSafe($components[0]), true);
+            $payload = json_decode(EncodingTools::Base64DecodeURLSafe($components[1]), true);
 
             if(!is_array($header) || !is_array($payload))
             {
@@ -55,14 +56,14 @@ class URLMetadata
 
             if($valid)
             {
-                $valid = hash_hmac("sha256", $components[0] . "." . $components[1], base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true) == EncodingTools::base64_decode_url_safe($components[2]);
+                $valid = hash_hmac("sha256", $components[0] . "." . $components[1], base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true) == EncodingTools::Base64DecodeURLSafe($components[2]);
             }
 
             if($valid)
             {
                 if(isset($payload["sub"]))
                 { // Restriction on who this is valid for
-                    $mdo->jwtMatchedUser = ($payload["sub"] == EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId())));
+                    $mdo->jwtMatchedUser = ($payload["sub"] == EncodingTools::Base64EncodeURLSafe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId())));
                 }
             }
 
@@ -70,11 +71,11 @@ class URLMetadata
             {
                 if(isset($payload["mda"]["tn"]))
                 {
-                    $payload["mda"]["tn"] = EncodingTools::base64_decode_url_safe($payload["mda"]["tn"]);
+                    $payload["mda"]["tn"] = EncodingTools::Base64DecodeURLSafe($payload["mda"]["tn"]);
                 }
                 if(isset($payload["mda"]["rc"]))
                 {
-                    $payload["mda"]["rc"] = EncodingTools::base64_decode_url_safe($payload["mda"]["rc"]);
+                    $payload["mda"]["rc"] = EncodingTools::Base64DecodeURLSafe($payload["mda"]["rc"]);
                 }
                 $mdo->metadata = $payload["mda"];
             }
@@ -287,17 +288,17 @@ class URLMetadata
         }
         if(isset($md["tn"]))
         {
-            $md["tn"] = EncodingTools::base64_encode_url_safe($md["tn"]);
+            $md["tn"] = EncodingTools::Base64EncodeURLSafe($md["tn"]);
         }
         if(isset($md["rc"]))
         {
-            $md["rc"] = EncodingTools::base64_encode_url_safe($md["rc"]);
+            $md["rc"] = EncodingTools::Base64EncodeURLSafe($md["rc"]);
         }
 
         $subject = null;
         if(Session::get_current()->getUser() != null)
         {
-            $subject = EncodingTools::base64_encode_url_safe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
+            $subject = EncodingTools::Base64EncodeURLSafe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
         }
         $header = [
             "alg" => "HS256",
@@ -309,9 +310,9 @@ class URLMetadata
             "mda" => $md
         ];
         // (new \DateTime("now", new \DateTimeZone("UTC")))->format("Y-m-d\\TH:i:s\\Z")
-        $header = EncodingTools::base64_encode_url_safe(json_encode($header));
-        $payload = EncodingTools::base64_encode_url_safe(json_encode($payload));
-        $jwt = $header . "." . $payload . "." . EncodingTools::base64_encode_url_safe(hash_hmac("sha256", $header . "." . $payload, base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true));
+        $header = EncodingTools::Base64EncodeURLSafe(json_encode($header));
+        $payload = EncodingTools::Base64EncodeURLSafe(json_encode($payload));
+        $jwt = $header . "." . $payload . "." . EncodingTools::Base64EncodeURLSafe(hash_hmac("sha256", $header . "." . $payload, base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true));
 
         $this->jwtValidated = true;
         $this->jwtMatchedUser = true;

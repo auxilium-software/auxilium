@@ -4,9 +4,9 @@ namespace Auxilium\EmailHandling;
 
 use auxilium\DatabaseConnection;
 use Auxilium\DataObject;
-use Auxilium\EncodingTools;
 use auxilium\PersistentObject;
 use Auxilium\ReadPermissionException;
+use Auxilium\Utilities\EncodingTools;
 use DOMDocument;
 use HTMLPurifier;
 use HTMLPurifier_Config;
@@ -328,7 +328,7 @@ class RFC822Object extends DataObject
                         break;
                     case "INTERVENE":
                     default:
-                        $tagDestination->nodeValue = "/email-link/" . EncodingTools::base64_encode_url_safe($tagDestination->nodeValue);
+                        $tagDestination->nodeValue = "/email-link/" . EncodingTools::Base64EncodeURLSafe($tagDestination->nodeValue);
                 }
             }
 
@@ -428,7 +428,7 @@ class RFC822Object extends DataObject
 
         foreach($imagesToInsert as $cid)
         {
-            $cleanHtml = str_replace("::auxpckimg:" . $cid . "::", "<img src='/api/v1/data/" . $this->getUuid() . "/attachments/" . EncodingTools::base64_encode_url_safe($cid) . "' style='max-width: 100%; max-height: 100vh;'/>", $cleanHtml);
+            $cleanHtml = str_replace("::auxpckimg:" . $cid . "::", "<img src='/api/v1/data/" . $this->getUuid() . "/attachments/" . EncodingTools::Base64EncodeURLSafe($cid) . "' style='max-width: 100%; max-height: 100vh;'/>", $cleanHtml);
         }
 
         return $cleanHtml;

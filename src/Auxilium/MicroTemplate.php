@@ -3,6 +3,7 @@
 namespace Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\Utilities\EncodingTools;
 
 class MicroTemplate
 {
@@ -126,7 +127,7 @@ class MicroTemplate
 
     public function asInnerPackedTemplate()
     {
-        return "{" . EncodingTools::base64_encode_url_safe($this->generate_packed_template()) . "}";
+        return "{" . EncodingTools::Base64EncodeURLSafe($this->generate_packed_template()) . "}";
     }
 
     public function __toString()
@@ -170,7 +171,7 @@ class MicroTemplate
                         }
                         elseif(preg_match("/^\{(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2}|[A-Za-z0-9_-]{3})?\}$/", $tvval))
                         { // Might be an inner encoded template
-                            $tvval = strval(self::from_packed_template(EncodingTools::base64_decode_url_safe(substr($tvval, 1, strlen($tvval) - 2)), $this->lang, $this->template_variables));
+                            $tvval = strval(self::from_packed_template(EncodingTools::Base64DecodeURLSafe(substr($tvval, 1, strlen($tvval) - 2)), $this->lang, $this->template_variables));
                         }
                         $template_string = str_replace("{{" . $tvkey . "}}", $tvval, $template_string);
                         $template_string = str_replace("{{ " . $tvkey . " }}", $tvval, $template_string);

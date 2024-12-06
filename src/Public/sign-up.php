@@ -257,7 +257,7 @@ try
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
 
                     $session_info = [
-                        "session_uuid" => Auxilium\EncodingTools::generate_new_uuid(),
+                        "session_uuid" => \Auxilium\Utilities\EncodingTools::GenerateNewUUID(),
                         "session_key" => $session_key,
                         "user_uuid" => $user_node->getId(),
                         "ip_address" => $_SERVER["REMOTE_ADDR"],
