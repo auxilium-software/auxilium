@@ -2,6 +2,7 @@
 
 namespace Auxilium\SessionHandling;
 
+use Auxilium\Enumerators\CookieKey;
 use Auxilium\RelationalDatabaseConnection;
 use Auxilium\User;
 use Exception;
@@ -29,7 +30,7 @@ class Session
                 $sessionInfo = $statement->fetch();
                 if($sessionInfo == null)
                 { // This isn't a valid session
-                    setcookie("session_key", "", time() - (3600 * 48), "/", "", true, true); // Delete cookie by setting expiry to the past.
+                    CookieHandling::DeleteCookie(targetCookie: CookieKey::SESSION_KEY);
                 }
                 else
                 { // This *is* a valid session
@@ -39,7 +40,7 @@ class Session
             catch(Exception $e)
             { // Something has gone very wrong with this session key, time to trash it
                 $this->currentUser = null;
-                setcookie("session_key", "", time() - (3600 * 48), "/", "", true, true); // Delete cookie by setting expiry to the past.
+                CookieHandling::DeleteCookie(targetCookie: CookieKey::SESSION_KEY);
             }
         }
     }

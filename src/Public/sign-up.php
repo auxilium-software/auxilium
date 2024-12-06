@@ -5,6 +5,7 @@ use Auxilium\EmailHandling\EmailBuilder;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\MessageSendException;
 use Auxilium\Schemas\UserSchema;
+use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\TwigHandling\PageBuilder;
 use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
@@ -99,7 +100,7 @@ try
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         $form_data["form_step"] = null;
-                        setcookie("session_key", $form_data["session_key"], time() + (3600 * 48), "/", null, true, true);
+                        CookieHandling::SetSessionKey(sessionKey: $form_data["session_key"]);
                         Auxilium\PersistentFormData::set($form_data);
                         $next_location = array_pop($form_data["form_stack"]);
                         if($next_location == null)

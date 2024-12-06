@@ -1,5 +1,8 @@
 <?php
 
+use Auxilium\Enumerators\CookieKey;
+use Auxilium\Enumerators\Language;
+use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -23,11 +26,11 @@ if(isset($_GET["switch"]))
     switch($_GET["switch"])
     {
         case "cy":
-            setcookie("lang", "cy", time() + (3600 * 24 * 30));
+            CookieHandling::SetLanguage(language: Language::WELSH);
             break;
         case "en":
         default:
-            setcookie("lang", "en", time() + (3600 * 24 * 30));
+            CookieHandling::SetLanguage(language: Language::ENGLISH);
             break;
     }
 }

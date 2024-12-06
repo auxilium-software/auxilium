@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\Utilities\NavigationUtilities;
 use Jose\Component\Core\Util\RSAKey;
 use Lcobucci\Clock\SystemClock;
@@ -232,7 +233,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, ip_address, active, unique_sub) VALUES (:session_uuid, :session_key, :user_uuid, :ip_address, :active, :unique_sub)";
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
-                    setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
+                    CookieHandling::SetSessionKey(sessionKey: $session_key);
                     if($form_data == null)
                     {
                         NavigationUtilities::Redirect(target: "/");

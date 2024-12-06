@@ -3,6 +3,7 @@
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
+use Auxilium\SessionHandling\CookieHandling;
 use auxilium\TotpUtility;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\NavigationUtilities;
@@ -226,7 +227,7 @@ try
     $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, ip_address, unique_sub, active) VALUES (:session_uuid, :session_key, :user_uuid, :ip_address, :sub, :active)";
     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
     $statement->execute($session_info);
-    setcookie("session_key", $session_info["session_key"], time() + (3600 * 48), "/", null, true, true);
+    CookieHandling::SetSessionKey(sessionKey: $session_key);
     if($form_data == null)
         NavigationUtilities::Redirect(target: "/");
 
