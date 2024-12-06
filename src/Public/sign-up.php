@@ -90,8 +90,8 @@ try
                         $statement->execute($bind_variables);
 
                         $user_node = DeegraphNode::from_id($returned_data["user_uuid"]);
-                        $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, Auxilium\User::get_system_node());
-                        $user_node->addProperty("contact_email", $email_prop, Auxilium\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
+                        $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node());
+                        $user_node->addProperty("contact_email", $email_prop, \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
                         $bind_variables = [
                             "user_uuid" => $returned_data["user_uuid"]
@@ -214,8 +214,8 @@ try
                     $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
                     // NOTE: BCrypt has a max input of 72 chars, so in order to mitigate attacks on sentence based passwords, that are long but lower complexity, we must pre-hash the password and then base64 encode to get down to 44 chars, which is under the limit. These 44 chars still have plenty of entropy thanks to sha256 being a robust hash algorithm.
 
-                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), Auxilium\User::get_system_node());
-                    $user_node = new Auxilium\User($user_node->getId());
+                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node());
+                    $user_node = new \Auxilium\DatabaseInteractions\Deegraph\Nodes\User($user_node->getId());
 
                     $hash_options = [
                         "cost" => 12,

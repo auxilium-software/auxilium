@@ -2,9 +2,9 @@
 
 namespace Auxilium\SessionHandling;
 
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\Enumerators\CookieKey;
 use Auxilium\RelationalDatabaseConnection;
-use Auxilium\User;
 use Exception;
 
 class Session

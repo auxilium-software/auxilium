@@ -113,7 +113,7 @@ elseif($action == "send")
         $recipient = null;
         if(preg_match("/\{[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}\}/", $recipient_string))
         {
-            $recipient = new Auxilium\User(substr($recipient_string, 1, 36));
+            $recipient = new \Auxilium\DatabaseInteractions\Deegraph\Nodes\User(substr($recipient_string, 1, 36));
             if($recipient == null)
             {
                 $at->setErrorText("Failed to create valid RFC822 object. Invalid local user id provided.");

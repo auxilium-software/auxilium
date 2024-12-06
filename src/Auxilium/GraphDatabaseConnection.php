@@ -4,6 +4,7 @@ namespace Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphServerConnection;
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\Schemas\CaseSchema;

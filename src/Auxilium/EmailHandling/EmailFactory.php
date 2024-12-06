@@ -2,11 +2,11 @@
 
 namespace Auxilium\EmailHandling;
 
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\Exceptions\MessageSendException;
 use Auxilium\MicroTemplate;
 use Auxilium\Schemas\MessageSchema;
 use Auxilium\SessionHandling\Session;
-use Auxilium\User;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;

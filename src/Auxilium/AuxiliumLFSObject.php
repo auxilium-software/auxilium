@@ -2,6 +2,7 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\SessionHandling\Session;
 
 class AuxiliumLFSObject

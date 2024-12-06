@@ -2,6 +2,7 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\Exceptions\MessageSendException;
 use Aws\S3\S3Client;
 use Aws\Ses\SesClient;
