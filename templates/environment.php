@@ -1,4 +1,4 @@
- 
+
 <?php
 require_once "/var/www/vendor/autoload.php"; // <-- Point to your composer autoload file.
 

@@ -37,7 +37,7 @@ RUN composer install
 
 COPY src /var/www
 
-COPY templates/environment.php /var/www/environment.php
+COPY templates/Environment.php /var/www/Configuration/Configuration/Environment.php
 
 USER root
 WORKDIR /app
