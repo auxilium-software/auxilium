@@ -18,6 +18,7 @@ use Twig\Loader\FilesystemLoader;
 
 class PageBuilder2
 {
+    private static array $AdditionalVariables = [];
     public FilesystemLoader $loader;
     public Environment $twig;
 
@@ -91,8 +92,6 @@ class PageBuilder2
         }
 
 
-        foreach(self::$AdditionalVariables as $key=>$value)
-            $this->twig->addGlobal($key, $value);
     }
 
     /**
@@ -112,6 +111,12 @@ class PageBuilder2
 
     #[NoReturn] public static function Render(string $template, array $variables = []): void
     {
+
+        foreach(self::$AdditionalVariables as $key => $value)
+        {
+            $variables[$key] = $value;
+        }
+
         try
         {
             echo (new PageBuilder2())->twig->render($template, $variables);
@@ -119,6 +124,8 @@ class PageBuilder2
         }
         catch(RuntimeError $e)
         {
+            throw $e;
+            die();
             $e = $e->getPrevious();
             PageBuilder2::RenderInternalSystemError($e);
         }
@@ -129,6 +136,13 @@ class PageBuilder2
         }
         catch(SyntaxError $e)
         {
+            throw $e;
+            die();
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+            die();
         }
     }
 
@@ -153,7 +167,6 @@ class PageBuilder2
         {
             throw $ex;
             die();
-
 
 
             echo "<pre>";
