@@ -1,44 +1,47 @@
 #!/bin/bash
 
-BOLD_F=$(tput bold)
-NORMAL_F=$(tput sgr0)
-UNDERLINE_F=$(tput smul)
-INV_F=$(tput rev)
+FONT_RESET='\033[0m'
+FONT__HELP_HEADER='\033[1;34m'
+FONT__HELP_WARNING='\033[5;31m'
+FONT__ERROR='\033[0;33m'
+FONT__HELP_ARG='\033[1;34m'
+FONT__HELP_PARAM='\033[1;32m'
 
 
-function dockerVolumeExists {
-    if [ "$(docker volume ls -f name=$1 | awk '{print $NF}' | grep -E '^'$1'$')" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
+####################################################################################################
+#  _____  _____  ______ ______ _      _____ _____ _    _ _______ 
+# |  __ \|  __ \|  ____|  ____| |    |_   _/ ____| |  | |__   __|
+# | |__) | |__) | |__  | |__  | |      | || |  __| |__| |  | |   
+# |  ___/|  _  /|  __| |  __| | |      | || | |_ |  __  |  | |   
+# | |    | | \ \| |____| |    | |____ _| || |__| | |  | |  | |   
+# |_|    |_|  \_\______|_|    |______|_____\_____|_|  |_|  |_|   
+####################################################################################################
+#########################
+# Ensure that the script is NOT run as root.
+if [ "$EUID" -eq 0 ]
+    then
+    echo -e "${FONT__ERROR}This script must not be run as root.${FONT_RESET}"
+    exit
+fi
 
-function showHelp {
-    # Display Help
-    echo "Installs and builds Auxilium with given options for testing and deployment"
-    echo
-    echo "Syntax: ./install.sh [options]"
-    echo "-h, --help                Print this Help."
-    echo "-l, --local               Install locally. THIS WILL MODIFY YOUR HOST."
-    echo "-b, --build-only          Build only, do not test."
-    echo "-n <hostname>,            Set the fully qualified domain name the"
-    echo "    --hostname <name>     server will self-identify as."
-    echo "-i <name>,                Set the identifier name of the container."
-    echo "    --identifier <name>   "
-    echo "-c <dir>, --certs <dir>   Point to real certificates, and don't "
-    echo "    create self-signed certs."
-    echo "-y                        Skip questions."
-}
 
 if [ ! -d bin ]; then
     mkdir bin
 fi
 
+#########################
+# ASCII AUXILIUM(TM) LOGO
 echo ""
 tput setaf 4
 tput bold
-echo "H4sICAd/eWYAA2FzY2lpLWFydC50eHQAfZCxDcMwDAR7TfFFiqTiBtnAXUoBXITDh3xaoiAoeYAvyy8daQPyoHCUh6NamCpwPmuqYp7Fema5np/r1YyEjhtdTeaTodrW2xAXElLJYl/cl3KKpUbu02MYEfkxdcRnIljwG5Fz94FYgkTgHeb1BzGtbeNn8/iGju165TuC/5velZLcxVZsqS2f1r72zncjBAIAAA==" | base64 -d | gzip -dc
+echo -e "  /AAAAAA                      /II /LL /II                             "
+echo -e " /AA__  AA                    |__/| LL|__/                         (TM)"
+echo -e "| AA  \ AA /UU   /UU /XX   /XX /II| LL /II /UU   /UU /MMMMMM/MMMM      "
+echo -e "| AAAAAAAA| UU  | UU|  XX /XX/| II| LL| II| UU  | UU| MM_  MM_  MM     "
+echo -e "| AA__  AA| UU  | UU \  XXXX/ | II| LL| II| UU  | UU| MM \ MM \ MM     "
+echo -e "| AA  | AA| UU  | UU  >XX  XX | II| LL| II| UU  | UU| MM | MM | MM     "
+echo -e "| AA  | AA|  UUUUUU/ /XX/\  XX| II| LL| II|  UUUUUU/| MM | MM | MM     "
+echo -e "|__/  |__/ \______/ |__/  \__/|__/|__/|__/ \______/ |__/ |__/ |__/     "
 tput sgr0
 
 echo ""
@@ -46,20 +49,120 @@ echo "$(tput bold)Welcome to the Auxilium docker package build tool$(tput sgr0)"
 echo ""
 
 #echo "Writing default config files"
-HOSTNAME=$(hostname --fqdn)
-INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
-INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
+#########################
+# PORTS
 HTTP_PORT=8080
 HTTPS_PORT=8081
 DEEGRAPH_PORT=8880
-CERT_LOC=$(pwd)/certs
-CREATE_SSC=1
-INSTALL=1
-LOCAL_INSTALL=0
-SKIP_QUESTIONS=0
-PREEXISTING_VOLUME=0
 
-# Transform long options to short ones
+#########################
+# VERSIONS
+DEEGRAPH_VERSION=0.8
+
+#########################
+# MISC.
+HOSTNAME=$(hostname --fqdn)
+INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
+INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
+CERT_LOC=$(pwd)/certs
+####################################################################################################
+
+
+
+
+
+####################################################################################################
+#  ______ _    _ _   _  _____ _______ _____ ____  _   _  _____ 
+# |  ____| |  | | \ | |/ ____|__   __|_   _/ __ \| \ | |/ ____|
+# | |__  | |  | |  \| | |       | |    | || |  | |  \| | (___  
+# |  __| | |  | | . ` | |       | |    | || |  | | . ` |\___ \ 
+# | |    | |__| | |\  | |____   | |   _| || |__| | |\  |____) |
+# |_|     \____/|_| \_|\_____|  |_|  |_____\____/|_| \_|_____/ 
+####################################################################################################
+function fatalErrorMessage {
+    echo -e "${FONT__ERROR}Error: ${1}${FONT_RESET}"
+    exit
+}
+function checkUserIsInGroup {
+    if groups $USER | grep -q "\b${1}\b"; then
+        # No action, just continue
+        :
+    else
+        fatalErrorMessage "User is not in the ${1} group"
+    fi
+}
+function checkPackageIsInstalled {
+    if dpkg -l | grep -q "^ii\s*${1}\s"; then
+        # No action, just continue
+        :
+    else
+        fatalErrorMessage "Package '${1}' is not installed"
+    fi
+}
+function dockerVolumeExists {
+    checkPackageIsInstalled 'docker'
+    checkUserIsInGroup 'docker'
+
+    if [ "$(docker volume ls -f name=$1 | awk '{print $NF}' | grep -E '^'$1'$')" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+function showHelp {
+    echo -e "${FONT__HELP_HEADER}NAME${FONT_RESET}"
+    echo -e "\tAuxilium installer script"
+    echo -e ""
+    echo -e "${FONT__HELP_HEADER}SYNOPSIS${FONT_RESET}"
+    echo -e "\t./install.sh ${FONT__HELP_ARG}--help${FONT_RESET}"
+    echo -e "\t./install.sh [${FONT__HELP_ARG}OPTION${FONT_RESET}]..."
+    echo -e ""
+    echo -e "${FONT__HELP_HEADER}DESCRIPTION${FONT_RESET}"
+    echo -e "\tInstalls and builds Auxilium with given options for testing and deployment."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-h${FONT_RESET}, ${FONT__HELP_ARG}--help${FONT_RESET}"
+    echo -e "\t\tPrint this Help."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-l${FONT_RESET}, ${FONT__HELP_ARG}--local${FONT_RESET}"
+    echo -e "\t\tInstall locally, ${FONT__HELP_WARNING}THIS WILL MODIFY YOUR HOST${FONT_RESET}."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-b${FONT_RESET}, ${FONT__HELP_ARG}--build-only${FONT_RESET}"
+    echo -e "\t\tBuild only, do not test."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-n ${FONT__HELP_PARAM}<hostname>${FONT_RESET}, ${FONT__HELP_ARG}--hostname ${FONT__HELP_PARAM}<hostname>${FONT_RESET}"
+    echo -e "\t\tSet the fully qualified domain name the server will self-identify as."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-i ${FONT__HELP_PARAM}<name>${FONT_RESET}, ${FONT__HELP_ARG}--name ${FONT__HELP_PARAM}<name>${FONT_RESET}"
+    echo -e "\t\tSet the identifier name of the container."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-c ${FONT__HELP_PARAM}<dir>${FONT_RESET}, ${FONT__HELP_ARG}--certs ${FONT__HELP_PARAM}<dir>${FONT_RESET}"
+    echo -e "\t\tPoint to real certificates, and don't create self-signed certs."
+    echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-y${FONT_RESET}"
+    echo -e "\t\tSkip questions."
+}
+####################################################################################################
+
+
+
+
+
+####################################################################################################
+#           _____   _____ _    _ __  __ ______ _   _ _______       _    _          _   _ _____  _      _____ _   _  _____ 
+#     /\   |  __ \ / ____| |  | |  \/  |  ____| \ | |__   __|     | |  | |   /\   | \ | |  __ \| |    |_   _| \ | |/ ____|
+#    /  \  | |__) | |  __| |  | | \  / | |__  |  \| |  | |        | |__| |  /  \  |  \| | |  | | |      | | |  \| | |  __ 
+#   / /\ \ |  _  /| | |_ | |  | | |\/| |  __| | . ` |  | |        |  __  | / /\ \ | . ` | |  | | |      | | | . ` | | |_ |
+#  / ____ \| | \ \| |__| | |__| | |  | | |____| |\  |  | |        | |  | |/ ____ \| |\  | |__| | |____ _| |_| |\  | |__| |
+# /_/    \_\_|  \_\\_____|\____/|_|  |_|______|_| \_|  |_|        |_|  |_/_/    \_\_| \_|_____/|______|_____|_| \_|\_____|
+####################################################################################################
+_MODE__CREATE_SELF_SIGNED_CERTS=1
+_MODE__INSTALL=1
+_MODE__LOCAL_INSTALL=0
+_MODE__SKIP_QUESTIONS=0
+_MODE__PREEXISTING_VOLUME=0
+
+#########################
+# TRANSFORM LONG OPTIONS TO SHORT ONES
 for arg in "$@"; do
     shift
     case "$arg" in
@@ -74,44 +177,59 @@ for arg in "$@"; do
 done
 
 OPTIND=1
-while getopts "hylbi:n:c:" opt; do
+
+# optstring starts with a colon so getopts lets the case block handle errors
+while getopts ":hylbi:n:c:" opt; do
     case $opt in
         h) # display Help
             showHelp
             exit;;
         b) # Enter a name
-            LOCAL_INSTALL=0
-            INSTALL=0;;
+            _MODE__LOCAL_INSTALL=0
+            _MODE__INSTALL=0;;
         y) # Enter a name
-            SKIP_QUESTIONS=1;;
+            _MODE__SKIP_QUESTIONS=1;;
         l) # Enter a name
-            LOCAL_INSTALL=1;;
+            _MODE__LOCAL_INSTALL=1;;
         i) # Enter a name
             INSTANCE_IDENITIFIER=$OPTARG;;
         n) # Enter a name
             HOSTNAME=$OPTARG;;
         c)
             CERT_LOC=$OPTARG
-            CREATE_SSC=0;;
+            _MODE__CREATE_SELF_SIGNED_CERTS=0;;
         \?) # Invalid option
-            echo "Error: Invalid option"
-            exit;;
+            fatalErrorMessage "Invalid option $OPTARG";;
     esac
 done
-shift $(expr $OPTIND - 1) # remove options from positional parameters
 
-if [ "$INSTALL" -eq 1 ]; then
-    if [ "$LOCAL_INSTALL" -eq 0 ]; then
+#########################
+# REMOVE OPTIONS FROM POSITIONAL PARAMETERS
+shift $(expr $OPTIND - 1)
+
+if [ "$_MODE__INSTALL" -eq 1 ]; then
+    if [ "$_MODE__LOCAL_INSTALL" -eq 0 ]; then
         if dockerVolumeExists auxilium-volume-$INSTANCE_IDENITIFIER; then
-            PREEXISTING_VOLUME=1
+            _MODE__PREEXISTING_VOLUME=1
         fi
     fi
 fi
+####################################################################################################
 
 
+
+
+####################################################################################################
+#  __  __  ____  _____  ______           _____ _   _  _____ _______       _      _      
+# |  \/  |/ __ \|  __ \|  ____|  _      |_   _| \ | |/ ____|__   __|/\   | |    | |     
+# | \  / | |  | | |  | | |__    (_)       | | |  \| | (___    | |  /  \  | |    | |     
+# | |\/| | |  | | |  | |  __|             | | | . ` |\___ \   | | / /\ \ | |    | |     
+# | |  | | |__| | |__| | |____   _       _| |_| |\  |____) |  | |/ ____ \| |____| |____ 
+# |_|  |_|\____/|_____/|______| (_)     |_____|_| \_|_____/   |_/_/    \_\______|______|
+####################################################################################################
 tput bold
 tput rev
-if [ "$INSTALL" -eq 1 ]; then
+if [ "$_MODE__INSTALL" -eq 1 ]; then
     echo "About to build and install Auxilium with the following options:"
     tput sgr0
     echo ""
@@ -120,17 +238,17 @@ if [ "$INSTALL" -eq 1 ]; then
     echo "HTTP port on $HTTP_PORT"
     echo "HTTPS port on $HTTPS_PORT"
     echo "Deegraph server on port $DEEGRAPH_PORT"
-    if [ "$PREEXISTING_VOLUME" -eq 1 ]; then
+    if [ "$_MODE__PREEXISTING_VOLUME" -eq 1 ]; then
         echo "Reinstalling with existing user data"
     else
         echo "Creating a new instance"
     fi
-    if [ "$CREATE_SSC" -eq 1 ]; then
+    if [ "$_MODE__CREATE_SELF_SIGNED_CERTS" -eq 1 ]; then
         echo "Creating new self-signed certs for development purposes"
     else
         echo "Using SSL certificates at $CERT_LOC"
     fi
-    if [ "$LOCAL_INSTALL" -eq 1 ]; then
+    if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
         echo ""
         tput bold
         tput setaf 1
@@ -142,11 +260,11 @@ if [ "$INSTALL" -eq 1 ]; then
 else
     echo "About to build Auxilium"
     tput sgr0
-    CREATE_SSC=0
-    SKIP_QUESTIONS=1
+    _MODE__CREATE_SELF_SIGNED_CERTS=0
+    _MODE__SKIP_QUESTIONS=1
 fi
 
-if [ "$SKIP_QUESTIONS" -eq 0 ]; then
+if [ "$_MODE__SKIP_QUESTIONS" -eq 0 ]; then
     echo ""
     tput bold
     read -p "Do you want to continue with the installation? [Y/n] " CONFIRM_VALUES
@@ -157,12 +275,29 @@ if [ "$SKIP_QUESTIONS" -eq 0 ]; then
         exit
     fi
 fi
+####################################################################################################
 
-if [ "$LOCAL_INSTALL" -eq 1 ]; then
+
+
+
+
+####################################################################################################
+#  __  __  ____  _____  ______           _      ____   _____          _            _____ _   _  _____ _______       _      _      
+# |  \/  |/ __ \|  __ \|  ____|  _      | |    / __ \ / ____|   /\   | |          |_   _| \ | |/ ____|__   __|/\   | |    | |     
+# | \  / | |  | | |  | | |__    (_)     | |   | |  | | |       /  \  | |            | | |  \| | (___    | |  /  \  | |    | |     
+# | |\/| | |  | | |  | |  __|           | |   | |  | | |      / /\ \ | |            | | | . ` |\___ \   | | / /\ \ | |    | |     
+# | |  | | |__| | |__| | |____   _      | |___| |__| | |____ / ____ \| |____       _| |_| |\  |____) |  | |/ ____ \| |____| |____ 
+# |_|  |_|\____/|_____/|______| (_)     |______\____/ \_____/_/    \_\______|     |_____|_| \_|_____/   |_/_/    \_\______|______|
+####################################################################################################
+if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     echo ""
     tput bold
     echo "Installing dependencies"
     tput sgr0
+
+
+    checkUserIsInGroup 'sudo'
+
     
     sudo apt-get update
     sudo apt-get -y install supervisor wget grep curl openjdk-17-jre-headless
@@ -217,8 +352,21 @@ if [ "$LOCAL_INSTALL" -eq 1 ]; then
     sudo chown www-data:www-data /var/auxilium/www-data -R
 
 fi
+####################################################################################################
 
-if [ "$CREATE_SSC" -eq 1 ]; then
+
+
+
+
+####################################################################################################
+#   _____ ______ _____ _______ _____ ______ _____ _____       _______ ______  _____ 
+#  / ____|  ____|  __ \__   __|_   _|  ____|_   _/ ____|   /\|__   __|  ____|/ ____|
+# | |    | |__  | |__) | | |    | | | |__    | || |       /  \  | |  | |__  | (___  
+# | |    |  __| |  _  /  | |    | | |  __|   | || |      / /\ \ | |  |  __|  \___ \ 
+# | |____| |____| | \ \  | |   _| |_| |     _| || |____ / ____ \| |  | |____ ____) |
+#  \_____|______|_|  \_\ |_|  |_____|_|    |_____\_____/_/    \_\_|  |______|_____/ 
+####################################################################################################
+if [ "$_MODE__CREATE_SELF_SIGNED_CERTS" -eq 1 ]; then
 
 CERT_LOC="$(pwd)/certs/$INSTALL_ID"
 
@@ -294,15 +442,27 @@ openssl x509 -req -days 365 -passin pass:auxilium -CA rootCA.crt -CAkey rootCA.k
 cd $INSTALL_DIR
 
 fi
+####################################################################################################
 
 
-if [ ! -f bin/deegraph-v0.8.jar ]; then
+
+
+
+####################################################################################################
+#  _____  ______ ______ _____ _____            _____  _    _ 
+# |  __ \|  ____|  ____/ ____|  __ \     /\   |  __ \| |  | |
+# | |  | | |__  | |__ | |  __| |__) |   /  \  | |__) | |__| |
+# | |  | |  __| |  __|| | |_ |  _  /   / /\ \ |  ___/|  __  |
+# | |__| | |____| |___| |__| | | \ \  / ____ \| |    | |  | |
+# |_____/|______|______\_____|_|  \_\/_/    \_\_|    |_|  |_|
+####################################################################################################
+if [ ! -f bin/deegraph-v${DEEGRAPH_VERSION}.jar ]; then
     if [ ! -f bin/deegraph.jar ]; then
         rm bin/deegraph.jar
     fi
     echo "Downloading Deegraph"
-    wget -O bin/deegraph-v0.8.jar https://github.com/owoalex/deegraph/releases/download/v0.8/deegraph.jar
-    cp bin/deegraph-v0.8.jar bin/deegraph.jar 
+    wget -O bin/deegraph-v${DEEGRAPH_VERSION}.jar https://github.com/owoalex/deegraph/releases/download/v${DEEGRAPH_VERSION}/deegraph.jar
+    cp bin/deegraph-v${DEEGRAPH_VERSION}.jar bin/deegraph.jar 
 fi
 
 
@@ -316,8 +476,21 @@ if [ $? -ne 0 ]; then
     echo ""
     exit 2
 fi
+####################################################################################################
 
-if [ "$LOCAL_INSTALL" -eq 1 ]; then
+
+
+
+
+####################################################################################################
+#  _      ____   _____          _            _____ _   _  _____ _______       _      _      
+# | |    / __ \ / ____|   /\   | |          |_   _| \ | |/ ____|__   __|/\   | |    | |     
+# | |   | |  | | |       /  \  | |            | | |  \| | (___    | |  /  \  | |    | |     
+# | |   | |  | | |      / /\ \ | |            | | | . ` |\___ \   | | / /\ \ | |    | |     
+# | |___| |__| | |____ / ____ \| |____       _| |_| |\  |____) |  | |/ ____ \| |____| |____ 
+# |______\____/ \_____/_/    \_\______|     |_____|_| \_|_____/   |_/_/    \_\______|______|
+####################################################################################################
+if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
 
     sudo su - root -c "echo \"127.0.0.1     $HOSTNAME\" >> /etc/hosts"
 
@@ -335,6 +508,8 @@ if [ "$LOCAL_INSTALL" -eq 1 ]; then
     AUTH_JWT_SECRET=$(echo $JSON_KEYS | jq -r '.jwtSecret')
     AUTH_JWT_PUBLIC=$(echo $JSON_KEYS | jq -r '.jwtPublic')
     
+    #########################
+    # HANDLE SQL
     cat > pre-init-db.sql << EOF
 DROP USER IF EXISTS auxilium2@localhost;
 CREATE USER auxilium2@localhost IDENTIFIED BY '$MYSQL_PASSWORD';
@@ -351,6 +526,8 @@ EOF
         sudo update-ca-certificates
     fi
     
+    #########################
+    # SETUP APACHE FILES
 cat > apache-auxilium.conf << EOF
 
 <VirtualHost *:80>
@@ -387,6 +564,8 @@ cat > apache-auxilium.conf << EOF
 EOF
     sudo cp apache-auxilium.conf /etc/apache2/sites-enabled/default.conf
     
+    #########################
+    # SETUP DEEGRAPH CONFIG FILES
     cat > deegraph-config.json << EOF
 {
     "fqdn": "$HOSTNAME",
@@ -418,6 +597,9 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 EOF
+    
+    #########################
+    # SYSTEMD
     sudo systemctl stop deegraph.service
     sudo mv deegraph.service /etc/systemd/system/deegraph.service
     sudo systemctl daemon-reload
@@ -437,6 +619,8 @@ EOF
     DDS_ROOT_NODE=$(find . -maxdepth 1 -name "*.private.jwk" | cut -d '/' -f2 | cut -d '.' -f1)
     cd $QUICK_RETURN
     
+    #########################
+    # AUXILIUM CREDENTIALS FILE
     cat > credentials.php << EOF
 <?php
 const INSTANCE_DOMAIN_NAME = "$HOSTNAME";
@@ -494,12 +678,21 @@ EOF
     sudo chown www-data:www-data /var/auxilium/ecs/certs/apache -R
     
     sudo systemctl restart apache2.service
-
+####################################################################################################
+#  _____   ____   _____ _  ________ _____        _____ _   _  _____ _______       _      _      
+# |  __ \ / __ \ / ____| |/ /  ____|  __ \      |_   _| \ | |/ ____|__   __|/\   | |    | |     
+# | |  | | |  | | |    | ' /| |__  | |__) |       | | |  \| | (___    | |  /  \  | |    | |     
+# | |  | | |  | | |    |  < |  __| |  _  /        | | | . ` |\___ \   | | / /\ \ | |    | |     
+# | |__| | |__| | |____| . \| |____| | \ \       _| |_| |\  |____) |  | |/ ____ \| |____| |____ 
+# |_____/ \____/ \_____|_|\_\______|_|  \_\     |_____|_| \_|_____/   |_/_/    \_\______|______|
+####################################################################################################
 else
+    checkUserIsInGroup 'docker'
+
     echo "Building docker image"
     docker build -t auxilium .
     if [ $? -eq 0 ]; then
-        if [ "$INSTALL" -eq 1 ]; then
+        if [ "$_MODE__INSTALL" -eq 1 ]; then
             echo "Running new image"
             docker stop auxilium-$INSTANCE_IDENITIFIER
             docker rm auxilium-$INSTANCE_IDENITIFIER
@@ -517,7 +710,7 @@ else
             tput sgr0
             echo ""
 
-            if [ "$PREEXISTING_VOLUME" -eq 1 ]; then
+            if [ "$_MODE__PREEXISTING_VOLUME" -eq 1 ]; then
                 echo "Data restored from disk"
                 echo "Go to <https://$HOSTNAME:$HTTPS_PORT/login> to examine this instance"
                 echo ""
@@ -550,3 +743,4 @@ else
         exit 1
     fi
 fi
+####################################################################################################
