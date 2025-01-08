@@ -53,7 +53,10 @@
         "aura/sqlquery": "2.8.1",
 
         "darksparrow/deegraph-interactions": "dev-dev",
-        "darksparrow/auxilium-schema-builder": "dev-dev"
+        "darksparrow/auxilium-schema-builder": "dev-dev",
+
+
+        "geerlingguy/ping": "1.2.1"
     },
     "config": {
         "allow-plugins": {

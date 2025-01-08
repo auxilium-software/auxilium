@@ -5,6 +5,7 @@ use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Wrappers\ICMPWrapper;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -15,6 +16,7 @@ try
     try
     {
         Security::RequireLogin();
+        ICMPWrapper::RequireSchemaRepo();
 
 
         PageBuilder2::AutoRender(variables: [
