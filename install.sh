@@ -92,15 +92,15 @@ function checkUserIsInGroup {
     fi
 }
 function checkPackageIsInstalled {
-    if dpkg -l | grep -q "^ii\s*${1}\s"; then
         # No action, just continue
+    if dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed"; then
         :
     else
         fatalErrorMessage "Package '${1}' is not installed"
     fi
 }
 function dockerVolumeExists {
-    checkPackageIsInstalled 'docker'
+    checkPackageIsInstalled docker
     checkUserIsInGroup 'docker'
 
     if [ "$(docker volume ls -f name=$1 | awk '{print $NF}' | grep -E '^'$1'$')" ]; then
