@@ -3,11 +3,11 @@
 namespace Auxilium\DatabaseInteractions\Deegraph;
 
 use Auxilium\AuxiliumLFSObject;
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DataURL;
 use Auxilium\GraphDatabaseConnection;
 use Auxilium\Schema;
 use Auxilium\SessionHandling\Session;
-use Auxilium\User;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use Darksparrow\DeegraphInteractions\Exceptions\InvalidUUIDFormatException;
 use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
@@ -43,38 +43,13 @@ class DeegraphNode
         $this->NodeID = new UUID($id);
     }
 
-    /**
-     * Converts the Node to a string by fetching its data.
-     * If the data is a string, it returns that string; otherwise, it returns an empty string.
-     * @return string
-     */
-    public function __toString()
-    {
-        $temp = $this->GetData();
-        if(is_string($temp))
-            return $temp;
-        return "";
-    }
 
 
-    /**
-     * Returns the UUID of the Node as a string.
-     * @return string Node UUID.
-     */
-    public function GetNodeID(): string
-    {
-        return $this->NodeID->GetPlainUUID();
-    }
 
 
-    /**
-     * Returns the UUID of the node as a UUID object.
-     * @return UUID Node UUID.
-     */
-    public function GetNodeUUID(): UUID
-    {
-        return $this->NodeID;
-    }
+
+
+
 
 
     /**
@@ -82,10 +57,11 @@ class DeegraphNode
      * @param string $path The path to the Node.
      * @return DeegraphNode|null The Node if found, otherwise null.
      */
-    public static function FromPath(string $path): ?DeegraphNode
+    public static function from_path(string $path): ?DeegraphNode
     {
         return GraphDatabaseConnection::node_from_path($path);
     }
+
 
     /**
      * Fetches a Node by its ID, using a static cache for optimisation.
@@ -93,7 +69,7 @@ class DeegraphNode
      * @return DeegraphNode|null The Node if found or created, null otherwise.
      * @throws InvalidUUIDFormatException
      */
-    public static function FromID(string $id = null): ?DeegraphNode
+    public static function from_id(string $id = null): ?DeegraphNode
     {
         if($id == null)
         {
@@ -123,6 +99,93 @@ class DeegraphNode
     }
 
 
+
+
+
+
+
+
+
+
+    /**
+     * Converts the Node to a string by fetching its data.
+     * If the data is a string, it returns that string; otherwise, it returns an empty string.
+     * @return string
+     */
+    public function __toString() {
+        if (is_string($this->getData())) {
+            return $this->getData();
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Retrieves raw content data associated with the node.
+     * @return mixed Raw content or null if not fetched.
+     */
+    public function getData(User $actor = null)
+    {
+        $content = $this->getContent($actor);
+        return ($content == null) ? null : $content->getData();
+    }
+
+    public function getContent(User $actor = null): AuxiliumLFSObject|DataURL|null
+    {
+        if($this->getRawContent($actor) != null)
+        {
+            if(substr($this->getRawContent($actor), 0, 5) === "data:")
+            {
+                return new DataURL($this->getRawContent($actor));
+            }
+            elseif(substr($this->getRawContent($actor), 0, 7) === "auxlfs:")
+            {
+                return new AuxiliumLFSObject($this->getRawContent($actor));
+            }
+        }
+        return null;
+    }
+
+    public function getRawContent(User $actor = null)
+    {
+        if($this->HasRawContentBeenFetchedYet)
+        {
+            return $this->RawContent;
+        }
+
+        if($actor == null)
+        {
+            $actor = Session::get_current()->getUser();
+        }
+
+        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/" . $this->NodeID, "GET");
+
+        if(is_array($result))
+        {
+            if(isset($result["@data"]))
+            {
+                $this->RawContent = $result["@data"];
+            }
+        }
+
+        $this->HasRawContentBeenFetchedYet = true;
+        return $this->RawContent;
+    }
+
+
+    /**
+     * Returns the UUID of the Node as a string.
+     * @return string Node UUID.
+     */
+    public function getId(): string
+    {
+        return $this->NodeID->GetPlainUUID();
+    }
+    public function getUuid(): string
+    {
+        return $this->NodeID->GetPlainUUID();
+    }
+
     /**
      * Adds a property (link) between this Node and another Node.
      * @param string $key The key representing the property.
@@ -132,7 +195,7 @@ class DeegraphNode
      * @return mixed The result of the graph database query.
      * @throws InvalidUUIDFormatException
      */
-    public function AddProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
+    public function addProperty(string $key, DeegraphNode $node, User $actor = null, bool $force = false)
     {
         if($actor == null)
         {
@@ -142,7 +205,7 @@ class DeegraphNode
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "LINK {".$node->GetNodeID()."} AS ".$key." OF {".$this->GetNodeID()."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
-                ->LinkOfRelativePath($node->GetNodeUUID(), $this->GetNodeUUID())
+                ->LinkOfRelativePath($node->NodeID, $this->NodeID)
                 ->As($key);
             if($force) $query = $query->Force();
             $query = $query->Build();
@@ -161,7 +224,7 @@ class DeegraphNode
      * @return mixed The result of the graph database query.
      * @throws InvalidUUIDFormatException
      */
-    public function UnlinkProperty(string $key, User $actor = null)
+    public function unlinkProperty(string $key, User $actor = null)
     {
         if($actor == null)
         {
@@ -172,7 +235,7 @@ class DeegraphNode
             // $query = "UNLINK ".$key." FROM {".$this->GetNodeID()."}";
             $query = QueryBuilder::Unlink()
                 ->UnlinkWhat($key)
-                ->From($this->GetNodeUUID())
+                ->From($this->NodeID)
                 ->Build();
             if($this->CachedProperties != null)
             {
@@ -195,7 +258,7 @@ class DeegraphNode
      * @return mixed The result of the graph database query.
      * @throws InvalidUUIDFormatException
      */
-    public function Delete(User $actor = null)
+    public function delete(User $actor = null)
     {
         if($actor == null)
         {
@@ -204,7 +267,7 @@ class DeegraphNode
 
         // $query = "DELETE {".$this->GetNodeID()."}";
         $query = QueryBuilder::Delete()
-            ->RelativePath($this->GetNodeUUID())
+            ->RelativePath($this->NodeID)
             ->Build();
         return GraphDatabaseConnection::query($actor, $query);
     }
@@ -214,9 +277,9 @@ class DeegraphNode
      * @param DeegraphNode $n Another Node to compare.
      * @return bool True if they are the same, false otherwise.
      */
-    public function Is(DeegraphNode $n): bool
+    public function is(DeegraphNode $n): bool
     {
-        if($this->GetNodeID() == $n->GetNodeID())
+        if($this->getId() == $n->getId())
         {
             return true;
         }
@@ -229,7 +292,7 @@ class DeegraphNode
      * @return array|null Permissions data or null if not fetched.
      * @throws InvalidUUIDFormatException
      */
-    public function GetPermissions(User $actor = null): ?array
+    public function getPermissions(User $actor = null): ?array
     {
         if($actor == null)
         {
@@ -242,7 +305,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "PERMS ON {".$this->GetNodeID()."}";
         $query = QueryBuilder::Permission()
-            ->On($this->GetNodeUUID())
+            ->On($this->NodeID)
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@permissions"]))
@@ -266,7 +329,7 @@ class DeegraphNode
      * @return array|null References data or null if not fetched.
      * @throws InvalidUUIDFormatException
      */
-    public function GetReferences(User $actor = null): ?array
+    public function getReferences(User $actor = null): ?array
     {
         if($actor == null)
         {
@@ -279,7 +342,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "REFERENCES {".$this->GetNodeID()."}";
         $query = QueryBuilder::References()
-            ->RelativePath($this->GetNodeUUID())
+            ->RelativePath($this->NodeID)
             ->Build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@map"]))
@@ -289,7 +352,7 @@ class DeegraphNode
                 $arr = [];
                 foreach($value as $refNodeId)
                 {
-                    array_push($arr, DeegraphNode::FromID($refNodeId));
+                    array_push($arr, DeegraphNode::from_id($refNodeId));
                 }
                 $outputMap[$key] = $arr;
             }
@@ -308,19 +371,19 @@ class DeegraphNode
      * @param User|null $actor The user performing the operation.
      * @return mixed|null Property value or null if not found.
      */
-    public function GetProperty(string $property, User $actor = null)
+    public function getProperty(string $property, User $actor = null)
     {
         if($actor == null)
         {
             $actor = Session::get_current()->getUser();
         }
-        $temp = $this->GetProperties($actor);
+        $temp = $this->getProperties($actor);
         if(isset($temp[$property]))
             return $temp[$property];
         return null;
     }
 
-    public function GetProperties(User $actor = null): ?array
+    public function getProperties(User $actor = null): ?array
     {
         if($actor == null)
         {
@@ -333,7 +396,7 @@ class DeegraphNode
         $outputMap = [];
         // $query = "DIRECTORY {".$this->GetNodeID()."}";
         $query = QueryBuilder::Directory()
-            ->RelativePath($this->GetNodeUUID())
+            ->RelativePath($this->NodeID)
             ->Build();
 
         $response = GraphDatabaseConnection::query($actor, $query);
@@ -341,7 +404,7 @@ class DeegraphNode
         {
             foreach($response["@map"] as $key => $value)
             {
-                $outputMap[$key] = DeegraphNode::FromID($value);
+                $outputMap[$key] = DeegraphNode::from_id($value);
             }
             $this->CachedProperties = $outputMap;
             return $outputMap;
@@ -354,78 +417,26 @@ class DeegraphNode
 
     public function getObjectSize()
     {
-        $content = $this->GetContent($actor);
+        $content = $this->getContent($actor);
         return ($content == null) ? 0 : $content->getSize();
-    }
-
-    public function GetContent(User $actor = null): AuxiliumLFSObject|DataURL|null
-    {
-        if($this->GetRawContent($actor) != null)
-        {
-            if(substr($this->GetRawContent($actor), 0, 5) === "data:")
-            {
-                return new DataURL($this->GetRawContent($actor));
-            }
-            elseif(substr($this->GetRawContent($actor), 0, 7) === "auxlfs:")
-            {
-                return new AuxiliumLFSObject($this->GetRawContent($actor));
-            }
-        }
-        return null;
-    }
-
-    public function GetRawContent(User $actor = null)
-    {
-        if($this->HasRawContentBeenFetchedYet)
-        {
-            return $this->RawContent;
-        }
-
-        if($actor == null)
-        {
-            $actor = Session::get_current()->getUser();
-        }
-
-        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/" . $this->GetNodeUUID(), "GET");
-
-        if(is_array($result))
-        {
-            if(isset($result["@data"]))
-            {
-                $this->RawContent = $result["@data"];
-            }
-        }
-
-        $this->HasRawContentBeenFetchedYet = true;
-        return $this->RawContent;
     }
 
     public function getMimeType()
     {
-        $content = $this->GetContent($actor);
+        $content = $this->getContent($actor);
         return ($content == null) ? null : $content->getMimeType();
     }
 
-    /**
-     * Retrieves raw content data associated with the node.
-     * @return mixed Raw content or null if not fetched.
-     */
-    public function GetData(User $actor = null)
+    public function getTimestamp(): string
     {
-        $content = $this->GetContent($actor);
-        return ($content == null) ? null : $content->getData();
-    }
-
-    public function GetTimestamp(): string
-    {
-        return date("c", strtotime($this->GetNodeMetadata()["@created"]));
+        return date("c", strtotime($this->getNodeMetadata()["@created"]));
     }
 
     /**
      * Retrieves metadata associated with the node.
      * @return mixed Metadata or null if not fetched.
      */
-    public function GetNodeMetadata(User $actor = null): ?array
+    public function getNodeMetadata(User $actor = null): ?array
     {
         if($this->HasMetadataBeenFetchedYet)
         {
@@ -437,7 +448,7 @@ class DeegraphNode
             $actor = Session::get_current()->getUser();
         }
 
-        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->GetNodeID() . "}", "GET");
+        $result = GraphDatabaseConnection::raw_request($actor, "/api/v1/{" . $this->getId() . "}", "GET");
 
         if(is_array($result))
         {
@@ -448,32 +459,32 @@ class DeegraphNode
         return $this->Metadata;
     }
 
-    public function GetTimestampInt(): false|int
+    public function getTimestampInt(): false|int
     {
-        return strtotime($this->GetNodeMetadata()["@created"]);
+        return strtotime($this->getNodeMetadata()["@created"]);
     }
 
-    public function GetSchema()
+    public function getSchema()
     {
-        return Schema::from_url($this->GetSchemaUrl());
+        return Schema::from_url($this->getSchemaUrl());
     }
 
-    public function GetSchemaUrl()
+    public function getSchemaUrl()
     {
-        return isset($this->GetNodeMetadata()["@schema"]) ? $this->GetNodeMetadata()["@schema"] : null;
+        return isset($this->getNodeMetadata()["@schema"]) ? $this->getNodeMetadata()["@schema"] : null;
     }
 
-    public function GetCreator(): ?DeegraphNode
+    public function getCreator(): ?DeegraphNode
     {
-        return DeegraphNode::FromID($this->GetNodeMetadata()["@creator"]);
+        return DeegraphNode::from_id($this->getNodeMetadata()["@creator"]);
     }
 
-    public function ExtendsOrInstanceOf(string $schema): bool
+    public function extendsOrInstanceOf(string $schema): bool
     {
-        if(!isset($this->GetNodeMetadata()["@schema"]))
+        if(!isset($this->getNodeMetadata()["@schema"]))
         {
             return false;
         }
-        return $this->GetNodeMetadata()["@schema"] == $schema;
+        return $this->getNodeMetadata()["@schema"] == $schema;
     }
 }
