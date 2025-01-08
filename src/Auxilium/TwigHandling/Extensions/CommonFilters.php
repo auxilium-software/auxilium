@@ -2,9 +2,10 @@
 
 namespace Auxilium\TwigHandling\Extensions;
 
-use Auxilium\EncodingTools;
+use Auxilium\Enumerators\CookieKey;
 use Auxilium\MicroTemplate;
 use Auxilium\SessionHandling\CookieHandling;
+use Auxilium\Utilities\EncodingTools;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -13,6 +14,11 @@ class CommonFilters extends AbstractExtension
     public function getFilters()
     {
         return [
+            /*
+            new TwigFilter('json_encode', [$this, 'JSONEncode']),
+            new TwigFilter('json_decode', [$this, 'JSONDecode']),
+            */
+
             new TwigFilter('uiprop', [$this, 'uiprop']),
             new TwigFilter('uitxt', [$this, 'uitxt']),
             new TwigFilter('uitxtrt', [$this, 'uitxtrt']),
@@ -27,66 +33,90 @@ class CommonFilters extends AbstractExtension
         ];
     }
 
+    public function JSONEncode($value): string { return json_encode($value); }
+    public function JSONDecode($value): array { return json_decode($value, true); }
+
     public function uiprop($string): string
     {
-        return MicroTemplate::data_type_to_human_name($string, CookieHandling::GetCookieValue("lang"));
+        return MicroTemplate::data_type_to_human_name($string, CookieHandling::GetCookieValue(CookieKey::LANGUAGE));
     }
+
     public function uitxt($string): string
     {
-        return MicroTemplate::ui_text($string, CookieHandling::GetCookieValue("lang"));
+        return MicroTemplate::ui_text($string, CookieHandling::GetCookieValue(CookieKey::LANGUAGE));
     }
+
     public function uitxtrt($string): string
     {
         // return MicroTemplate::ui_text_root($string, CookieHandling::GetCookieValue("lang"), $this->twigVariables);
-        return MicroTemplate::ui_text_root($string, CookieHandling::GetCookieValue("lang"), [
+        return MicroTemplate::ui_text_root($string, CookieHandling::GetCookieValue(CookieKey::LANGUAGE), [
 
-        ]);
+            ]
+        );
     }
+
     public function ndtitle($string): string
     {
         $pcs = mb_split(" ", $string);
-        foreach ($pcs as &$pc) {
+        foreach($pcs as &$pc)
+        {
             $pc = mb_strtoupper(mb_substr($pc, 0, 1)) . mb_substr($pc, 1);
         }
         return implode(" ", $pcs);
     }
+
     public function ndsentence($string): string
     {
         return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1);
     }
+
     public function uihdg($string): string
     {
-        return MicroTemplate::ui_heading($string, CookieHandling::GetCookieValue("lang"));
+        return MicroTemplate::ui_heading($string, CookieHandling::GetCookieValue(CookieKey::LANGUAGE));
     }
+
     public function unpack_string($string): string
     {
-        return MicroTemplate::from_packed_template($string, CookieHandling::GetCookieValue("lang"));
+        return MicroTemplate::from_packed_template($string, CookieHandling::GetCookieValue(CookieKey::LANGUAGE));
     }
+
     public function b64_url_safe($string): string
     {
-        return EncodingTools::base64_encode_url_safe($string);
+        return EncodingTools::Base64EncodeURLSafe($string);
     }
+
     public function un_b64_url_safe($string): string
     {
-        return EncodingTools::base64_decode_url_safe($string);
+        return EncodingTools::Base64DecodeURLSafe($string);
     }
+
     public function human_filesize($string): string
     {
         $size = intval($string);
-        if ($size <= 256) {
-            return $size." B";
-        } elseif ($size <= 256 * pow(1024, 1)) {
-            return substr($size / pow(1024, 1), 0, 3)." KiB";
-        } elseif ($size <= 256 * pow(1024, 2)) {
-            return substr($size / pow(1024, 2), 0, 3)." MiB";
-        } elseif ($size <= 256 * pow(1024, 3)) {
-            return substr($size / pow(1024, 3), 0, 3)." GiB";
-        } else {
-            return substr($size / pow(1024, 4), 0, 3)." TiB";
+        if($size <= 256)
+        {
+            return $size . " B";
+        }
+        elseif($size <= 256 * pow(1024, 1))
+        {
+            return substr($size / pow(1024, 1), 0, 3) . " KiB";
+        }
+        elseif($size <= 256 * pow(1024, 2))
+        {
+            return substr($size / pow(1024, 2), 0, 3) . " MiB";
+        }
+        elseif($size <= 256 * pow(1024, 3))
+        {
+            return substr($size / pow(1024, 3), 0, 3) . " GiB";
+        }
+        else
+        {
+            return substr($size / pow(1024, 4), 0, 3) . " TiB";
         }
     }
+
     // Macro to insert a dynamically loaded node view
-    public function dnd($string): string
+    public function dnd($path): string
     {
         $rid = openssl_random_pseudo_bytes(16);
         $rid = bin2hex($rid);
