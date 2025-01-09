@@ -1,15 +1,14 @@
 <?php
 
-use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Enumerators\CookieKey;
+use Auxilium\SessionHandling\CookieHandling;
+use Auxilium\TwigHandling\PageBuilder2;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
-
-// setcookie("session_key", null, time() - (3600 * 48), "/", null, true, true);
-
-setcookie("session_key", "", time() - (3600 * 48), "/", "", true, true);
-
-\Auxilium\TwigHandling\PageBuilder2::AutoRender([
-    "current_user" => null,
-]);
+CookieHandling::DeleteCookie(targetCookie: CookieKey::SESSION_KEY);
+PageBuilder2::AutoRender([
+        "current_user" => null,
+    ]
+);

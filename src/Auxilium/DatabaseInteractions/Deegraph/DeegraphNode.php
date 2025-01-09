@@ -203,7 +203,7 @@ class DeegraphNode
         }
         if(preg_match('/^[a-z_][a-z0-9_]*$/', $key) || preg_match('/^[0-9]+$/', $key) || $key == "#")
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
-            // $query = "LINK {".$node->GetNodeID()."} AS ".$key." OF {".$this->GetNodeID()."}".($force ? " FORCE" : "");
+            // $query = "LINK {".$node->NodeID."} AS ".$key." OF {".$this->NodeID."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
                 ->LinkOfRelativePath($node->NodeID, $this->NodeID)
                 ->As($key);
