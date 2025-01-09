@@ -2,6 +2,7 @@
 
 namespace Auxilium\DatabaseInteractions\MariaDB;
 
+use Aura\SqlQuery\Common\InsertInterface;
 use Aura\SqlQuery\Common\SelectInterface;
 use PDO;
 
@@ -24,7 +25,7 @@ class MariaDBServerConnection
         $this->pdo->setAttribute(attribute: PDO::ATTR_ERRMODE, value: PDO::ERRMODE_EXCEPTION);
     }
 
-    public static function RunSelect(SelectInterface $queryBuilder): array
+    public function RunSelect(SelectInterface $queryBuilder): array
     {
         $db = new MariaDBServerConnection();
 
@@ -34,7 +35,7 @@ class MariaDBServerConnection
         return $result;
     }
 
-    public static function RunOneRowSelect(SelectInterface $queryBuilder): array|null
+    public function RunOneRowSelect(SelectInterface $queryBuilder): array|null
     {
         $db = new MariaDBServerConnection();
 
@@ -45,5 +46,25 @@ class MariaDBServerConnection
         if(sizeof($result) == 1) return $result[0];
 
         return null;
+    }
+
+    public function RunInsert(InsertInterface $queryBuilder): array|null
+    {
+        $db = new MariaDBServerConnection();
+
+        $sth = $db->pdo->prepare($queryBuilder->getStatement());
+        $sth->execute($queryBuilder->getBindValues());
+        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        if(sizeof($result) == 1) return $result[0];
+
+        return null;
+    }
+
+    public function InitialDatabaseSetup(): false|\PDOStatement
+    {
+        $db = new MariaDBServerConnection();
+        $relational_schema = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
+        return $db->pdo->query(file_get_contents($relational_schema));
     }
 }

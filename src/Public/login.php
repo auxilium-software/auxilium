@@ -63,7 +63,10 @@ try
     $statement->execute($bind_variables);
     $user_data = $statement->fetch();
     */
-    $user_data = MariaDBServerConnection::RunOneRowSelect(
+    
+    $mariaDBConnection = new MariaDBServerConnection();
+    
+    $user_data = $mariaDBConnection->RunOneRowSelect(
         SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
             ->cols(cols: [
                 "email_address",
@@ -154,7 +157,7 @@ try
                 $used_code_info = $statement->fetch();
                 */
 
-                $used_code_info = MariaDBServerConnection::RunSelect(
+                $used_code_info = $mariaDBConnection->RunSelect(
                     SQLQueryBuilderWrapper::SELECT(MariaDBTable::TOTP_USED_CODES)
                         ->cols(cols: [
                             "1",
