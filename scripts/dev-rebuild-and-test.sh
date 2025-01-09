@@ -12,11 +12,11 @@ function dockerVolumeExists {
 if [ ! -d bin ]; then
     mkdir bin
 fi
-if [ ! -d auxilium2 ]; then
-    git clone git@gitlab.aber.ac.uk:auxilium-software/auxilium2.git
+if [ ! -d auxilium ]; thenls -lah /
+    git clone https://github.com/auxilium-software/auxilium.git
 fi
-if [ ! -d auxilium2 ]; then
-    echo "FAILED TO DOWNLOAD AUXILIUM2, CHECK GIT SSH KEYS"
+if [ ! -d auxilium ]; then
+    echo "FAILED TO DOWNLOAD AUXILIUM, CHECK GIT SSH KEYS"
     exit 2
 fi
 if [ -f bin/deegraph-0.7.jar ]; then
@@ -24,7 +24,7 @@ if [ -f bin/deegraph-0.7.jar ]; then
 else
     wget -O bin/deegraph-0.7.jar https://github.com/owoalex/deegraph/releases/download/v0.7/deegraph.jar
 fi
-cd auxilium2
+cd auxilium
 git pull
 cd ..
 echo "Writing default config files"
