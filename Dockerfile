@@ -7,6 +7,7 @@ RUN apt-get update
 RUN apt-get -y install supervisor wget grep curl openjdk-17-jre-headless
 RUN apt-get -y install apache2 apache2-utils libapache2-mod-php php-gd php-mysql mariadb-server mariadb-client php-simplexml php-mysql php-curl php-bcmath php-json php-imap php-mbstring
 RUN apt-get -y install composer ssl-cert git jq
+RUN apt-get -y install iputils-ping
 
 RUN export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`; a2enmod php$PHP_VER;
 RUN a2enmod headers
