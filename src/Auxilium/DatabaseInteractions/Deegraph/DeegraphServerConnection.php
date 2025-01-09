@@ -9,10 +9,9 @@ class DeegraphServerConnection
     public static function GetConnection(): DeegraphServer
     {
         return new DeegraphServer(
-            token: INSTANCE_CREDENTIAL_DDS_TOKEN,
-            actor: INSTANCE_CREDENTIAL_DDS_LOGIN_NODE,
-            server: INSTANCE_CREDENTIAL_DDS_HOST,
-            port: INSTANCE_CREDENTIAL_DDS_PORT,
+            token               : INSTANCE_CREDENTIAL_DDS_TOKEN,
+            server              : INSTANCE_CREDENTIAL_DDS_HOST,
+            port                : INSTANCE_CREDENTIAL_DDS_PORT,
         );
     }
 
