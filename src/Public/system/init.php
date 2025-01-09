@@ -1,5 +1,9 @@
 <?php
 
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
+use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
@@ -60,13 +64,13 @@ if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.lock"))
 }
 else
 {
+
     $lock_file = fopen(LOCAL_STORAGE_DIRECTORY . "setup.lock", "w") or die("Unable to write lockfile!");
     fwrite($lock_file, date("c", time()));
     fclose($lock_file);
 
-    $relational_schema = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
-    $pdo = Auxilium\RelationalDatabaseConnection::get_pdo();
-    $pdo->query(file_get_contents($relational_schema));
+    $mariaDBConnection = new MariaDBServerConnection();
+    $mariaDBConnection->InitialDatabaseSetup();
 
     Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
     Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE . === /");
@@ -119,18 +123,21 @@ if(isset($_GET["page"]))
                 ];
                 $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
 
-                $bind_variables = [
-                    "user_uuid" => $user_node->getId(),
-                    "email_address" => $_POST["email"],
-                    "password" => $hashed_password
-                ];
-                $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
-                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                $statement->execute($bind_variables);
 
-                Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
+                $mariaDBConnection->RunInsert(
+                    queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::STANDARD_LOGINS)
+                        ->set(col: 'email_address', value: ':__email_address__')
+                        ->set(col: 'user_uuid',     value: ':__user_uuid__')
+                        ->set(col: 'password',      value: ':__password__')
+                        ->bindValue(name: '__email_address__',  value: $_POST["email"])
+                        ->bindValue(name: '__user_uuid__',      value: $user_node->getId())
+                        ->bindValue(name: '__password__',       value: $hashed_password)
+                );
 
-                $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
+
+                Auxilium\GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
+
+                $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
                 $user_node->addProperty("preferred_language", $language_prop, $user_node);
                 $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
                 $user_node->addProperty("name", $full_name_prop, $user_node);
