@@ -18,3 +18,10 @@
 credentials.php
 *.jar
 nohup.out
+
+/src/.phpdoc
+/src/.phpdoc-export
+/src/LocalStorage
+src/Configuration/Configuration/Secrets.yaml
+src/Configuration/Configuration/Configuration.yaml
+src/Configuration/Configuration/Environment.php
