@@ -5,6 +5,7 @@ namespace Auxilium\DatabaseInteractions\MariaDB;
 use Aura\SqlQuery\Common\InsertInterface;
 use Aura\SqlQuery\Common\SelectInterface;
 use PDO;
+use PDOStatement;
 
 class MariaDBServerConnection
 {
@@ -50,9 +51,12 @@ class MariaDBServerConnection
         return $sth->execute($queryBuilder->getBindValues());
     }
 
-    public function InitialDatabaseSetup(): false|\PDOStatement
+    public function InitialDatabaseSetup(): false
     {
-        $relational_schema = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
-        return $this->pdo->query(file_get_contents($relational_schema));
+        $filePath = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
+        $schema = file_get_contents($filePath);
+        $result = $this->pdo->exec(statement: $schema);
+        if($result === 0) return true;
+        return false;
     }
 }
