@@ -12,6 +12,7 @@ class DeegraphServerConnection
             token               : INSTANCE_CREDENTIAL_DDS_TOKEN,
             server              : INSTANCE_CREDENTIAL_DDS_HOST,
             port                : INSTANCE_CREDENTIAL_DDS_PORT,
+            allowSelfSignedCerts: ACCEPT_SELF_SIGNED_CERTIFICATES,
         );
     }
 
