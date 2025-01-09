@@ -55,7 +55,6 @@
         "darksparrow/deegraph-interactions": "dev-dev",
         "darksparrow/auxilium-schema-builder": "dev-dev",
 
-
         "geerlingguy/ping": "1.2.1"
     },
     "config": {

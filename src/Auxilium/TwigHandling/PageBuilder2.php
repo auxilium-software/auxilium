@@ -179,16 +179,6 @@ class PageBuilder2
         die();
     }
 
-    #[NoReturn] public static function Render404(): void
-    {
-        http_response_code(404);
-        self::Render(
-            template : "Pages/node-views/404",
-            variables: [
-            ],
-        );
-    }
-
     /**
      * Uses the $_SERVER['REQUEST_URI'] variable to figure out which twig file to target.
      * Means that you don't have to specify the twig file every time, small QoL feature.
@@ -211,6 +201,16 @@ class PageBuilder2
         }
 
         return "Pages" . $twigFile;
+    }
+
+    #[NoReturn] public static function Render404(): void
+    {
+        http_response_code(404);
+        self::Render(
+            template : "Pages/node-views/404.html.twig",
+            variables: [
+            ],
+        );
     }
 
 
