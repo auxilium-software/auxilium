@@ -58,7 +58,7 @@ class CookieHandling
             $value,
             time() + self::GetCookieTTL($targetCookie),
             "/",
-            null,
+            INSTANCE_DOMAIN_NAME,
             true,
             true
         );
@@ -72,7 +72,7 @@ class CookieHandling
             "", // value
             time() - (3600 * 48), // ttl
             "/", //
-            "", // domain
+            INSTANCE_DOMAIN_NAME, // domain
             true, //
             true //
         );
