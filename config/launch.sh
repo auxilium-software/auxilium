@@ -65,7 +65,7 @@ mkdir /var/ecs/certs/deegraph/
 mkdir /var/ecs/certs/apache/
 cp /etc/ssl/ext-certs/* /var/ecs/certs/apache/
 
-ln -s /store/local-assets /var/www/assets/local
+ln -s /store/local-assets /var/www/Public/assets/local
 
 chown www-data:www-data /var/ecs -R
 
@@ -74,7 +74,7 @@ chown deegraph:deegraph /var/ecs/certs/deegraph -R
 
 echo "127.0.0.1     $CONTAINER_FQDN" >> /etc/hosts
 
-cat > /app/deegraph-config.json << EOF
+cat > /app/config.json << EOF
 {
     "fqdn": "$CONTAINER_FQDN",
     "data_directory": "/store/deegraph/dgdata/",
@@ -88,14 +88,14 @@ cat > /app/deegraph-config.json << EOF
 }
 EOF
 
-chown deegraph:deegraph /app/deegraph-config.json
+chown deegraph:deegraph /app/config.json
 
-# runuser -l deegraph -c "cd /app/; java -jar /app/deegraph.jar /app/deegraph-config.json"
-#runuser -l deegraph -c "cd /app/; nohup java -jar /app/deegraph.jar /app/deegraph-config.json >/dev/null 2>&1"
+# runuser -l deegraph -c "cd /app/; java -jar /app/deegraph.jar /app/config.json"
+#runuser -l deegraph -c "cd /app/; nohup java -jar /app/deegraph.jar /app/config.json >/dev/null 2>&1"
 
 echo "Launching deegraph"
 
-nohup su - deegraph -c "/usr/bin/java -jar /app/deegraph.jar /app/deegraph-config.json & echo \$! > /store/deegraph/deegraph.pid.tmp" &
+nohup su - deegraph -c "/usr/bin/java -jar /app/deegraph.jar /app/config.json & echo \$! > /store/deegraph/deegraph.pid.tmp" &
 
 QUICK_RETURN=$(pwd)
 cd /store/deegraph/dgdata/
