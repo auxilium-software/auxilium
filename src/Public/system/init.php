@@ -96,79 +96,87 @@ if (isset($_GET["lang"]))
     $pb->setVariable("lang", $_GET["lang"]);
 }
 */
-if(isset($_GET["page"]))
+if(!isset($_GET["page"]))
 {
-    switch(strtolower($_GET["page"]))
-    {
-        case "cmgmt":
-            PageBuilder2::Render(
-                template : "Pages/system/init-step-1-central-management.html.twig",
-                variables: [
-                    "setup_key" => $setup_key,
-                    "lang" => $_GET["lang"],
-                ]
+    PageBuilder2::Render(
+        template : "Pages/system/init.html.twig",
+        variables: [
+            "setup_key" => $setup_key,
+            "lang" => $_GET["lang"],
+        ]
+    );
+}
+
+switch(strtolower($_GET["page"]))
+{
+    case "cmgmt":
+        PageBuilder2::Render(
+            template : "Pages/system/init-step-1-central-management.html.twig",
+            variables: [
+                "setup_key" => $setup_key,
+                "lang" => $_GET["lang"],
+            ]
+        );
+    case "racc":
+        if(isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
+        {
+            $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+            $user_node = new User($user_node->getId());
+
+            $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
+            $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+            $user_node = new User($user_node->getId());
+
+            $hash_options = [
+                "cost" => 12,
+            ];
+            $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
+
+
+            $mariaDBConnection->RunInsert(
+                queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::STANDARD_LOGINS)
+                    ->set(col: 'email_address', value: ':__email_address__')
+                    ->set(col: 'user_uuid',     value: ':__user_uuid__')
+                    ->set(col: 'password',      value: ':__password__')
+                    ->bindValue(name: '__email_address__',  value: $_POST["email"])
+                    ->bindValue(name: '__user_uuid__',      value: $user_node->getId())
+                    ->bindValue(name: '__password__',       value: $hashed_password)
             );
-        case "racc":
-            if(isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
+
+
+            GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
+
+            $language_prop = GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
+            $user_node->addProperty("preferred_language", $language_prop, $user_node);
+            $full_name_prop = GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
+            $user_node->addProperty("name", $full_name_prop, $user_node);
+            $name_prop = GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
+            $user_node->addProperty("display_name", $name_prop, $user_node);
+            $email_name_prop = GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
+            $user_node->addProperty("contact_email", $email_name_prop, $user_node);
+
+
+            if(unlink(LOCAL_STORAGE_DIRECTORY . "setup.key"))
             {
-                $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
-                $user_node = new User($user_node->getId());
-
-                $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
-                $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
-                $user_node = new User($user_node->getId());
-
-                $hash_options = [
-                    "cost" => 12,
-                ];
-                $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
-
-
-                $mariaDBConnection->RunInsert(
-                    queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::STANDARD_LOGINS)
-                        ->set(col: 'email_address', value: ':__email_address__')
-                        ->set(col: 'user_uuid',     value: ':__user_uuid__')
-                        ->set(col: 'password',      value: ':__password__')
-                        ->bindValue(name: '__email_address__',  value: $_POST["email"])
-                        ->bindValue(name: '__user_uuid__',      value: $user_node->getId())
-                        ->bindValue(name: '__password__',       value: $hashed_password)
+                PageBuilder2::Render(
+                    template : "Pages/system/init-done.html.twig",
+                    variables: [
+                        "setup_key" => $setup_key,
+                        "lang" => $_GET["lang"],
+                    ]
                 );
-
-
-                GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
-
-                $language_prop = GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
-                $user_node->addProperty("preferred_language", $language_prop, $user_node);
-                $full_name_prop = GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
-                $user_node->addProperty("name", $full_name_prop, $user_node);
-                $name_prop = GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
-                $user_node->addProperty("display_name", $name_prop, $user_node);
-                $email_name_prop = GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
-                $user_node->addProperty("contact_email", $email_name_prop, $user_node);
-
-
-                if(unlink(LOCAL_STORAGE_DIRECTORY . "setup.key"))
-                {
-                    PageBuilder2::Render(
-                        template : "Pages/system/init-done.html.twig",
-                        variables: [
-                            "setup_key" => $setup_key,
-                            "lang" => $_GET["lang"],
-                        ]
-                    );
-                }
-                else
-                {
-                    echo "ERROR DELETING KEY";
-                    exit();
-                }
             }
-            PageBuilder2::Render(
-                template : "Pages/system/init-step-2-root-account.html.twig",
-                variables: [
-                    "setup_key" => $setup_key,
-                    "lang" => $_GET["lang"],
-                ]
-            );
-    }
+            else
+            {
+                echo "ERROR DELETING KEY";
+                exit();
+            }
+        }
+        PageBuilder2::Render(
+            template : "Pages/system/init-step-2-root-account.html.twig",
+            variables: [
+                "setup_key" => $setup_key,
+                "lang" => $_GET["lang"],
+            ]
+        );
 }
