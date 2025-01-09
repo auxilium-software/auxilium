@@ -12,7 +12,7 @@ function dockerVolumeExists {
 if [ ! -d bin ]; then
     mkdir bin
 fi
-if [ ! -d auxilium ]; thenls -lah /
+if [ ! -d auxilium ]; then
     git clone https://github.com/auxilium-software/auxilium.git
 fi
 if [ ! -d auxilium ]; then
