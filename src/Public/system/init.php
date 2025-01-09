@@ -4,7 +4,7 @@ use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
-use Auxilium\Schemas\UserSchema;
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\TwigHandling\PageBuilder2;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
@@ -72,13 +72,13 @@ else
     $mariaDBConnection = new MariaDBServerConnection();
     $mariaDBConnection->InitialDatabaseSetup();
 
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE . === /");
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ ON /*");
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ ON {" . INSTANCE_UUID . "}");
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE ON /cases/# ON /cases/#/*");
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ ON /messages/#");
-    Auxilium\GraphDatabaseConnection::query(\Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node(), "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE . === /");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ ON /*");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ ON {" . INSTANCE_UUID . "}");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE ON /cases/# ON /cases/#/*");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ ON /messages/#");
+    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE");
 }
 
 if($setup_key == null)
@@ -111,12 +111,12 @@ if(isset($_GET["page"]))
         case "racc":
             if(isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
             {
-                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node());
-                $user_node = new \Auxilium\DatabaseInteractions\Deegraph\Nodes\User($user_node->getId());
+                $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+                $user_node = new User($user_node->getId());
 
                 $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
-                $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node());
-                $user_node = new \Auxilium\DatabaseInteractions\Deegraph\Nodes\User($user_node->getId());
+                $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+                $user_node = new User($user_node->getId());
 
                 $hash_options = [
                     "cost" => 12,
@@ -135,15 +135,15 @@ if(isset($_GET["page"]))
                 );
 
 
-                Auxilium\GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
+                GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
 
-                $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
+                $language_prop = GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
                 $user_node->addProperty("preferred_language", $language_prop, $user_node);
-                $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
+                $full_name_prop = GraphDatabaseConnection::new_node($_POST["name"], "text/plain", null, $user_node);
                 $user_node->addProperty("name", $full_name_prop, $user_node);
-                $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
+                $name_prop = GraphDatabaseConnection::new_node(explode(" ", $_POST["name"])[0], "text/plain", null, $user_node);
                 $user_node->addProperty("display_name", $name_prop, $user_node);
-                $email_name_prop = Auxilium\GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
+                $email_name_prop = GraphDatabaseConnection::new_node($_POST["email"], "text/plain", null, $user_node);
                 $user_node->addProperty("contact_email", $email_name_prop, $user_node);
 
 
