@@ -65,6 +65,7 @@ HOSTNAME=$(hostname --fqdn)
 INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
 INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
 CERT_LOC=$(pwd)/certs
+ACCEPT_SELF_SIGNED_CERTIFICATES=true
 ####################################################################################################
 
 
@@ -138,6 +139,9 @@ function showHelp {
     echo -e "\t${FONT__HELP_ARG}-c ${FONT__HELP_PARAM}<dir>${FONT_RESET}, ${FONT__HELP_ARG}--certs ${FONT__HELP_PARAM}<dir>${FONT_RESET}"
     echo -e "\t\tPoint to real certificates, and don't create self-signed certs."
     echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-a ${FONT__HELP_PARAM}<dir>${FONT_RESET}, ${FONT__HELP_ARG}--allow-self-signed-certs ${FONT__HELP_PARAM}<dir>${FONT_RESET}"
+    echo -e "\t\tConfigures Auxilium to allow self signed certs for Deegraph."
+    echo -e ""
     echo -e "\t${FONT__HELP_ARG}-y${FONT_RESET}"
     echo -e "\t\tSkip questions."
 }
@@ -166,13 +170,14 @@ _MODE__PREEXISTING_VOLUME=0
 for arg in "$@"; do
     shift
     case "$arg" in
-        '--help')           set -- "$@" '-h'   ;;
-        '--hostname')       set -- "$@" '-n'   ;;
-        '--identifier')     set -- "$@" '-i'   ;;
-        '--build-only')     set -- "$@" '-b'   ;;
-        '--local')          set -- "$@" '-l'   ;;
-        '--certs')          set -- "$@" '-c'   ;;
-        *)                  set -- "$@" "$arg" ;;
+        '--help')                       set -- "$@" '-h'   ;;
+        '--hostname')                   set -- "$@" '-n'   ;;
+        '--identifier')                 set -- "$@" '-i'   ;;
+        '--build-only')                 set -- "$@" '-b'   ;;
+        '--local')                      set -- "$@" '-l'   ;;
+        '--certs')                      set -- "$@" '-c'   ;;
+        '--allow-self-signed-certs')    set -- "$@" '-a'   ;;
+        *)                              set -- "$@" "$arg" ;;
     esac
 done
 
@@ -198,6 +203,8 @@ while getopts ":hylbi:n:c:" opt; do
         c)
             CERT_LOC=$OPTARG
             _MODE__CREATE_SELF_SIGNED_CERTS=0;;
+        a) # Enter a name
+            ACCEPT_SELF_SIGNED_CERTIFICATES=true;;
         \?) # Invalid option
             fatalErrorMessage "Invalid option $OPTARG";;
     esac
@@ -662,6 +669,8 @@ const INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS = [
         "client_secret" => 'REDACTED'
     ]
 ];
+
+const ACCEPT_SELF_SIGNED_CERTIFICATES = $ACCEPT_SELF_SIGNED_CERTIFICATES
 ?>
 EOF
     sudo mv credentials.php /var/auxilium/credentials.php

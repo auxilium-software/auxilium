@@ -50,19 +50,6 @@ switch (ENVIRONMENT_TYPE) {
 }
 
 
-class AuxiliumAutoLoader {
-    public static function autoLoad($className) {
-        if (str_starts_with($className, "auxilium\\")) {
-            $classPath = explode("\\", $className);
-            $classBaseName = end($classPath);
-            if (file_exists(WEB_ROOT_DIRECTORY."lib/$classBaseName.php")) {
-                require_once WEB_ROOT_DIRECTORY."lib/$classBaseName.php";
-            }
-        }
-    }
-}
-
-spl_autoload_register(["AuxiliumAutoLoader", "autoLoad"]);
 
 require_once CREDENTIALS_FILE_LOCATION;
 
@@ -71,3 +58,4 @@ const INSTANCE_BRANDING_DOMAIN_NAME = INSTANCE_DOMAIN_NAME; // For backwards com
 
 // intentionally missing PHP closing tag to avoid trailing whitespace issue
 
+URLHandling::$URLBase = "https://schemas.auxiliumsoftware.co.uk/v1/";

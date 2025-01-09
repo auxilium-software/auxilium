@@ -167,10 +167,11 @@ class GraphDatabaseConnection
         }
         curl_setopt($curl_handle, CURLOPT_PORT, INSTANCE_CREDENTIAL_DDS_PORT);
 
-
-        curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl_handle, CURLOPT_SSL_VERIFYHOST, false);
-
+        if(ACCEPT_SELF_SIGNED_CERTIFICATES)
+        {
+            curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl_handle, CURLOPT_SSL_VERIFYHOST, false);
+        }
 
         if($actor == null)
         {
