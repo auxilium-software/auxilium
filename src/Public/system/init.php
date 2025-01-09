@@ -91,13 +91,17 @@ if($setup_key == null)
     fclose($key_file);
 }
 
-/*
+
+PageBuilder2::AddVariable('selected_lang', 'en');
 if (isset($_GET["lang"]))
 {
+    PageBuilder2::AddVariable('selected_lang', $_GET["lang"]);
+    /*
     $pb->overrideCurrentLanguage($_GET["lang"]);
     $pb->setVariable("lang", $_GET["lang"]);
+    */
 }
-*/
+
 if(!isset($_GET["page"]))
 {
     PageBuilder2::Render(
