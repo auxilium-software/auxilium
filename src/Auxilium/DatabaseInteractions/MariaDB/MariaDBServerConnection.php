@@ -51,7 +51,7 @@ class MariaDBServerConnection
         return $sth->execute($queryBuilder->getBindValues());
     }
 
-    public function InitialDatabaseSetup(): false
+    public function InitialDatabaseSetup(): bool
     {
         $filePath = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
         $schema = file_get_contents($filePath);
