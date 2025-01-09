@@ -121,11 +121,21 @@ switch(strtolower($_GET["page"]))
     case "racc":
         if(isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
         {
-            $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+            $user_node = GraphDatabaseConnection::new_node(
+                data: null,
+                media_type: null,
+                schema: URLHandling::GetURLForSchema(UserSchema::class),
+                creator: User::get_system_node()
+            );
             $user_node = new User($user_node->getId());
 
             $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
-            $user_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+            $user_node = GraphDatabaseConnection::new_node(
+                data: null,
+                media_type: null,
+                schema: URLHandling::GetURLForSchema(UserSchema::class),
+                creator: User::get_system_node()
+            );
             $user_node = new User($user_node->getId());
 
             $hash_options = [
