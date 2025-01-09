@@ -27,9 +27,7 @@ class MariaDBServerConnection
 
     public function RunSelect(SelectInterface $queryBuilder): array
     {
-        $db = new MariaDBServerConnection();
-
-        $sth = $db->pdo->prepare($queryBuilder->getStatement());
+        $sth = $this->pdo->prepare($queryBuilder->getStatement());
         $sth->execute($queryBuilder->getBindValues());
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -37,9 +35,7 @@ class MariaDBServerConnection
 
     public function RunOneRowSelect(SelectInterface $queryBuilder): array|null
     {
-        $db = new MariaDBServerConnection();
-
-        $sth = $db->pdo->prepare($queryBuilder->getStatement());
+        $sth = $this->pdo->prepare($queryBuilder->getStatement());
         $sth->execute($queryBuilder->getBindValues());
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -48,23 +44,15 @@ class MariaDBServerConnection
         return null;
     }
 
-    public function RunInsert(InsertInterface $queryBuilder): array|null
+    public function RunInsert(InsertInterface $queryBuilder): bool
     {
-        $db = new MariaDBServerConnection();
-
-        $sth = $db->pdo->prepare($queryBuilder->getStatement());
-        $sth->execute($queryBuilder->getBindValues());
-        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-
-        if(sizeof($result) == 1) return $result[0];
-
-        return null;
+        $sth = $this->pdo->prepare($queryBuilder->getStatement());
+        return $sth->execute($queryBuilder->getBindValues());
     }
 
     public function InitialDatabaseSetup(): false|\PDOStatement
     {
-        $db = new MariaDBServerConnection();
         $relational_schema = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
-        return $db->pdo->query(file_get_contents($relational_schema));
+        return $this->pdo->query(file_get_contents($relational_schema));
     }
 }

@@ -42,6 +42,8 @@ if(isset($_GET["setup_key"]))
     }
 }
 
+$mariaDBConnection = new MariaDBServerConnection();
+
 
 if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.lock"))
 {
@@ -70,7 +72,6 @@ else
     fwrite($lock_file, date("c", time()));
     fclose($lock_file);
 
-    $mariaDBConnection = new MariaDBServerConnection();
     $mariaDBConnection->InitialDatabaseSetup();
 
     GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
