@@ -5,6 +5,7 @@ use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use Auxilium\GraphDatabaseConnection;
+use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
