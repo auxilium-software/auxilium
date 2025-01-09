@@ -287,11 +287,14 @@ class GraphDatabaseConnection
 
     public static function new_node_raw(string $data_url = null, string $schema = null, User $creator = null)
     {
+        $actor = Session::get_current()->getUser();
+
         if($creator == null)
         {
             $creator = Session::get_current()->getUser()->getId();
         }
 
+        /*
         $temp = DeegraphServerConnection::GetConnection()->CreateNewNode(
             actorID: new UUID($creator),
             dataURL: $data_url,
@@ -299,8 +302,8 @@ class GraphDatabaseConnection
             creator: null,
         );
         return new DeegraphNode($temp->ID);
+        */
 
-        /*
         $body = [
             "@data" => $data_url,
         ];
@@ -316,6 +319,5 @@ class GraphDatabaseConnection
         {
             return new DeegraphNode($server_response["@id"]);
         }
-        */
     }
 }
