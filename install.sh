@@ -100,7 +100,7 @@ function checkPackageIsInstalled {
     fi
 }
 function dockerVolumeExists {
-    checkPackageIsInstalled docker
+    checkPackageIsInstalled docker-ce
     checkUserIsInGroup 'docker'
 
     if [ "$(docker volume ls -f name=$1 | awk '{print $NF}' | grep -E '^'$1'$')" ]; then
