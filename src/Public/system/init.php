@@ -175,7 +175,7 @@ switch(strtolower($_GET["page"]))
             if(unlink(LOCAL_STORAGE_DIRECTORY . "setup.key"))
             {
                 PageBuilder2::Render(
-                    template : "Pages/system/init-done.html.twig",
+                    template : "Pages/system/init-step-3-done.html.twig",
                     variables: [
                         "setup_key" => $setup_key,
                         "lang" => $_GET["lang"],
