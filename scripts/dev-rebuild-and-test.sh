@@ -1,4 +1,7 @@
 #!/bin/bash
+
+DOCKER_CONTAINER_NAME=auxilium-dev
+
 echo "Loading prerequisites"
 
 function dockerVolumeExists {
@@ -37,19 +40,19 @@ echo "Building docker image"
 docker build -t auxilium .
 if [ $? -eq 0 ]; then
     echo "Running new image"
-    docker stop auxilium-dev
-    docker rm auxilium-dev
+    docker stop ${DOCKER_CONTAINER_NAME}
+    docker rm ${DOCKER_CONTAINER_NAME}
 
     PREEXISTING_VOLUME=0
-    if dockerVolumeExists auxilium-dev-volume; then
+    if dockerVolumeExists ${DOCKER_CONTAINER_NAME}-volume; then
         PREEXISTING_VOLUME=1
     fi
-    #docker run -d -p 5097:8085 --name auxilium-dev auxilium
-    docker run -dit -p $HTTP_PORT:80 -p $HTTPS_PORT:443 -p $DEEGRAPH_PORT:8880 -v $CERT_LOC:/etc/ssl/ext-certs --mount source=auxilium-dev-volume,target=/store -e CONTAINER_FQDN="$HOSTNAME" -e HTTPS_PORT="$HTTPS_PORT" --name auxilium-dev auxilium
-    #docker run -it -p 8080:80 --name auxilium-dev auxilium
-    #docker exec -it auxilium-dev /bin/bash
-    #docker exec -it auxilium-dev watch cat /var/log/apache2/error.log
-    #docker exec -it auxilium-dev watch -n 0.1 ps -A
+    #docker run -d -p 5097:8085 --name ${DOCKER_CONTAINER_NAME} auxilium
+    docker run -dit -p $HTTP_PORT:80 -p $HTTPS_PORT:443 -p $DEEGRAPH_PORT:8880 -v $CERT_LOC:/etc/ssl/ext-certs --mount source=${DOCKER_CONTAINER_NAME}-volume,target=/store -e CONTAINER_FQDN="$HOSTNAME" -e HTTPS_PORT="$HTTPS_PORT" --name ${DOCKER_CONTAINER_NAME} auxilium
+    #docker run -it -p 8080:80 --name ${DOCKER_CONTAINER_NAME} auxilium
+    #docker exec -it ${DOCKER_CONTAINER_NAME} /bin/bash
+    #docker exec -it ${DOCKER_CONTAINER_NAME} watch cat /var/log/apache2/error.log
+    #docker exec -it ${DOCKER_CONTAINER_NAME} watch -n 0.1 ps -A
     if [ "$PREEXISTING_VOLUME" -eq 1 ]; then
         echo "Restored data from disk"
         echo "Go to <https://$HOSTNAME:$HTTPS_PORT/login> to examine this instance"
