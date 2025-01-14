@@ -3,9 +3,11 @@
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
+use Auxilium\PersistentFormData;
+use Auxilium\RelationalDatabaseConnection;
 use Auxilium\SessionHandling\CookieHandling;
-use auxilium\TotpUtility;
 use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -24,7 +26,7 @@ try
         ];
     }
 
-    $form_data = Auxilium\PersistentFormData::get();
+    $form_data = PersistentFormData::get();
 
     $unverified_user_data = [
         "email_address" => null,
@@ -115,7 +117,7 @@ try
         "user_uuid" => $user_data["user_uuid"]
     ];
     $sql = "SELECT totp_secret, device_uuid FROM totp_secrets WHERE user_uuid=:user_uuid";
-    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+    $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
     $statement->execute($bind_variables);
     $totp_secret_data_rows = $statement->fetchAll();
     if(count($totp_secret_data_rows) != 0)
@@ -190,7 +192,7 @@ try
                 $totp_authed = true;
 
                 $sql = "INSERT INTO totp_used_codes (device_uuid, totp_code) VALUES (:device_uuid, :totp_code)";
-                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
 
 
@@ -236,7 +238,7 @@ try
 
     if(count($form_data["form_stack"]) > 0)
     {
-        Auxilium\PersistentFormData::set($form_data);
+        PersistentFormData::set($form_data);
         NavigationUtilities::Redirect(target: array_pop($form_data["form_stack"]));
     }
 
