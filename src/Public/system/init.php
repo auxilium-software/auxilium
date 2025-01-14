@@ -4,9 +4,11 @@ use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
+use Auxilium\Enumerators\QueryParamKey;
 use Auxilium\GraphDatabaseConnection;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Wrappers\QueryParamWrapper;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -92,15 +94,15 @@ if($setup_key == null)
 }
 
 
-PageBuilder2::AddVariable('selected_lang', 'en');
-if (isset($_GET["lang"]))
-{
-    PageBuilder2::AddVariable('selected_lang', $_GET["lang"]);
-    /*
-    $pb->overrideCurrentLanguage($_GET["lang"]);
-    $pb->setVariable("lang", $_GET["lang"]);
-    */
-}
+PageBuilder2::AddVariable(
+    variableName: 'selected_lang',
+    variableValue: QueryParamWrapper::Get(
+        key: QueryParamKey::LANGUAGE,
+        default: 'en',
+        writeToIfNotSet: true,
+    )
+);
+
 
 if(!isset($_GET["page"]))
 {
