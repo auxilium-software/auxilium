@@ -219,19 +219,30 @@ try
         }
     }
 
-    $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
+    /*
+     * 512 bits should be long enough to be practically impossible to guess.
+     * Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years.
+     * This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
+     */
+    $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '=');
 
-    $session_info = [
-        "session_uuid" => \Auxilium\Utilities\EncodingTools::GenerateNewUUID("sessions"),
-        "session_key" => $session_key,
-        "user_uuid" => $user_data["user_uuid"],
-        "ip_address" => $_SERVER["REMOTE_ADDR"],
-        "sub" => "auxilium/" . $user_data["email_address"],
-        "active" => 1,
-    ];
-    $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, ip_address, unique_sub, active) VALUES (:session_uuid, :session_key, :user_uuid, :ip_address, :sub, :active)";
-    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-    $statement->execute($session_info);
+
+    $mariaDBConnection->RunInsert(queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::PORTAL_SESSIONS)
+        ->set(col: 'session_uuid', value: ':__session_uuid__')
+        ->set(col: 'session_key',  value: ':__session_key__')
+        ->set(col: 'user_uuid',    value: ':__user_uuid__')
+        ->set(col: 'ip_address',   value: ':__ip_address__')
+        ->set(col: 'unique_sub',   value: ':__unique_sub__')
+        ->set(col: 'active',       value: ':__active__')
+
+        ->bindValue(name: '__session_uuid__', value: EncodingTools::GenerateNewUUID("sessions"))
+        ->bindValue(name: '__session_key__',  value: $session_key)
+        ->bindValue(name: '__user_uuid__',    value: $user_data["user_uuid"])
+        ->bindValue(name: '__ip_address__',   value: $_SERVER["REMOTE_ADDR"])
+        ->bindValue(name: '__unique_sub__',   value: "auxilium/" . $user_data["email_address"])
+        ->bindValue(name: '__active__',       value: 1)
+    );
+
     CookieHandling::SetSessionKey(sessionKey: $session_key);
     if($form_data == null)
         NavigationUtilities::Redirect(target: "/");
