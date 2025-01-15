@@ -109,7 +109,7 @@
             "type": "CONSTRUCT_JSON",
             "if": "exists($form_var_wemwbs)",
             "struct": {
-                
+
             },
             "output_variable": "wemwbs_json"
         },
@@ -122,8 +122,8 @@
         },
         {
             "type": "NEW_NODE",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/case.json",
-            "output_variable": "case_root_node"
+            "output_variable": "case_root_node",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/case.json"
         },
         {
             "type": "NEW_NODE",
@@ -141,8 +141,8 @@
         {
             "type": "NEW_NODE",
             "if": "$output_var_create_new_target",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/user.json",
-            "output_variable": "case_client"
+            "output_variable": "case_client",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/user.json"
         },
         {
             "type": "NEW_NODE",
@@ -218,36 +218,36 @@
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "todo_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "todo_node",
             "name": "todos",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "workers_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "workers_node",
             "name": "workers",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "documents_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "documents_node",
             "name": "documents",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "messages_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "messages_node",
             "name": "messages",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "timeline_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "timeline_node",
             "name": "timeline",
             "target": "$output_var_case_root_node"
         },
