@@ -218,36 +218,36 @@
         },
         {
             "type": "NEW_NODE",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "output_variable": "todo_node",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "name": "todos",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "output_variable": "workers_node",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "name": "workers",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "output_variable": "documents_node",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "name": "documents",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "output_variable": "messages_node",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "name": "messages",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "output_variable": "timeline_node",
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
             "name": "timeline",
             "target": "$output_var_case_root_node"
         },
