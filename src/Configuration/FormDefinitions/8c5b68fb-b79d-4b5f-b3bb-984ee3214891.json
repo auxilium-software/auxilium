@@ -181,8 +181,8 @@
         {
             "type": "LINK",
             "if": "exists($output_var_case_client)",
-            "property": "$output_var_case_root_node",
-            "target": "$output_var_case_client/cases"
+            "target": "$output_var_case_client/cases",
+            "property": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
@@ -194,8 +194,8 @@
         {
             "type": "LINK",
             "if": "equals($form_var_on_behalf_of,\"SOMEONE_ELSE_MANAGED\")",
-            "property": "$output_var_case_root_node",
-            "target": "$user/cases"
+            "target": "$user/cases",
+            "property": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
@@ -213,8 +213,8 @@
         },
         {
             "type": "LINK",
-            "property": "$output_var_case_client",
-            "target": "$output_var_case_root_node/clients"
+            "target": "$output_var_case_root_node/clients",
+            "property": "$output_var_case_client"
         },
         {
             "type": "NEW_NODE",
