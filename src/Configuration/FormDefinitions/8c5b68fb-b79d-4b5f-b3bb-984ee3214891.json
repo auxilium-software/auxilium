@@ -122,8 +122,8 @@
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "case_root_node",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/case.json"
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/case.json",
+            "output_variable": "case_root_node"
         },
         {
             "type": "NEW_NODE",
@@ -135,14 +135,14 @@
         {
             "type": "SET",
             "if": "or(equals($form_var_on_behalf_of,\"SOMEONE_ELSE\"),equals($form_var_on_behalf_of,\"SOMEONE_ELSE_MANAGED\"))",
-            "value": "true",
-            "output_variable": "create_new_target"
+            "output_variable": "create_new_target",
+            "value": "true"
         },
         {
             "type": "NEW_NODE",
             "if": "$output_var_create_new_target",
-            "output_variable": "case_client",
-            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/user.json"
+            "schema": "https://schemas.auxiliumsoftware.co.uk/v1/user.json",
+            "output_variable": "case_client"
         },
         {
             "type": "NEW_NODE",
@@ -199,15 +199,15 @@
         },
         {
             "type": "NEW_NODE",
-            "mime_type": "text/plain",
             "content": "::auxpckstr:ui_text/new_case::",
-            "target": "$output_var_case_root_node",
-            "name": "title"
+            "mime_type": "text/plain",
+            "name": "title",
+            "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "case_clients_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "case_clients_node",
             "name": "clients",
             "target": "$output_var_case_root_node"
         },
@@ -218,36 +218,36 @@
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "todo_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "todo_node",
             "name": "todos",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "workers_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "workers_node",
             "name": "workers",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "documents_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "documents_node",
             "name": "documents",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "messages_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "messages_node",
             "name": "messages",
             "target": "$output_var_case_root_node"
         },
         {
             "type": "NEW_NODE",
-            "output_variable": "timeline_node",
             "schema": "https://schemas.auxiliumsoftware.co.uk/v1/collection.json",
+            "output_variable": "timeline_node",
             "name": "timeline",
             "target": "$output_var_case_root_node"
         },
