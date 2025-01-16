@@ -1,4 +1,5 @@
 {
+    "$schema": "https://schemas.darksparrow.uk/AuxiliumFormDefinition.json?version=4",
     "text_prefab_path": "forms/new_user",
     "pages": [
         {
