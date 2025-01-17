@@ -109,9 +109,7 @@
         {
             "type": "CONSTRUCT_JSON",
             "if": "exists($form_var_wemwbs)",
-            "struct": {
-
-            },
+            "struct": {},
             "output_variable": "wemwbs_json"
         },
         {
