@@ -1,19 +1,21 @@
 <?php
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\EmailHandling\EmailBuilder;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\MessageSendException;
+use Auxilium\PersistentFormData;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\CookieHandling;
-use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
-$pb = PageBuilder::get_instance();
 try
 {
     $form_data = Auxilium\PersistentFormData::get();
@@ -90,8 +92,8 @@ try
                         $statement->execute($bind_variables);
 
                         $user_node = DeegraphNode::from_id($returned_data["user_uuid"]);
-                        $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node());
-                        $user_node->addProperty("contact_email", $email_prop, \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
+                        $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, User::get_system_node());
+                        $user_node->addProperty("contact_email", $email_prop, User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
                         $bind_variables = [
                             "user_uuid" => $returned_data["user_uuid"]
@@ -214,8 +216,8 @@ try
                     $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
                     // NOTE: BCrypt has a max input of 72 chars, so in order to mitigate attacks on sentence based passwords, that are long but lower complexity, we must pre-hash the password and then base64 encode to get down to 44 chars, which is under the limit. These 44 chars still have plenty of entropy thanks to sha256 being a robust hash algorithm.
 
-                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), \Auxilium\DatabaseInteractions\Deegraph\Nodes\User::get_system_node());
-                    $user_node = new \Auxilium\DatabaseInteractions\Deegraph\Nodes\User($user_node->getId());
+                    $user_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(UserSchema::class), User::get_system_node());
+                    $user_node = new User($user_node->getId());
 
                     $hash_options = [
                         "cost" => 12,
@@ -238,16 +240,16 @@ try
                     $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($temporary_data);
 
-                    $email_builder = new EmailBuilder();
-                    $email_builder->setTemplate("new-account-verification-code");
-                    $email_builder->setTemplateProperty("verification_code", $verification_code);
-                    $email_builder->setTemplateProperty("recipient_name", explode(" ", $form_values["full_name"])[0]);
-                    $email_builder->setSubject("Account creation security code");
-                    $email_builder->addRecipient(strtolower($_POST["email_address"]), $form_values["full_name"]);
-                    $email = $email_builder->build();
+                    $email = (new EmailBuilder())
+                        ->setTemplate(template: "new-account-verification-code")
+                        ->setTemplateProperty(key: "verification_code", value: $verification_code)
+                        ->setTemplateProperty(key: "recipient_name", value: explode(" ", $form_values["full_name"])[0])
+                        ->setSubject(subject: "Account creation security code")
+                        ->addRecipient(recipient: strtolower($_POST["email_address"]), name: $form_values["full_name"])
+                        ->build();
                     Auxilium\InternetMessageTransport::send($email, "MIME");
 
-                    $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper($pb->getCurrentLanguage()), "text/plain", null, $user_node);
+                    $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable("lang")), "text/plain", null, $user_node);
                     $user_node->addProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
                     $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($form_values["full_name"], "text/plain", null, $user_node);
                     $user_node->addProperty("name", $full_name_prop, $user_node);
@@ -257,7 +259,7 @@ try
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
 
                     $session_info = [
-                        "session_uuid" => \Auxilium\Utilities\EncodingTools::GenerateNewUUID(),
+                        "session_uuid" => EncodingTools::GenerateNewUUID(),
                         "session_key" => $session_key,
                         "user_uuid" => $user_node->getId(),
                         "ip_address" => $_SERVER["REMOTE_ADDR"],
@@ -321,52 +323,50 @@ try
                 }
                 break;
         }
-        $pb->setVariable("form_values", $form_values);
-        $pb->setVariable("form_validation_failures", $form_validation_failures);
-        $pb->setVariable("form_persistence_key", Auxilium\PersistentFormData::set($form_data));
+
+        PageBuilder2::AddVariable(variableName: 'form_values', variableValue: $form_values);
+        PageBuilder2::AddVariable(variableName: 'form_validation_failures', variableValue: $form_validation_failures);
+        PageBuilder2::AddVariable(variableName: 'form_persistence_key', variableValue: PersistentFormData::set($form_data));
+
         switch($form_data["form_step"])
         {
             case "VERIFY_ACCOUNT_EMAIL":
-                $pb->setTemplate("Pages/sign-up-form/account-verify-email");
-                $pb->setVariable("email_address", $form_data["email_address"]);
-                $pb->render();
-                break;
+                PageBuilder2::Render(
+                    template: "Pages/sign-up-form/account-verify-email.html.twig",
+                    variables: [
+                        "email_address" => $form_data["email_address"],
+                    ]
+                );
             case "CREATE_ACCOUNT":
-                $pb->setTemplate("Pages/sign-up-form/account-sign-up");
-                $pb->render();
-                break;
+                PageBuilder2::Render(
+                    template: "Pages/sign-up-form/account-sign-up.html.twig",
+                    variables: [
+                        "email_address" => $form_data["email_address"],
+                    ]
+                );
             case "INVITE_CODE":
-                $pb->setTemplate("Pages/sign-up-form/invite-code");
-                $pb->render();
-                break;
+                PageBuilder2::Render(
+                    template: "Pages/sign-up-form/invite-code.html.twig",
+                    variables: [
+                        "email_address" => $form_data["email_address"],
+                    ]
+                );
             case "USER_TYPE":
             default:
-                $pb->setTemplate("Pages/sign-up-form/account-type");
-                $pb->render();
-                break;
+                PageBuilder2::Render(
+                    template: "Pages/sign-up-form/account-type.html.twig",
+                    variables: [
+                        "email_address" => $form_data["email_address"],
+                    ]
+                );
         }
     }
     catch(DatabaseConnectionException|MessageSendException $e)
     {
-        $pb->setDefaultVariables();
-        $pb->setTemplate("ErrorPages/InternalSystemError");
-        $technical_details = "Exception Type:\n    " . get_class($e);
-        $technical_details .= "\nMessage:\n    " . $e->getMessage();
-        $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-        $pb->setVariable("technical_details", $technical_details);
-        http_response_code(500);
-        $pb->render();
+        PageBuilder2::RenderInternalSystemError($e);
     }
 }
 catch(Exception $e)
 {
-    $pb->setDefaultVariables();
-    $pb->setTemplate("ErrorPages/InternalSystemError");
-    $technical_details = "Exception Type:\n    " . get_class($e);
-    $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-    $technical_details .= "\nMessage:\n" . $e->getMessage();
-    $technical_details .= "\nStack Trace:\n\n" . $e->getTraceAsString();
-    $pb->setVariable("technical_details", $technical_details);
-    http_response_code(500);
-    $pb->render();
+    PageBuilder2::RenderInternalSystemError($e);
 }
