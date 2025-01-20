@@ -1,8 +1,12 @@
 <?php
 
+use Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\URLMetadata;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -32,10 +36,10 @@ if(count($uri_components) > 0)
 $jwt_validation_passed = false; // This is used to make sure that a user has clicked a link that Auxilium has generated.
 //This is not the current state of the url_metadata, rather the state it was in when we received the request
 
-$url_metadata = Auxilium\URLMetadata::from_jwt($get_params);
+$url_metadata = URLMetadata::from_jwt($get_params);
 if($url_metadata == null)
 {
-    $url_metadata = new Auxilium\URLMetadata();
+    $url_metadata = new URLMetadata();
     $url_metadata->setPath($primary_string_path);
 }
 else
@@ -43,17 +47,17 @@ else
     $jwt_validation_passed = $url_metadata->isValid();
     if(!$jwt_validation_passed)
     {
-        $url_metadata = new Auxilium\URLMetadata();
+        $url_metadata = new URLMetadata();
     }
 }
 $pb->setVariable("url_metadata", $url_metadata);
-$pb->setVariable("root_url_metadata", new Auxilium\URLMetadata());
+$pb->setVariable("root_url_metadata", new URLMetadata());
 $pb->setVariable("jwt_validation_passed", $jwt_validation_passed);
 
 $target_node = $url_metadata->getProperty("tn");
 if($target_node != null)
 {
-    $target_node = DeegraphNode::from_id(Auxilium\URLMetadata::expand_crushed_uuid($target_node));
+    $target_node = DeegraphNode::from_id(URLMetadata::expand_crushed_uuid($target_node));
 }
 
 $pb->setTemplate("Pages/invalid");
@@ -96,7 +100,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
         $fpth = null;
         do
         {
-            $fpid = \Auxilium\Utilities\EncodingTools::GenerateNewUUID();
+            $fpid = EncodingTools::GenerateNewUUID();
             $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress/" . $fpid . ".json";
         } while(file_exists($fpth));
         $url_metadata->setProperty("fpid", $fpid);
@@ -271,7 +275,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
             {
                 $skip = false;
             }
-            elseif(Auxilium\AuxiliumScript::evaluate_expression($action["if"], $internal_vars))
+            elseif(AuxiliumScript::evaluate_expression($action["if"], $internal_vars))
             {
                 $skip = false;
             }
@@ -280,10 +284,10 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                 switch($action["type"])
                 {
                     case "NEW_NODE":
-                        $schema = isset($action["schema"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars) : null;
-                        $mime_type = isset($action["mime_type"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars) : null;
-                        $content = isset($action["content"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars) : null;
-                        $out_node = Auxilium\GraphDatabaseConnection::new_node($content, $mime_type, $schema, $as_node);
+                        $schema = isset($action["schema"]) ? AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars) : null;
+                        $mime_type = isset($action["mime_type"]) ? AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars) : null;
+                        $content = isset($action["content"]) ? AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars) : null;
+                        $out_node = GraphDatabaseConnection::new_node($content, $mime_type, $schema, $as_node);
                         if(isset($action["output_variable"]))
                         {
                             $internal_vars["output_var_" . $action["output_variable"]] = $out_node;
@@ -319,16 +323,16 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                             if(isset($action["name"]))
                             {
                                 $query = $query . " AS \$name";
-                                $fvars["name"] = Auxilium\AuxiliumScript::evaluate_variable_path($action["name"], $internal_vars);
+                                $fvars["name"] = AuxiliumScript::evaluate_variable_path($action["name"], $internal_vars);
                             }
-                            Auxilium\GraphDatabaseConnection::query($as_node, $query, $fvars);
+                            GraphDatabaseConnection::query($as_node, $query, $fvars);
                         }
                         break;
                     case "LINK":
                         if(isset($action["property"]) && isset($action["target"]))
                         {
                             $fvars = [
-                                "property" => Auxilium\AuxiliumScript::evaluate_variable_path($action["property"], $internal_vars),
+                                "property" => AuxiliumScript::evaluate_variable_path($action["property"], $internal_vars),
                                 "target" => $action["target"]
                             ];
                             if(isset($action["name"]))
@@ -361,24 +365,24 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                             {
                                 $query = $query . " AS \$name";
                             }
-                            Auxilium\GraphDatabaseConnection::query($as_node, $query, $fvars);
+                            GraphDatabaseConnection::query($as_node, $query, $fvars);
                         }
                         break;
                     case "SET":
                         if(isset($action["output_variable"]))
                         {
-                            $internal_vars["output_var_" . $action["output_variable"]] = isset($action["eval"]) ? Auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+                            $internal_vars["output_var_" . $action["output_variable"]] = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                         }
                         break;
                     case "EXPORT":
-                        $export = isset($action["eval"]) ? Auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+                        $export = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                         break;
                     case "NAVIGATE":
                         if(isset($action["replace_last_return_url"]))
                         {
                             $navigate_replace = $action["replace_last_return_url"];
                         }
-                        $navigate = isset($action["eval"]) ? Auxilium\AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+                        $navigate = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                         break;
                     default:
                         echo "<h3>UNKNOWN ACTION " . $action["type"] . "</h3>";
@@ -394,7 +398,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
         {
             if(is_a($export, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
             {
-                $url_metadata->setProperty("rcn", \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(Auxilium\URLMetadata::crush_uuid($export->getId())));
+                $url_metadata->setProperty("rcn", EncodingTools::Base64EncodeURLSafe(URLMetadata::crush_uuid($export->getId())));
                 $url_metadata->setProperty("exp", null);
             }
             else
@@ -499,7 +503,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                 {
                     $skip = false;
                 }
-                elseif(Auxilium\AuxiliumScript::evaluate_expression($component["if"], $internal_vars))
+                elseif(AuxiliumScript::evaluate_expression($component["if"], $internal_vars))
                 {
                     $skip = false;
                 }
@@ -519,7 +523,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                         case "PARAGRAPH":
                             if(isset($component["value"]))
                             {
-                                $var = Auxilium\AuxiliumScript::evaluate_variable_path($component["value"], $internal_vars);
+                                $var = AuxiliumScript::evaluate_variable_path($component["value"], $internal_vars);
                                 if(is_a($var, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                 {
                                     $component["object"] = $var;
@@ -535,7 +539,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                             {
                                 foreach($component["dictionary"] as $dkey => &$dvar)
                                 {
-                                    $var = Auxilium\AuxiliumScript::evaluate_variable_path($dvar, $internal_vars);
+                                    $var = AuxiliumScript::evaluate_variable_path($dvar, $internal_vars);
                                     if(is_a($var, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
                                     {
                                         $dvar = ["object" => $var, "text" => $dvar];
@@ -573,7 +577,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                     {
                         if(isset($component["default_value"]))
                         {
-                            $component["default_value"] = Auxilium\AuxiliumScript::evaluate_variable_path($component["default_value"], $internal_vars);
+                            $component["default_value"] = AuxiliumScript::evaluate_variable_path($component["default_value"], $internal_vars);
                         }
                         elseif(isset($component["options"]))
                         {
@@ -581,7 +585,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
                             {
                                 if(isset($option["value"]))
                                 {
-                                    $option["value"] = Auxilium\AuxiliumScript::evaluate_variable_path($option["value"], $internal_vars);
+                                    $option["value"] = AuxiliumScript::evaluate_variable_path($option["value"], $internal_vars);
                                 }
                             }
                         }
