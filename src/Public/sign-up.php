@@ -74,7 +74,7 @@ try
                 if(isset($_POST["email_address_verification_code"]))
                 {
                     //$form_data["form_step"] = null;
-                    $returned_data = $db->RunSelect(
+                    $returned_data = $db->RunOneRowSelect(
                         queryBuilder: SQLQueryBuilderWrapper::SELECT(MariaDBTable::EMAIL_VERIFICATION_CODES)
                             ->cols(cols: [
                                 'user_uuid',
@@ -85,6 +85,7 @@ try
                             ->bindValue(name: '__verification_code__', value: strtolower(str_replace(" ", "", $_POST["email_address_verification_code"])))
                             ->bindValue(name: '__user_uuid__', value: $form_data["user_uuid"])
                     );
+
 
                     if($returned_data == null)
                     {
@@ -101,6 +102,7 @@ try
                                 ->bindValue(name: '__user_uuid__', value: $returned_data["user_uuid"])
                                 ->bindValue(name: '__password__', value: $form_data["hashed_password"])
                         );
+
 
                         $user_node = DeegraphNode::from_id($returned_data["user_uuid"]);
                         $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, User::get_system_node());
@@ -208,16 +210,16 @@ try
                     $valid_submission = false;
                 }
 
-                $query_response = $db->RunSelect(
+                $query_response = $db->RunOneRowSelect(
                     queryBuilder: SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
                         ->cols(cols: [
-                            'COUNT(*)'
+                            'COUNT(*) AS Counter'
                         ])
                         ->where(cond: 'email_address=:__email_address__')
                         ->bindValue(name: '__email_address__', value: strtolower($_POST["email_address"]))
                 );
 
-                if(sizeof($query_response) > 0)
+                if($query_response["Counter"] > 0)
                 {
                     $form_validation_failures["email_address_unique"] = true;
                     $valid_submission = false;
@@ -250,8 +252,8 @@ try
                             ->set(col: 'verification_code', value: ':__verification_code__')
                             ->set(col: 'email_address', value: ':__email_address__')
                             ->bindValue(name: '__user_uuid__', value: $user_node->getId())
-                            ->bindValue(name: '__verification_code__', value: strtolower($_POST["email_address"]))
-                            ->bindValue(name: '__email_address__', value: str_replace(" ", "", $verification_code))
+                            ->bindValue(name: '__email_address__', value: strtolower($_POST["email_address"]))
+                            ->bindValue(name: '__verification_code__', value: str_replace(" ", "", $verification_code))
                     );
 
                     $email = (new EmailBuilder())
