@@ -30,6 +30,7 @@
         "ext-dom": "*",
         "ext-sodium": "*",
         "ext-pdo": "*",
+        "ext-mbstring": "*",
 
         "phpunit/phpunit": "11.4.4",
 
