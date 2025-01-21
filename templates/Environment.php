@@ -5,7 +5,6 @@ require_once "/var/www/vendor/autoload.php"; // <-- Point to your composer autol
 const CREDENTIALS_FILE_LOCATION = "/app/credentials.php"; // <-- Change this to the correct credentials file for your environment.
 const LOCAL_EPHEMERAL_CREDENTIAL_STORE = "/var/ecs/"; // <-- Used for storing credentials that should be lost after reboot (ephemeral)
 const LOCAL_STORAGE_DIRECTORY = "/store/"; // <-- Used for storing encrypted files
-const WEB_ROOT_DIRECTORY = "/var/www/"; // <-- Used throughout when the software needs to refer to a local file, set this to the web root of this instance.
 
 const ENVIRONMENT_TYPE = "DEV"; // <-- DEV | DEMO | PROD
 

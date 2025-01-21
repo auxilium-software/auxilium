@@ -338,7 +338,7 @@ if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     composer install
     cd ..
     
-    cp templates/environment-local.php src/Configuration/Configuration/Environment.php
+    cp templates/EnvironmentLocal.php src/Configuration/Configuration/Environment.php
     
     sudo chown www-data:www-data src/ -R
     f=$(pwd)/src

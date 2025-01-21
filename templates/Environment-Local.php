@@ -5,7 +5,6 @@ require_once "/var/www/auxilium2/vendor/autoload.php"; // <-- Point to your comp
 const CREDENTIALS_FILE_LOCATION = "/var/auxilium/credentials.php"; // <-- Change this to the correct credentials file for your environment.
 const LOCAL_EPHEMERAL_CREDENTIAL_STORE = "/var/auxilium/ecs/"; // <-- Used for storing credentials that should be lost after reboot (ephemeral)
 const LOCAL_STORAGE_DIRECTORY = "/var/auxilium/www-data/"; // <-- Used for storing encrypted files
-const WEB_ROOT_DIRECTORY = "/var/www/auxilium2/"; // <-- Used throughout when the software needs to refer to a local file, set this to the web root of this instance.
 
 const ENVIRONMENT_TYPE = "DEV"; // <-- DEV | DEMO | PROD
 
