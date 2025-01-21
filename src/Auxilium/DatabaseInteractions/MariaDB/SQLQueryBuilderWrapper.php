@@ -18,6 +18,7 @@ class SQLQueryBuilderWrapper
 
         return $query;
     }
+
     public static function INSERT(MariaDBTable $table): AbstractQuery|InsertInterface
     {
         $query_factory = new QueryFactory(db: 'mysql');
@@ -26,6 +27,7 @@ class SQLQueryBuilderWrapper
 
         return $query;
     }
+
     public static function DELETE(MariaDBTable $table): AbstractQuery|DeleteInterface
     {
         $query_factory = new QueryFactory(db: 'mysql');

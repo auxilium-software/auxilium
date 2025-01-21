@@ -17,6 +17,11 @@ use PHPUnit\Framework\TestCase;
 
 class SchemaGenerationTest extends TestCase
 {
+    public function testCaseSchema()
+    {
+        $this->compare(CaseSchema::class);
+    }
+
     private function compare(string $schemaClassName): void
     {
         $useAssoc = true;
@@ -29,33 +34,35 @@ class SchemaGenerationTest extends TestCase
 
         self::assertEquals(
             expected: $actualSchemaAssocArray,
-            actual: $generatedSchema,
+            actual  : $generatedSchema,
         );
     }
-    public function testCaseSchema()
-    {
-        $this->compare(CaseSchema::class);
-    }
+
     public function testCollectionSchema()
     {
         $this->compare(CollectionSchema::class);
     }
+
     public function testDocumentSchema()
     {
         $this->compare(DocumentSchema::class);
     }
+
     public function testEnumSchema()
     {
         $this->compare(EnumSchema::class);
     }
+
     public function testMessageSchema()
     {
         $this->compare(MessageSchema::class);
     }
+
     public function testOrganisationSchema()
     {
         $this->compare(OrganisationSchema::class);
     }
+
     public function testUserSchema()
     {
         $this->compare(UserSchema::class);

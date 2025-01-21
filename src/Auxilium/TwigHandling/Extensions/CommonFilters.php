@@ -34,6 +34,7 @@ class CommonFilters extends AbstractExtension
     }
 
     public function JSONEncode($value): string { return json_encode($value); }
+
     public function JSONDecode($value): array { return json_decode($value, true); }
 
     public function uiprop($string): string

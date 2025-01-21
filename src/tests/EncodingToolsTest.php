@@ -19,6 +19,7 @@ class EncodingToolsTest extends TestCase
         $decodedActual = EncodingTools::Base64DecodeURLSafe(data: $encodedActual);
         self::assertEquals(expected: $start, actual: $decodedActual);
     }
+
     public function testURLEncodingComplex()
     {
         $start = "`~!@#$%^&*()_+-=[]{}|\;:'\",<>/?\n\t";

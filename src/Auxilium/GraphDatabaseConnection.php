@@ -314,7 +314,12 @@ class GraphDatabaseConnection
             $body["@schema"] = $schema;
         }
 
-        $server_response = GraphDatabaseConnection::raw_request($creator, "/api/v1/@new", "PUT", json_encode($body));
+        $server_response = GraphDatabaseConnection::raw_request(
+            actor    : $creator,
+            path     : "/api/v1/@new",
+            method   : "PUT",
+            body_data: json_encode($body)
+        );
 
         if(is_array($server_response))
         {

@@ -52,7 +52,8 @@ try
                             ->cols(cols: [
                                 'invite_rule',
                                 'invite_code'
-                            ])
+                            ]
+                            )
                             ->where(cond: 'invite_code=:__invite_code__')
                             ->bindValue(name: '__invite_code__', value: strtolower(str_replace(" ", "", $_POST["invite_code"])))
                     );
@@ -79,7 +80,8 @@ try
                             ->cols(cols: [
                                 'user_uuid',
                                 'email_address'
-                            ])
+                            ]
+                            )
                             ->where(cond: 'verification_code=:__verification_code__')
                             ->where(cond: 'user_uuid=:__user_uuid__')
                             ->bindValue(name: '__verification_code__', value: strtolower(str_replace(" ", "", $_POST["email_address_verification_code"])))
@@ -214,7 +216,8 @@ try
                     queryBuilder: SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
                         ->cols(cols: [
                             'COUNT(*) AS Counter'
-                        ])
+                        ]
+                        )
                         ->where(cond: 'email_address=:__email_address__')
                         ->bindValue(name: '__email_address__', value: strtolower($_POST["email_address"]))
                 );
@@ -266,35 +269,36 @@ try
                     Auxilium\InternetMessageTransport::send($email, "MIME");
 
                     $language_prop = GraphDatabaseConnection::new_node(
-                        data: strtoupper(PageBuilder2::GetVariable("lang", "en")),
+                        data      : strtoupper(PageBuilder2::GetVariable("lang", "en")),
                         media_type: "text/plain",
-                        schema: null,
-                        creator: $user_node);
+                        schema    : null,
+                        creator   : $user_node
+                    );
                     $user_node->addProperty(
-                        key: "preferred_language",
-                        node: $language_prop,
+                        key  : "preferred_language",
+                        node : $language_prop,
                         actor: $user_node
                     ); // Set it to whatever the language is currently in
                     $full_name_prop = GraphDatabaseConnection::new_node(
-                        data: $form_values["full_name"],
+                        data      : $form_values["full_name"],
                         media_type: "text/plain",
-                        schema: null,
-                        creator: $user_node
+                        schema    : null,
+                        creator   : $user_node
                     );
                     $user_node->addProperty(
-                        key: "name",
-                        node: $full_name_prop,
+                        key  : "name",
+                        node : $full_name_prop,
                         actor: $user_node
                     );
                     $name_prop = GraphDatabaseConnection::new_node(
-                        data: explode(" ", $form_values["full_name"])[0],
+                        data      : explode(" ", $form_values["full_name"])[0],
                         media_type: "text/plain",
-                        schema: null,
-                        creator: $user_node
+                        schema    : null,
+                        creator   : $user_node
                     );
                     $user_node->addProperty(
-                        key: "display_name",
-                        node: $name_prop,
+                        key  : "display_name",
+                        node : $name_prop,
                         actor: $user_node
                     ); // Create this as default the user's first name - they can change it later if they want
 
@@ -379,27 +383,27 @@ try
         {
             case "VERIFY_ACCOUNT_EMAIL":
                 PageBuilder2::Render(
-                    template: "Pages/sign-up-form/account-verify-email.html.twig",
+                    template : "Pages/sign-up-form/account-verify-email.html.twig",
                     variables: [
                         "email_address" => $form_data["email_address"],
                     ]
                 );
             case "CREATE_ACCOUNT":
                 PageBuilder2::Render(
-                    template: "Pages/sign-up-form/account-sign-up.html.twig",
+                    template : "Pages/sign-up-form/account-sign-up.html.twig",
                     variables: [
                     ]
                 );
             case "INVITE_CODE":
                 PageBuilder2::Render(
-                    template: "Pages/sign-up-form/invite-code.html.twig",
+                    template : "Pages/sign-up-form/invite-code.html.twig",
                     variables: [
                     ]
                 );
             case "USER_TYPE":
             default:
                 PageBuilder2::Render(
-                    template: "Pages/sign-up-form/account-type.html.twig",
+                    template : "Pages/sign-up-form/account-type.html.twig",
                     variables: [
                     ]
                 );

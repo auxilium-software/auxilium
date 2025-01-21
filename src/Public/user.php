@@ -2,12 +2,15 @@
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\EmailHandling\EmailBuilder;
+use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
 use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
+
+Security::RequireLogin();
 
 $pb = PageBuilder::get_instance();
 
@@ -155,13 +158,13 @@ switch($uri_components[1])
                             $user_name = $target_node->getProperty("name");
                         }
 
-                        $email_builder = new EmailBuilder();
-                        $email_builder->setTemplate("new-login-verification-code");
-                        $email_builder->setTemplateProperty("verification_code", $verification_code);
-                        $email_builder->setTemplateProperty("recipient_name", $user_name);
-                        $email_builder->setSubject("Login security code");
-                        $email_builder->addRecipient(strtolower($_POST["email_address"]), $user_name);
-                        $email = $email_builder->build();
+                        $email = (new EmailBuilder())
+                            ->setTemplate("new-login-verification-code")
+                            ->setTemplateProperty("verification_code", $verification_code)
+                            ->setTemplateProperty("recipient_name", $user_name)
+                            ->setSubject("Login security code")
+                            ->addRecipient(strtolower($_POST["email_address"]), $user_name)
+                            ->build();
                         Auxilium\InternetMessageTransport::send($email, "MIME");
 
                         $pb->setVariable("form_validation", $form_validation);

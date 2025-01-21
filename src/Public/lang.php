@@ -1,6 +1,5 @@
 <?php
 
-use Auxilium\Enumerators\CookieKey;
 use Auxilium\Enumerators\Language;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\Utilities\NavigationUtilities;

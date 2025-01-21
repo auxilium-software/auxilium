@@ -65,9 +65,9 @@ try
     $statement->execute($bind_variables);
     $user_data = $statement->fetch();
     */
-    
+
     $mariaDBConnection = new MariaDBServerConnection();
-    
+
     $user_data = $mariaDBConnection->RunOneRowSelect(
         SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
             ->cols(cols: [
@@ -229,18 +229,17 @@ try
 
     $mariaDBConnection->RunInsert(queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::PORTAL_SESSIONS)
         ->set(col: 'session_uuid', value: ':__session_uuid__')
-        ->set(col: 'session_key',  value: ':__session_key__')
-        ->set(col: 'user_uuid',    value: ':__user_uuid__')
-        ->set(col: 'ip_address',   value: ':__ip_address__')
-        ->set(col: 'unique_sub',   value: ':__unique_sub__')
-        ->set(col: 'active',       value: ':__active__')
-
+        ->set(col: 'session_key', value: ':__session_key__')
+        ->set(col: 'user_uuid', value: ':__user_uuid__')
+        ->set(col: 'ip_address', value: ':__ip_address__')
+        ->set(col: 'unique_sub', value: ':__unique_sub__')
+        ->set(col: 'active', value: ':__active__')
         ->bindValue(name: '__session_uuid__', value: EncodingTools::GenerateNewUUID("sessions"))
-        ->bindValue(name: '__session_key__',  value: $session_key)
-        ->bindValue(name: '__user_uuid__',    value: $user_data["user_uuid"])
-        ->bindValue(name: '__ip_address__',   value: $_SERVER["REMOTE_ADDR"])
-        ->bindValue(name: '__unique_sub__',   value: "auxilium/" . $user_data["email_address"])
-        ->bindValue(name: '__active__',       value: 1)
+        ->bindValue(name: '__session_key__', value: $session_key)
+        ->bindValue(name: '__user_uuid__', value: $user_data["user_uuid"])
+        ->bindValue(name: '__ip_address__', value: $_SERVER["REMOTE_ADDR"])
+        ->bindValue(name: '__unique_sub__', value: "auxilium/" . $user_data["email_address"])
+        ->bindValue(name: '__active__', value: 1)
     );
 
     CookieHandling::SetSessionKey(sessionKey: $session_key);

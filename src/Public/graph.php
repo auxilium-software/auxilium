@@ -19,10 +19,10 @@ require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 Security::RequireLogin();
 PageBuilder2::AddVariable(
-    variableName: "progressive_load",
+    variableName : "progressive_load",
     variableValue: CookieHandling::GetBooleanCookie(
         targetCookie: CookieKey::PROGRESSIVE_LOAD,
-        default: false,
+        default     : false,
     ),
 );
 

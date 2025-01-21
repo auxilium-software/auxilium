@@ -95,10 +95,10 @@ if($setup_key == null)
 
 
 PageBuilder2::AddVariable(
-    variableName: 'selected_lang',
+    variableName : 'selected_lang',
     variableValue: QueryParamWrapper::Get(
-        key: QueryParamKey::LANGUAGE,
-        default: 'en',
+        key            : QueryParamKey::LANGUAGE,
+        default        : 'en',
         writeToIfNotSet: true,
     )
 );
@@ -129,19 +129,19 @@ switch(strtolower($_GET["page"]))
         if(isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["password"]))
         {
             $user_node = GraphDatabaseConnection::new_node(
-                data: null,
+                data      : null,
                 media_type: null,
-                schema: URLHandling::GetURLForSchema(UserSchema::class),
-                creator: User::get_system_node()
+                schema    : URLHandling::GetURLForSchema(UserSchema::class),
+                creator   : User::get_system_node()
             );
             $user_node = new User($user_node->getId());
 
             $pre_hashed_password = base64_encode(hash("sha256", $_POST["password"], true));
             $user_node = GraphDatabaseConnection::new_node(
-                data: null,
+                data      : null,
                 media_type: null,
-                schema: URLHandling::GetURLForSchema(UserSchema::class),
-                creator: User::get_system_node()
+                schema    : URLHandling::GetURLForSchema(UserSchema::class),
+                creator   : User::get_system_node()
             );
             $user_node = new User($user_node->getId());
 
@@ -154,11 +154,11 @@ switch(strtolower($_GET["page"]))
             $mariaDBConnection->RunInsert(
                 queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::STANDARD_LOGINS)
                     ->set(col: 'email_address', value: ':__email_address__')
-                    ->set(col: 'user_uuid',     value: ':__user_uuid__')
-                    ->set(col: 'password',      value: ':__password__')
-                    ->bindValue(name: '__email_address__',  value: $_POST["email"])
-                    ->bindValue(name: '__user_uuid__',      value: $user_node->getId())
-                    ->bindValue(name: '__password__',       value: $hashed_password)
+                    ->set(col: 'user_uuid', value: ':__user_uuid__')
+                    ->set(col: 'password', value: ':__password__')
+                    ->bindValue(name: '__email_address__', value: $_POST["email"])
+                    ->bindValue(name: '__user_uuid__', value: $user_node->getId())
+                    ->bindValue(name: '__password__', value: $hashed_password)
             );
 
 

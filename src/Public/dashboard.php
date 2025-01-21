@@ -6,7 +6,6 @@ use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Wrappers\ICMPWrapper;
-use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
@@ -22,10 +21,10 @@ try
         PageBuilder2::AutoRender(variables: [
             "progressive_load" => CookieHandling::GetBooleanCookie(CookieKey::PROGRESSIVE_LOAD, false),
             "is_admin" => (
-                in_array(
-                    needle: "ACT",
-                    haystack: Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()
-                )
+            in_array(
+                needle  : "ACT",
+                haystack: Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()
+            )
             ),
         ]
         );
