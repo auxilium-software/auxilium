@@ -3,6 +3,7 @@
 namespace Auxilium\DatabaseInteractions\MariaDB;
 
 use Aura\SqlQuery\AbstractQuery;
+use Aura\SqlQuery\Common\DeleteInterface;
 use Aura\SqlQuery\Common\InsertInterface;
 use Aura\SqlQuery\Common\SelectInterface;
 use Aura\SqlQuery\QueryFactory;
@@ -22,6 +23,14 @@ class SQLQueryBuilderWrapper
         $query_factory = new QueryFactory(db: 'mysql');
         $query = $query_factory->newInsert()
             ->into(into: $table->value);
+
+        return $query;
+    }
+    public static function DELETE(MariaDBTable $table): AbstractQuery|DeleteInterface
+    {
+        $query_factory = new QueryFactory(db: 'mysql');
+        $query = $query_factory->newDelete()
+            ->from($table->value);
 
         return $query;
     }

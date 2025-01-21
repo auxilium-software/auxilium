@@ -2,6 +2,7 @@
 
 namespace Auxilium\DatabaseInteractions\MariaDB;
 
+use Aura\SqlQuery\Common\DeleteInterface;
 use Aura\SqlQuery\Common\InsertInterface;
 use Aura\SqlQuery\Common\SelectInterface;
 use PDO;
@@ -46,6 +47,12 @@ class MariaDBServerConnection
     }
 
     public function RunInsert(InsertInterface $queryBuilder): bool
+    {
+        $sth = $this->pdo->prepare($queryBuilder->getStatement());
+        return $sth->execute($queryBuilder->getBindValues());
+    }
+
+    public function RunDelete(DeleteInterface $queryBuilder): bool
     {
         $sth = $this->pdo->prepare($queryBuilder->getStatement());
         return $sth->execute($queryBuilder->getBindValues());
