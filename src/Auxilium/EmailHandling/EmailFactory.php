@@ -96,7 +96,7 @@ class EmailFactory extends RFC822ObjectFactory
             Session::get_current()->forceSetCurrentUser($sendAs);
         }
 
-        $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
+        $twigLoader = new FilesystemLoader(__DIR__ . "/../../Templates");
         $twig = new Environment($twigLoader, [
                 "cache" => false,
             ]

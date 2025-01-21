@@ -238,7 +238,7 @@ try
                     ];
                     $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
 
-                    $word_list = json_decode(file_get_contents(WEB_ROOT_DIRECTORY . "byte-word-list.json"), true);
+                    $word_list = json_decode(file_get_contents(__DIR__ . "/../byte-word-list.json"), true);
 
                     $garbage_data = openssl_random_pseudo_bytes(4);
 

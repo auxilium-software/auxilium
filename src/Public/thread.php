@@ -269,7 +269,7 @@ try
                     {
                         $url_metadata->pushCurrentToReturnStack();
 
-                        $form_list = file_get_contents(WEB_ROOT_DIRECTORY . "/property-forms.json");
+                        $form_list = file_get_contents(__DIR__ . "/../property-forms.json");
                         $form_list = json_decode($form_list, true);
 
                         /* 

@@ -72,7 +72,7 @@ if(!preg_match('/^[a-f0-9-]+$/', $uri_components[0]))
     die();
 }
 
-if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_components[0] . ".json"))
+if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[0] . ".json"))
 {
     $fpid = null;
 
@@ -117,7 +117,7 @@ if(file_exists(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_com
         $form_persistent_data = json_decode($form_persistent_data, true);
     }
 
-    $definition = file_get_contents(WEB_ROOT_DIRECTORY . "/Configuration/FormDefinitions/" . $uri_components[0] . ".json");
+    $definition = file_get_contents(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[0] . ".json");
     $definition = json_decode($definition, true);
 
     if(!isset($form_persistent_data["variables"]))

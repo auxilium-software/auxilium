@@ -27,7 +27,7 @@ if(!preg_match("/^[0-9a-z_-]+$/", $index_id))
 
 
 $regenerate_index = false;
-$index_list = json_decode(file_get_contents(WEB_ROOT_DIRECTORY . "indexes.json"), true);
+$index_list = json_decode(file_get_contents(__DIR__ . "/../../../indexes.json"), true);
 
 if(!array_key_exists($index_id, $index_list))
 {

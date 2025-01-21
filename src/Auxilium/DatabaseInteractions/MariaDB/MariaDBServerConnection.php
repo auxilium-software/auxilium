@@ -60,7 +60,7 @@ class MariaDBServerConnection
 
     public function InitialDatabaseSetup(): bool
     {
-        $filePath = WEB_ROOT_DIRECTORY . "Public/system/first-setup/schema.sql";
+        $filePath = __DIR__ . "/../../../Public/system/first-setup/schema.sql";
         $schema = file_get_contents($filePath);
         $result = $this->pdo->exec(statement: $schema);
         if($result === 0) return true;
