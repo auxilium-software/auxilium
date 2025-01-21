@@ -76,16 +76,16 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
 {
     $fpid = null;
 
-    if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress"))
+    if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress"))
     {
-        mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress", 0700, true);
+        mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress", 0700, true);
     }
 
     if($url_metadata->getProperty("fpid") != null)
     {
         if(preg_match('/^[a-f0-9-]+$/', $url_metadata->getProperty("fpid")))
         { // As much as we should be able to trust this value since it comes from the JWT, there's nothing wrong with verifying there's nothing malicious here.
-            if(file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress/" . $url_metadata->getProperty("fpid") . ".json"))
+            if(file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress/" . $url_metadata->getProperty("fpid") . ".json"))
             {
                 $fpid = $url_metadata->getProperty("fpid");
             }
@@ -101,7 +101,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
         do
         {
             $fpid = EncodingTools::GenerateNewUUID();
-            $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress/" . $fpid . ".json";
+            $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress/" . $fpid . ".json";
         } while(file_exists($fpth));
         $url_metadata->setProperty("fpid", $fpid);
         $form_persistence_file = fopen($fpth, "w") or die("Unable to open file!");
@@ -109,7 +109,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
     }
     else
     {
-        $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "forms-in-progress/" . $fpid . ".json";
+        $fpth = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress/" . $fpid . ".json";
         $form_persistence_file = fopen($fpth, "r") or die("Unable to open file!");
         $form_persistent_data = file_get_contents($fpth);
         fclose($form_persistence_file);
