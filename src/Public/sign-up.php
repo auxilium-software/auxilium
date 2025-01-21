@@ -2,9 +2,13 @@
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
+use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use Auxilium\EmailHandling\EmailBuilder;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\MessageSendException;
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\PersistentFormData;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\CookieHandling;
@@ -18,6 +22,8 @@ require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 try
 {
+    $db = new MariaDBServerConnection();
+
     $form_data = Auxilium\PersistentFormData::get();
 
     if($form_data == null)
@@ -41,25 +47,26 @@ try
             case "INVITE_CODE":
                 if(isset($_POST["invite_code"]))
                 {
-                    $bind_variables = [
-                        "invite_code" => strtolower(str_replace(" ", "", $_POST["invite_code"]))
-                    ];
-                    $sql = "SELECT invite_rule, invite_code FROM invite_codes WHERE invite_code=:invite_code";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                    $statement->execute($bind_variables);
-                    $returned_data = $statement->fetch();
+                    $returned_data = $db->RunSelect(
+                        queryBuilder: SQLQueryBuilderWrapper::SELECT(MariaDBTable::INVITE_CODES)
+                            ->cols(cols: [
+                                'invite_rule',
+                                'invite_code'
+                            ])
+                            ->where(cond: 'invite_code=:__invite_code__')
+                            ->bindValue(name: '__invite_code__', value: strtolower(str_replace(" ", "", $_POST["invite_code"])))
+                    );
                     if($returned_data == null)
                     {
                         $form_validation_failures["invite_code"] = true;
                     }
                     else
                     {
-                        $bind_variables = [
-                            "invite_code" => $returned_data["invite_code"]
-                        ];
-                        $sql = "DELETE FROM invite_codes WHERE invite_code=:invite_code";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                        $statement->execute($bind_variables);
+                        $db->RunDelete(
+                            queryBuilder: SQLQueryBuilderWrapper::DELETE(MariaDBTable::INVITE_CODES)
+                                ->where(cond: 'invite_code=:__invite_code__')
+                                ->bindValue(name: '__invite_code__', value: $returned_data["invite_code"])
+                        );
                     }
                 }
                 break;
@@ -67,40 +74,43 @@ try
                 if(isset($_POST["email_address_verification_code"]))
                 {
                     //$form_data["form_step"] = null;
+                    $returned_data = $db->RunSelect(
+                        queryBuilder: SQLQueryBuilderWrapper::SELECT(MariaDBTable::EMAIL_VERIFICATION_CODES)
+                            ->cols(cols: [
+                                'user_uuid',
+                                'email_address'
+                            ])
+                            ->where(cond: 'verification_code=:__verification_code__')
+                            ->where(cond: 'user_uuid=:__user_uuid__')
+                            ->bindValue(name: '__verification_code__', value: strtolower(str_replace(" ", "", $_POST["email_address_verification_code"])))
+                            ->bindValue(name: '__user_uuid__', value: $form_data["user_uuid"])
+                    );
 
-                    $bind_variables = [
-                        "verification_code" => strtolower(str_replace(" ", "", $_POST["email_address_verification_code"])),
-                        "user_uuid" => $form_data["user_uuid"],
-                    ];
-                    $sql = "SELECT user_uuid, email_address FROM email_verification_codes WHERE verification_code=:verification_code AND user_uuid=:user_uuid";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                    $statement->execute($bind_variables);
-                    $returned_data = $statement->fetch();
                     if($returned_data == null)
                     {
                         $form_validation_failures["email_address_verify_code"] = true;
                     }
                     else
                     {
-                        $bind_variables = [
-                            "user_uuid" => $returned_data["user_uuid"],
-                            "email_address" => $returned_data["email_address"],
-                            "password" => $form_data["hashed_password"]
-                        ];
-                        $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                        $statement->execute($bind_variables);
+                        $db->RunInsert(
+                            queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::STANDARD_LOGINS)
+                                ->set(col: 'email_address', value: ':__email_address__')
+                                ->set(col: 'user_uuid', value: ':__user_uuid__')
+                                ->set(col: 'password', value: ':__password__')
+                                ->bindValue(name: '__email_address__', value: $returned_data["email_address"])
+                                ->bindValue(name: '__user_uuid__', value: $returned_data["user_uuid"])
+                                ->bindValue(name: '__password__', value: $form_data["hashed_password"])
+                        );
 
                         $user_node = DeegraphNode::from_id($returned_data["user_uuid"]);
                         $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, User::get_system_node());
                         $user_node->addProperty("contact_email", $email_prop, User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
-                        $bind_variables = [
-                            "user_uuid" => $returned_data["user_uuid"]
-                        ];
-                        $sql = "DELETE FROM email_verification_codes WHERE user_uuid=:user_uuid";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                        $statement->execute($bind_variables);
+                        $db->RunDelete(
+                            queryBuilder: SQLQueryBuilderWrapper::DELETE(MariaDBTable::EMAIL_VERIFICATION_CODES)
+                                ->where(cond: 'user_uuid=:__user_uuid__')
+                                ->bindValue(name: '__user_uuid__', value: $returned_data["user_uuid"])
+                        );
                         $form_data["form_step"] = null;
                         CookieHandling::SetSessionKey(sessionKey: $form_data["session_key"]);
                         Auxilium\PersistentFormData::set($form_data);
@@ -118,6 +128,7 @@ try
                 }
                 break;
             case "CREATE_ACCOUNT":
+
                 if(!isset($_POST["privacy_policy_consent"]))
                 {
                     $form_validation_failures["privacy_policy_consent"] = true;
@@ -197,15 +208,16 @@ try
                     $valid_submission = false;
                 }
 
+                $query_response = $db->RunSelect(
+                    queryBuilder: SQLQueryBuilderWrapper::SELECT(MariaDBTable::STANDARD_LOGINS)
+                        ->cols(cols: [
+                            'COUNT(*)'
+                        ])
+                        ->where(cond: 'email_address=:__email_address__')
+                        ->bindValue(name: '__email_address__', value: strtolower($_POST["email_address"]))
+                );
 
-                $bind_variables = [
-                    "email_address" => strtolower($_POST["email_address"]),
-                ];
-                $sql = "SELECT COUNT(*) FROM standard_logins WHERE email_address=:email_address";
-                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                $statement->execute($bind_variables);
-
-                if($statement->fetchColumn() > 0)
+                if(sizeof($query_response) > 0)
                 {
                     $form_validation_failures["email_address_unique"] = true;
                     $valid_submission = false;
@@ -229,16 +241,18 @@ try
                     $garbage_data = openssl_random_pseudo_bytes(4);
 
                     $verification_code = $word_list[ord($garbage_data[0])] . " " . $word_list[ord($garbage_data[1])] . " " . $word_list[ord($garbage_data[2])] . " " . $word_list[ord($garbage_data[3])];
-                    $temporary_data = [
-                        "user_uuid" => $user_node->getId(),
-                        "email_address" => strtolower($_POST["email_address"]),
-                        "verification_code" => str_replace(" ", "", $verification_code),
-                    ];
+
                     //$twig_variables["verification_code"] = $verification_code;
                     //$twig_variables["first_name"] = explode(" ", $data["full_name"])[0];
-                    $sql = "INSERT INTO email_verification_codes (user_uuid, verification_code, email_address) VALUES (:user_uuid, :verification_code, :email_address)";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                    $statement->execute($temporary_data);
+                    $db->RunInsert(
+                        queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::EMAIL_VERIFICATION_CODES)
+                            ->set(col: 'user_uuid', value: ':__user_uuid__')
+                            ->set(col: 'verification_code', value: ':__verification_code__')
+                            ->set(col: 'email_address', value: ':__email_address__')
+                            ->bindValue(name: '__user_uuid__', value: $user_node->getId())
+                            ->bindValue(name: '__verification_code__', value: strtolower($_POST["email_address"]))
+                            ->bindValue(name: '__email_address__', value: str_replace(" ", "", $verification_code))
+                    );
 
                     $email = (new EmailBuilder())
                         ->setTemplate(template: "new-account-verification-code")
@@ -249,29 +263,60 @@ try
                         ->build();
                     Auxilium\InternetMessageTransport::send($email, "MIME");
 
-                    $language_prop = Auxilium\GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable("lang")), "text/plain", null, $user_node);
-                    $user_node->addProperty("preferred_language", $language_prop, $user_node); // Set it to whatever the language is currently in
-                    $full_name_prop = Auxilium\GraphDatabaseConnection::new_node($form_values["full_name"], "text/plain", null, $user_node);
-                    $user_node->addProperty("name", $full_name_prop, $user_node);
-                    $name_prop = Auxilium\GraphDatabaseConnection::new_node(explode(" ", $form_values["full_name"])[0], "text/plain", null, $user_node);
-                    $user_node->addProperty("display_name", $name_prop, $user_node); // Create this as default the user's first name - they can change it later if they want
+                    $language_prop = GraphDatabaseConnection::new_node(
+                        data: strtoupper(PageBuilder2::GetVariable("lang", "en")),
+                        media_type: "text/plain",
+                        schema: null,
+                        creator: $user_node);
+                    $user_node->addProperty(
+                        key: "preferred_language",
+                        node: $language_prop,
+                        actor: $user_node
+                    ); // Set it to whatever the language is currently in
+                    $full_name_prop = GraphDatabaseConnection::new_node(
+                        data: $form_values["full_name"],
+                        media_type: "text/plain",
+                        schema: null,
+                        creator: $user_node
+                    );
+                    $user_node->addProperty(
+                        key: "name",
+                        node: $full_name_prop,
+                        actor: $user_node
+                    );
+                    $name_prop = GraphDatabaseConnection::new_node(
+                        data: explode(" ", $form_values["full_name"])[0],
+                        media_type: "text/plain",
+                        schema: null,
+                        creator: $user_node
+                    );
+                    $user_node->addProperty(
+                        key: "display_name",
+                        node: $name_prop,
+                        actor: $user_node
+                    ); // Create this as default the user's first name - they can change it later if they want
 
                     $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
 
-                    $session_info = [
-                        "session_uuid" => EncodingTools::GenerateNewUUID(),
-                        "session_key" => $session_key,
-                        "user_uuid" => $user_node->getId(),
-                        "ip_address" => $_SERVER["REMOTE_ADDR"],
-                        "sub" => "auxilium/" . strtolower($_POST["email_address"]),
-                        "active" => 1,
-                    ];
-                    $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, unique_sub, ip_address, active) VALUES (:session_uuid, :session_key, :user_uuid, :sub, :ip_address, :active)";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
-                    $statement->execute($session_info);
+
+                    $db->RunInsert(
+                        queryBuilder: SQLQueryBuilderWrapper::INSERT(MariaDBTable::PORTAL_SESSIONS)
+                            ->set(col: 'session_uuid', value: ':__session_uuid__')
+                            ->set(col: 'session_key', value: ':__session_key__')
+                            ->set(col: 'user_uuid', value: ':__user_uuid__')
+                            ->set(col: 'unique_sub', value: ':__unique_sub__')
+                            ->set(col: 'ip_address', value: ':__ip_address__')
+                            ->set(col: 'active', value: ':__active__')
+                            ->bindValue(name: '__session_uuid__', value: EncodingTools::GenerateNewUUID())
+                            ->bindValue(name: '__session_key__', value: $session_key)
+                            ->bindValue(name: '__user_uuid__', value: $user_node->getId())
+                            ->bindValue(name: '__unique_sub__', value: $_SERVER["REMOTE_ADDR"])
+                            ->bindValue(name: '__ip_address__', value: strtolower($_POST["email_address"]))
+                            ->bindValue(name: '__active__', value: 1)
+                    );
 
                     $form_data["user_uuid"] = $user_node->getId();
-                    $form_data["session_key"] = $session_info["session_key"];
+                    $form_data["session_key"] = $session_key;
                     $form_data["email_address"] = strtolower($_POST["email_address"]);
                     $form_data["hashed_password"] = $hashed_password;
 
@@ -341,14 +386,12 @@ try
                 PageBuilder2::Render(
                     template: "Pages/sign-up-form/account-sign-up.html.twig",
                     variables: [
-                        "email_address" => $form_data["email_address"],
                     ]
                 );
             case "INVITE_CODE":
                 PageBuilder2::Render(
                     template: "Pages/sign-up-form/invite-code.html.twig",
                     variables: [
-                        "email_address" => $form_data["email_address"],
                     ]
                 );
             case "USER_TYPE":
@@ -356,7 +399,6 @@ try
                 PageBuilder2::Render(
                     template: "Pages/sign-up-form/account-type.html.twig",
                     variables: [
-                        "email_address" => $form_data["email_address"],
                     ]
                 );
         }
