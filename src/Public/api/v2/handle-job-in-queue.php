@@ -26,9 +26,9 @@ $this_run = time();
 $run_diff = $this_run - $last_run;
 file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "last-job-run", $this_run);
 
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/"))
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/", 0700, true);
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/", 0700, true);
 }
 if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/done/"))
 {
@@ -47,10 +47,10 @@ if($run_diff > REFRESH_RATE)
         "tries" => 0,
         "max_tries" => 1
     ];
-    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
 }
 
-$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs");
+$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs");
 foreach($jobs as &$job_name)
 {
     if(!in_array($job_name, [".", "..", "done", "failed"]))
@@ -63,7 +63,7 @@ foreach($jobs as &$job_name)
 {
     if(!in_array($job_name, [".", "..", "done", "failed"]))
     {
-        $job_payload = json_decode(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name), true);
+        $job_payload = json_decode(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_name), true);
         $success = false;
         $error_message = null;
         $exception = null;
@@ -118,18 +118,18 @@ foreach($jobs as &$job_name)
 
         if($success)
         {
-            unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name);
+            unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_name);
             file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/done/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
         }
         else
         {
             if($job_payload["tries"] < $job_payload["max_tries"])
             {
-                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
             }
             else
             {
-                unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_name);
+                unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_name);
                 file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
             }
         }

@@ -46,7 +46,7 @@ class InternetMessageTransport
                 foreach($response["Contents"] as $object)
                 {
                     $job_id = bin2hex(pack("J", time())) . "." . EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(3 * 8));
-                    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_id . ".json";
+                    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_id . ".json";
 
                     $job = [
                         "type" => "INGEST_S3_EMAIL",
@@ -322,7 +322,7 @@ class InternetMessageTransport
     {
         $job_id = bin2hex(pack("J", time())) . "." . EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(3 * 8));
         $job_change_key = EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(3 * 16));
-        $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_id . ".json";
+        $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_id . ".json";
 
         if($type == "MIME")
         {

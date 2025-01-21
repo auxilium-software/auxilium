@@ -42,7 +42,7 @@ if(!preg_match("/^[0-9a-f]{16}\\.[0-9a-zA-Z_-]{32}$/", $job_id))
     }
 }
 
-$job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jobs/" . $job_id . ".json";
+$job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs/" . $job_id . ".json";
 $at->setVariable("status", "PENDING");
 if(!file_exists($job_path))
 {

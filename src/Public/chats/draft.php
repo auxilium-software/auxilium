@@ -26,7 +26,7 @@ else
 $ret_url = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(explode("?", $_SERVER["REQUEST_URI"])[0]);
 $pb->setVariable("encoded_return_url", $ret_url);
 
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getId() . "/" . $message_uuid . ".json";
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $message_uuid . ".json";
 if(!file_exists($message_draft_path))
 { // Hmmm , not a draft message then, let's try finding it in the database
     $pb->setVariable("draft_path", $message_draft_path);
