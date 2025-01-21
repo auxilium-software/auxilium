@@ -40,10 +40,10 @@ if(!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
     $at->setErrorText("Malformed uuid");
     $at->output();
 }
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".json";
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getId() . "/"))
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".json";
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true);
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true);
 }
 
 if($_SERVER["REQUEST_METHOD"] === "POST" || $_SERVER["REQUEST_METHOD"] === "PUT")
