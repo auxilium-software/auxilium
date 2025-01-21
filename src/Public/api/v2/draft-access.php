@@ -78,7 +78,7 @@ if($action == "access")
 elseif($action == "send")
 {
     $draft_content = json_decode(file_get_contents($message_draft_path), true);
-    $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "message-drafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".eml";
+    $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".eml";
     $build_content = "X-Auxilium-Message-Version: 2.0\r\n";
     $build_content .= "MIME-Version: 1.0\r\n";
     $build_content .= "Message-ID: $draft_id." . Session::get_current()->getUser()->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . "\r\n";
@@ -197,7 +197,7 @@ elseif($action == "send")
     {
         $message_node = Auxilium\GraphDatabaseConnection::new_node_raw("auxlfs://" . INSTANCE_BRANDING_DOMAIN_NAME . "/++message%3Arfc822+" . $bytes_written, URLHandling::GetURLForSchema(MessageSchema::class));
 
-        rename($message_build_path, LOCAL_STORAGE_DIRECTORY . $message_node->getId());
+        rename($message_build_path, LOCAL_STORAGE_DIRECTORY . 'Messages/' . $message_node->getId());
 
         $attach_failures = [];
         $notified_parties = [];
