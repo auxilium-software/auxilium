@@ -3,7 +3,7 @@
 
 <div>
     <div class="inner-content">
-        {% include "/Partials/NodeViews/Utilities/NodeViewBreadcrumbs.html" %}
+        {% include "/Partials/NodeViews/Utilities/NodeViewBreadcrumbs.html.twig" %}
     
         <h1 class="no-lower-margin">{% if primary_node_path_name | trim | length %}{{ primary_node_path_name | unpack_string | ndtitle }}{% else %}<em>{{ "unnamed_node" | uitxt | ndtitle }}</em>{% endif %}</h1>
         <a class="reverse-navigational-link" href="/graph/{{ primary_string_path | raw }}">Back to node view</a><br />
