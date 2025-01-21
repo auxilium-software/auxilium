@@ -44,7 +44,7 @@
         },
         "create_new_account": {
             "en": "create a new account",
-			"cy": "creu cyfrif newydd",
+            "cy": "creu cyfrif newydd",
             "zh": "创建新帐户"
         },
         "system_settings": {
@@ -72,20 +72,20 @@
         },
         "unnamed_node": {
             "en": "unnamed node",
-			"cy": "nod heb ei enwi"
+            "cy": "nod heb ei enwi"
         },
         "ive_forgot_my_password": {
             "en": "i've forgotten my password",
-			"cy": "rwy wedi anghofio fy nghyfrinair",
+            "cy": "rwy wedi anghofio fy nghyfrinair",
             "zh": "我忘记了密码"
         },
         "cookie_notice_blurb_start": {
             "en": "We only use cookies to record your choices, and allow access to our web portal. For more information please see our ",
-			"cy": "Dim ond er mwyn cofnodi'ch dewisiadau a sicrhau'ch bod yn gallu defnyddio ein gwe-borth y defnyddiwn gwcis. Am ragor o wybodaeth gweler ein"
+            "cy": "Dim ond er mwyn cofnodi'ch dewisiadau a sicrhau'ch bod yn gallu defnyddio ein gwe-borth y defnyddiwn gwcis. Am ragor o wybodaeth gweler ein"
         },
         "cookie_notice_blurb_end": {
             "en": "We only place these cookies on your browser after you sign up or log in. If you don't consent to our use of these functional cookies, please do not sign up or log in.",
-			"cy": "Dim ond ar ôl i chi gofrestru neu fewngofnodi y byddwn yn rhoi'r cwcis hyn ar eich porwr. Os nad ydych yn rhoi'ch caniatâd i ni i ddefnyddio'r cwcis swyddogaethol hyn, gofynnwn i chi beidio â chofrestru neu fewngofnodi"
+            "cy": "Dim ond ar ôl i chi gofrestru neu fewngofnodi y byddwn yn rhoi'r cwcis hyn ar eich porwr. Os nad ydych yn rhoi'ch caniatâd i ni i ddefnyddio'r cwcis swyddogaethol hyn, gofynnwn i chi beidio â chofrestru neu fewngofnodi"
         },
         "privacy_policy": {
             "en": "privacy policy",
@@ -169,7 +169,7 @@
         },
         "message_failed_to_send": {
             "en": "message failed to send, please try again later",
-			"cy": "Ni lwyddwyd i anfon y neges, rhowch gynnig eto yn y man"
+            "cy": "Ni lwyddwyd i anfon y neges, rhowch gynnig eto yn y man"
         },
         "add_or_remove_login_methods": {
             "en": "add or remove login methods",
@@ -237,7 +237,7 @@
         },
         "draft_message": {
             "en": "Draft Message",
-			"cy": "Neges Drafft"
+            "cy": "Neges Drafft"
         }
     },
     "ui_templates": {
@@ -328,11 +328,11 @@
         "case": {
             "todo_list": {
                 "en": "to-do list",
-				"cy": "rhestr o dasgau"
+                "cy": "rhestr o dasgau"
             },
             "clients": {
                 "en": "beneficiaries",
-				"cy": "cleientiaid"
+                "cy": "cleientiaid"
             },
             "messages": {
                 "en": "messages",
@@ -344,15 +344,15 @@
             },
             "description": {
                 "en": "case description",
-				"cy": "disgrifiad achos"
+                "cy": "disgrifiad achos"
             },
             "case_workers": {
                 "en": "case workers",
-				"cy": "gweithwyr achos"
+                "cy": "gweithwyr achos"
             },
             "case_management": {
                 "en": "case management",
-				"cy": "rheoli achos"
+                "cy": "rheoli achos"
             },
             "delete_node": {
                 "en": "delete this case",
@@ -652,13 +652,13 @@
         "new_user": {
             "title": {
                 "en": "Create a new user",
-				"cy": "Creu defnyddiwr newydd"
+                "cy": "Creu defnyddiwr newydd"
             }
         },
         "new_group": {
             "title": {
                 "en": "Create a new group",
-				"cy": "Creu grŵp newydd"
+                "cy": "Creu grŵp newydd"
             }
         },
         "sign_up": {

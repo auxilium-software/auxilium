@@ -28,7 +28,7 @@ elseif(strlen($lang) == 0)
 
 $pack = [];
 
-$merged_language_pack = file_get_contents(__DIR__ . "/../../localised-strings.json");
+$merged_language_pack = file_get_contents(__DIR__ . '/../../Configuration/Localisation/LocalisedStrings.json');
 
 function extract_lang($from, $lang)
 {

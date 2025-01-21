@@ -77,7 +77,7 @@ class MicroTemplate
     {
         if(self::$lookup_table == null)
         {
-            self::$lookup_table = json_decode(file_get_contents(WEB_ROOT_DIRECTORY . "localised-strings.json"), true);
+            self::$lookup_table = json_decode(file_get_contents(__DIR__ . '/../Configuration/Localisation/LocalisedStrings.json'), true);
         }
         $path = explode("/", $path);
         $cdir = self::$lookup_table;
@@ -134,7 +134,7 @@ class MicroTemplate
     {
         if(self::$lookup_table == null)
         {
-            self::$lookup_table = json_decode(file_get_contents(WEB_ROOT_DIRECTORY . "localised-strings.json"), true);
+            self::$lookup_table = json_decode(file_get_contents(__DIR__ . '/../Configuration/Localisation/LocalisedStrings.json'), true);
         }
         $this->path = explode("/", $this->path);
         $cdir = self::$lookup_table;
