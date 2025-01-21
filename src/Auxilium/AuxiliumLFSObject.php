@@ -94,7 +94,7 @@ class AuxiliumLFSObject
 
     public function exists()
     {
-        if(file_exists(LOCAL_STORAGE_DIRECTORY . $this->getId()))
+        if(file_exists(LOCAL_STORAGE_DIRECTORY . "LFS/" . $this->getId()))
         {
             return true;
         }
@@ -138,7 +138,7 @@ class AuxiliumLFSObject
             {
                 if($this->exists())
                 {
-                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . $this->getId());
+                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . "LFS/" . $this->getId());
                 }
             }
             return $this->data;
