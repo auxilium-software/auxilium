@@ -298,7 +298,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                                 "property" => $out_node,
                                 "target" => $action["target"]
                             ];
-                            if(is_a($fvars["property"], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+                            if(is_a($fvars["property"], DeegraphNode::class))
                             {
                                 $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
                             }
@@ -308,7 +308,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                                 {
                                     if(strpos($fvars["target"], "\$" . $key) === 0)
                                     {
-                                        if(is_a($prop, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+                                        if(is_a($prop, DeegraphNode::class))
                                         {
                                             $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
                                         }
@@ -349,7 +349,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                                 {
                                     if(strpos($fvars["target"], "\$" . $key) === 0)
                                     {
-                                        if(is_a($prop, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+                                        if(is_a($prop, DeegraphNode::class))
                                         {
                                             $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
                                         }
@@ -396,7 +396,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
 
         if($export != null)
         {
-            if(is_a($export, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+            if(is_a($export, DeegraphNode::class))
             {
                 $url_metadata->setProperty("rcn", EncodingTools::Base64EncodeURLSafe(URLMetadata::crush_uuid($export->getId())));
                 $url_metadata->setProperty("exp", null);
@@ -524,7 +524,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                             if(isset($component["value"]))
                             {
                                 $var = AuxiliumScript::evaluate_variable_path($component["value"], $internal_vars);
-                                if(is_a($var, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+                                if(is_a($var, DeegraphNode::class))
                                 {
                                     $component["object"] = $var;
                                 }
@@ -540,7 +540,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                                 foreach($component["dictionary"] as $dkey => &$dvar)
                                 {
                                     $var = AuxiliumScript::evaluate_variable_path($dvar, $internal_vars);
-                                    if(is_a($var, "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+                                    if(is_a($var, DeegraphNode::class))
                                     {
                                         $dvar = ["object" => $var, "text" => $dvar];
                                     }
