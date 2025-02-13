@@ -2,6 +2,8 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+
 class AuxiliumScript
 {
     public static function evaluate_expression(string $string, array $vars)
@@ -140,7 +142,7 @@ class AuxiliumScript
             $st = substr(array_shift($pth), 1);
             if(isset($vars[$st]))
             {
-                if(is_a($vars[$st], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
+                if(is_a($vars[$st], DeegraphNode::class))
                 {
                     array_unshift($pth, "{" . $vars[$st]->getId() . "}");
                     $fcn = "@view";
