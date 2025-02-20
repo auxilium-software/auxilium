@@ -43,4 +43,10 @@ class FormBuilderHelpers
             }
         }
     }
+
+    public static function UpdateTempFiles($form_persistence_file, $form_persistent_data): void
+    {
+        fwrite($form_persistence_file, json_encode($form_persistent_data));
+        fclose($form_persistence_file);
+    }
 }
