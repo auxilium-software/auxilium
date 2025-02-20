@@ -1,27 +1,27 @@
-/src/environment.php
-/src/twig/compilation_cache/
-/src/unused/
-/src/vendor/
-/src/composer.lock
-/src/assets/branding.css
-/src/assets/custom/
-/src/favicon.png
-/src/favicon.svg
-/src/favicon.ico
-/src/templates/en/base.html
-/certs
-/bin
 
-.idea/
-*.phar
-.phpunit.result.cache
-credentials.php
+# Dev Files
+src/.idea/
+src/composer.phar
+src/vendor
+
+# Dev (Testing) Files
+src/.phpunit.result.cache
+
+# Dev (Documentation) Files
+src/.phpdoc
+src/.phpdoc-export
+src/phpunit.phar
+src/phpDocumentor.phar
+
+# Dev (Misc) Files
 *.jar
 nohup.out
 
-/src/.phpdoc
-/src/.phpdoc-export
-/src/LocalStorage
+# Config Files
 src/Configuration/Configuration/Secrets.yaml
-src/Configuration/Configuration/Configuration.yaml
+src/Configuration/Configuration/Credentials.php
 src/Configuration/Configuration/Environment.php
+
+# Local Storage Files
+src/LocalStorage
+!src/LocalStorage/**/.gitkeep
