@@ -23,5 +23,6 @@ src/Configuration/Configuration/Credentials.php
 src/Configuration/Configuration/Environment.php
 
 # Local Storage Files
-src/LocalStorage
+!src/LocalStorage/.gitkeep
 !src/LocalStorage/**/.gitkeep
+src/LocalStorage
