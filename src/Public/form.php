@@ -284,25 +284,33 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                 switch($action["type"])
                 {
                     case "NEW_NODE":
+                        // Handle the creation of a new node with optional schema, mime type, and content
                         $schema = isset($action["schema"]) ? AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars) : null;
                         $mime_type = isset($action["mime_type"]) ? AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars) : null;
                         $content = isset($action["content"]) ? AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars) : null;
+                        // Creates a new graph node
                         $out_node = GraphDatabaseConnection::new_node($content, $mime_type, $schema, $as_node);
+
+                        // Optionally store the created node in an internal variable
                         if(isset($action["output_variable"]))
                         {
                             $internal_vars["output_var_" . $action["output_variable"]] = $out_node;
                         }
+
+                        // Handles linking the new node to a specified target
                         if(isset($action["target"]))
                         {
                             $fvars = [
                                 "property" => $out_node,
                                 "target" => $action["target"]
                             ];
+                            // Prepare property id for the target if it is a node object
                             if(is_a($fvars["property"], DeegraphNode::class))
                             {
                                 $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
                             }
-                            if(substr($fvars["target"], 0, 1) === "\$")
+                            // Resolve internal variable-referenced targets (target starts with "$")
+                            if(str_starts_with($fvars["target"], "\$"))
                             {
                                 foreach($internal_vars as $key => &$prop)
                                 {
@@ -319,31 +327,31 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                                     }
                                 }
                             }
+                            // Build the query to link the node
                             $query = "LINK \$property TO \$target";
+
+                            // If a name is provided, append it to the query
                             if(isset($action["name"]))
                             {
                                 $query = $query . " AS \$name";
                                 $fvars["name"] = AuxiliumScript::evaluate_variable_path($action["name"], $internal_vars);
                             }
+                            // Execute the query to establish the link
                             GraphDatabaseConnection::query($as_node, $query, $fvars);
                         }
                         break;
-                    case "LINK":
-                        if(isset($action["property"]) && isset($action["target"]))
+
+                    case "PERMISSION":
+                        if(isset($action["permissions"]) && isset($action["target"]))
                         {
                             $fvars = [
-                                "property" => AuxiliumScript::evaluate_variable_path($action["property"], $internal_vars),
+                                // Evaluate the property and target from internal variables
+                                "permissions" => implode(separator: ',', array: $action['permissions']),
                                 "target" => $action["target"]
                             ];
-                            if(isset($action["name"]))
-                            {
-                                $fvars["name"] = $action["name"];
-                            }
-                            if(is_a($fvars["property"], "\Auxilium\DatabaseInteractions\Deegraph\DeegraphNode"))
-                            {
-                                $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
-                            }
-                            if(substr($fvars["target"], 0, 1) === "\$")
+
+                            // Resolve target if it references an internal variable
+                            if(str_starts_with($fvars["target"], "\$"))
                             {
                                 foreach($internal_vars as $key => &$prop)
                                 {
@@ -360,31 +368,87 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                                     }
                                 }
                             }
+
+                            $query = "GRANT " . $fvars['permissions'] . ' ON ' . $fvars["target"];
+                            GraphDatabaseConnection::query($as_node, $query, $fvars);
+                        }
+                        break;
+
+                    case "LINK":
+                        // Link a property to a target
+                        if(isset($action["property"]) && isset($action["target"]))
+                        {
+                            $fvars = [
+                                // Evaluate the property and target from internal variables
+                                "property" => AuxiliumScript::evaluate_variable_path($action["property"], $internal_vars),
+                                "target" => $action["target"]
+                            ];
+                            // Optionally attach a name to the link
+                            if(isset($action["name"]))
+                            {
+                                $fvars["name"] = $action["name"];
+                            }
+                            // Handle property as a node object
+                            if(is_a($fvars["property"], DeegraphNode::class))
+                            {
+                                $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
+                            }
+                            // Resolve target if it references an internal variable
+                            if(str_starts_with($fvars["target"], "\$"))
+                            {
+                                foreach($internal_vars as $key => &$prop)
+                                {
+                                    if(str_starts_with($fvars["target"], "\$" . $key))
+                                    {
+                                        if(is_a($prop, DeegraphNode::class))
+                                        {
+                                            $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
+                                        }
+                                        else
+                                        {
+                                            $fvars["target"] = $prop . substr($fvars["target"], strlen($key) + 1);
+                                        }
+                                    }
+                                }
+                            }
+                            // Build the query to link the property to the target
                             $query = "LINK \$property TO \$target";
+
+                            // If a name is present, append it to the query
                             if(isset($fvars["name"]))
                             {
                                 $query = $query . " AS \$name";
                             }
+                            // Execute the query
                             GraphDatabaseConnection::query($as_node, $query, $fvars);
                         }
                         break;
+
                     case "SET":
+                        // Set a variable in the internal_vars array
                         if(isset($action["output_variable"]))
                         {
                             $internal_vars["output_var_" . $action["output_variable"]] = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                         }
                         break;
+
                     case "EXPORT":
+                        // Evaluate and store the result in an export variable
                         $export = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                         break;
+
                     case "NAVIGATE":
+                        // Handle navigation logic
                         if(isset($action["replace_last_return_url"]))
                         {
                             $navigate_replace = $action["replace_last_return_url"];
                         }
+                        // Evaluate or resolve navigation target
                         $navigate = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? Auxilium\AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
                         break;
+
                     default:
+                        // Handle unrecognized actions gracefully by displaying an error message
                         echo "<h3>UNKNOWN ACTION " . $action["type"] . "</h3>";
                 }
             }
