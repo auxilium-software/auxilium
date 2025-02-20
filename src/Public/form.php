@@ -3,6 +3,7 @@
 use Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\GraphDatabaseConnection;
+use Auxilium\Helpers\FormBuilderHelpers;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
 use Auxilium\URLMetadata;
@@ -66,20 +67,13 @@ if(!isset($uri_components[0]))
     $pb->render();
 }
 
-if(!preg_match('/^[a-f0-9-]+$/', $uri_components[0]))
-{
-    // Make sure nobody is trying anything like path traversal
-    die();
-}
+FormBuilderHelpers::CheckForPathTraversal($uri_components);
 
 if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[0] . ".json"))
 {
     $fpid = null;
 
-    if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress"))
-    {
-        mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress", 0700, true);
-    }
+    FormBuilderHelpers::CreateTempDirectory();
 
     if($url_metadata->getProperty("fpid") != null)
     {
@@ -175,11 +169,11 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
     {
         if(!isset($page_index[$page_key]["if"]))
         {
-            array_push($allowed_page_keys, $page_key);
+            $allowed_page_keys[] = $page_key;
         }
         elseif(Auxilium\AuxiliumScript::evaluate_expression($page_index[$page_key]["if"], $internal_vars))
         {
-            array_push($allowed_page_keys, $page_key);
+            $allowed_page_keys[] = $page_key;
         }
     }
 
@@ -285,9 +279,9 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                 {
                     case "NEW_NODE":
                         // Handle the creation of a new node with optional schema, mime type, and content
-                        $schema = isset($action["schema"]) ? AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars) : null;
-                        $mime_type = isset($action["mime_type"]) ? AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars) : null;
-                        $content = isset($action["content"]) ? AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars) : null;
+                        $schema = isset($action["schema"])          ? AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars)     : null;
+                        $mime_type = isset($action["mime_type"])    ? AuxiliumScript::evaluate_variable_path($action["mime_type"], $internal_vars)  : null;
+                        $content = isset($action["content"])        ? AuxiliumScript::evaluate_variable_path($action["content"], $internal_vars)    : null;
                         // Creates a new graph node
                         $out_node = GraphDatabaseConnection::new_node($content, $mime_type, $schema, $as_node);
 
@@ -309,24 +303,10 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                             {
                                 $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
                             }
+
                             // Resolve internal variable-referenced targets (target starts with "$")
-                            if(str_starts_with($fvars["target"], "\$"))
-                            {
-                                foreach($internal_vars as $key => &$prop)
-                                {
-                                    if(strpos($fvars["target"], "\$" . $key) === 0)
-                                    {
-                                        if(is_a($prop, DeegraphNode::class))
-                                        {
-                                            $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
-                                        }
-                                        else
-                                        {
-                                            $fvars["target"] = $prop . substr($fvars["target"], strlen($key) + 1);
-                                        }
-                                    }
-                                }
-                            }
+                            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars);
+
                             // Build the query to link the node
                             $query = "LINK \$property TO \$target";
 
@@ -351,23 +331,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                             ];
 
                             // Resolve target if it references an internal variable
-                            if(str_starts_with($fvars["target"], "\$"))
-                            {
-                                foreach($internal_vars as $key => &$prop)
-                                {
-                                    if(strpos($fvars["target"], "\$" . $key) === 0)
-                                    {
-                                        if(is_a($prop, DeegraphNode::class))
-                                        {
-                                            $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
-                                        }
-                                        else
-                                        {
-                                            $fvars["target"] = $prop . substr($fvars["target"], strlen($key) + 1);
-                                        }
-                                    }
-                                }
-                            }
+                            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars);
 
                             $query = "GRANT " . $fvars['permissions'] . ' ON ' . $fvars["target"];
                             GraphDatabaseConnection::query($as_node, $query, $fvars);
@@ -388,29 +352,16 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                             {
                                 $fvars["name"] = $action["name"];
                             }
+
                             // Handle property as a node object
                             if(is_a($fvars["property"], DeegraphNode::class))
                             {
                                 $fvars["property"] = "{" . $fvars["property"]->getId() . "}";
                             }
+
                             // Resolve target if it references an internal variable
-                            if(str_starts_with($fvars["target"], "\$"))
-                            {
-                                foreach($internal_vars as $key => &$prop)
-                                {
-                                    if(str_starts_with($fvars["target"], "\$" . $key))
-                                    {
-                                        if(is_a($prop, DeegraphNode::class))
-                                        {
-                                            $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
-                                        }
-                                        else
-                                        {
-                                            $fvars["target"] = $prop . substr($fvars["target"], strlen($key) + 1);
-                                        }
-                                    }
-                                }
-                            }
+                            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars);
+
                             // Build the query to link the property to the target
                             $query = "LINK \$property TO \$target";
 
@@ -507,11 +458,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
         else
         {
             $ret_url_full = $return_to . "?" . $url_metadata;
-            //echo "<pre>";
-            //echo $ret_url_full;
             NavigationUtilities::Redirect(target: "$ret_url_full");
-            //echo "</pre>";
-            exit();
         }
     }
 
@@ -616,7 +563,7 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                             }
                             break;
                     }
-                    array_push($review_components, $component);
+                    $review_components[] = $component;
                 }
             }
 
