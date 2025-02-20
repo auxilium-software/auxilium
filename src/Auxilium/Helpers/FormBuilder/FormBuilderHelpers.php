@@ -1,6 +1,6 @@
 <?php
 
-namespace Auxilium\Helpers;
+namespace Auxilium\Helpers\FormBuilder;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 
