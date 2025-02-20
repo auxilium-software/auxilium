@@ -531,19 +531,13 @@ if($review_page)
     }
 
     $review_copy["components"] = $review_components;
-    PageBuilder2::AddVariable(
-        variableName: 'variables',
-        variableValue: $form_persistent_data["variables"]
-    );
-    PageBuilder2::AddVariable(
-        variableName: 'review_definition',
-        variableValue: $review_copy
-    );
-
     FormBuilderHelpers::UpdateTempFiles($form_persistence_file, $form_persistent_data);
     PageBuilder2::Render(
         template: 'Pages/form-review.html.twig',
-        variables: [],
+        variables: [
+            'variables' => $form_persistent_data["variables"],
+            'review_definition' => $review_copy,
+        ],
     );
 }
 $form_persistent_data["last_page"] = $target_page;
@@ -580,12 +574,10 @@ foreach($definition["pages"] as &$page)
     }
 }
 
-PageBuilder2::AddVariable(
-    variableName: 'variables',
-    variableValue: $form_persistent_data["variables"]
-);
 FormBuilderHelpers::UpdateTempFiles($form_persistence_file, $form_persistent_data);
 PageBuilder2::Render(
     template: 'Pages/form-page.html.twig',
-    variables: []
+    variables: [
+        'variables' => $form_persistent_data["variables"],
+    ]
 );
