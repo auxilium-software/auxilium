@@ -19,7 +19,6 @@
     "support": {
         "email": "info@auxiliumsoftware.co.uk"
     },
-
     "require": {
         "php": "^8.2",
 
@@ -58,9 +57,13 @@
 
         "geerlingguy/ping": "1.2.1"
     },
+    "require-dev": {
+        "phpdocumentor/shim": "*"
+    },
     "config": {
         "allow-plugins": {
-            "endroid/installer": true
+            "endroid/installer": true,
+            "phpdocumentor/shim": true
         }
     },
     "autoload": {
