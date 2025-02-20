@@ -279,24 +279,50 @@ if(file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[
                 switch($action["type"])
                 {
                     case "NEW_NODE":
-                        FormBuilderOnSubmitHelpers::NewNode($internal_vars, $as_node, $action,$fvars, $export, $navigate, $navigate_replace);
+                        FormBuilderOnSubmitHelpers::NewNode(
+                            internal_vars: $internal_vars,
+                            as_node      : $as_node,
+                            action       : $action,
+                            fvars        : $fvars,
+                        );
                         break;
                     case "PERMISSION":
-                        FormBuilderOnSubmitHelpers::Permission($internal_vars, $as_node, $action,$fvars, $export, $navigate, $navigate_replace);
+                        FormBuilderOnSubmitHelpers::Permission(
+                            internal_vars: $internal_vars,
+                            as_node      : $as_node,
+                            action       : $action,
+                            fvars        : $fvars,
+                        );
                         break;
                     case "LINK":
-                        FormBuilderOnSubmitHelpers::Link($internal_vars, $as_node, $action,$fvars, $export, $navigate, $navigate_replace);
+                        FormBuilderOnSubmitHelpers::Link(
+                            internal_vars: $internal_vars,
+                            as_node      : $as_node,
+                            action       : $action,
+                            fvars        : $fvars,
+                        );
                         break;
                     case "SET":
-                        FormBuilderOnSubmitHelpers::Set($internal_vars, $as_node, $action,$fvars, $export, $navigate, $navigate_replace);
+                        FormBuilderOnSubmitHelpers::Set(
+                            internal_vars: $internal_vars,
+                            action       : $action,
+                        );
                         break;
                     case "EXPORT":
-                        FormBuilderOnSubmitHelpers::Export($internal_vars, $as_node, $action,$fvars, $export, $navigate, $navigate_replace);
+                        FormBuilderOnSubmitHelpers::Export(
+                            internal_vars: $internal_vars,
+                            action       : $action,
+                            export       : $export,
+                        );
                         break;
                     case "NAVIGATE":
-                        FormBuilderOnSubmitHelpers::Navigate($internal_vars, $as_node, $action,$fvars, $export, $navigate, $navigate_replace);
+                        FormBuilderOnSubmitHelpers::Navigate(
+                            internal_vars   : $internal_vars,
+                            action          : $action,
+                            navigate        : $navigate,
+                            navigate_replace: $navigate_replace,
+                        );
                         break;
-
                     default:
                         // Handle unrecognized actions gracefully by displaying an error message
                         echo "<h3>UNKNOWN ACTION " . $action["type"] . "</h3>";

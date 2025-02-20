@@ -8,7 +8,7 @@ use Auxilium\GraphDatabaseConnection;
 
 class FormBuilderOnSubmitHelpers
 {
-    public static function NewNode(&$internal_vars, &$as_node, &$action, &$fvars, &$export, &$navigate, &$navigate_replace): void
+    public static function NewNode(&$internal_vars, &$as_node, &$action, &$fvars): void
     {
         // Handle the creation of a new node with optional schema, mime type, and content
         $schema = isset($action["schema"])          ? AuxiliumScript::evaluate_variable_path($action["schema"], $internal_vars)     : null;
@@ -53,7 +53,7 @@ class FormBuilderOnSubmitHelpers
         }
     }
 
-    public static function Permission(&$internal_vars, &$as_node, &$action, &$fvars, &$export, &$navigate, &$navigate_replace): void
+    public static function Permission(&$internal_vars, &$as_node, &$action, &$fvars): void
     {
         if(isset($action["permissions"]) && isset($action["target"]))
         {
@@ -71,7 +71,7 @@ class FormBuilderOnSubmitHelpers
         }
     }
 
-    public static function Link(&$internal_vars, &$as_node, &$action, &$fvars, &$export, &$navigate, &$navigate_replace): void
+    public static function Link(&$internal_vars, &$as_node, &$action, &$fvars): void
     {
         // Link a property to a target
         if(isset($action["property"]) && isset($action["target"]))
@@ -109,7 +109,7 @@ class FormBuilderOnSubmitHelpers
         }
     }
 
-    public static function Set(&$internal_vars, &$as_node, &$action, &$fvars, &$export, &$navigate, &$navigate_replace): void
+    public static function Set(&$internal_vars, &$action): void
     {
         // Set a variable in the internal_vars array
         if(isset($action["output_variable"]))
@@ -118,7 +118,7 @@ class FormBuilderOnSubmitHelpers
         }
     }
 
-    public static function Export(&$internal_vars, &$as_node, &$action, &$fvars, &$export, &$navigate, &$navigate_replace): void
+    public static function Export(&$internal_vars, &$action, &$export): void
     {
         // Evaluate and store the result in an export variable
         $export = isset($action["eval"])
@@ -129,7 +129,7 @@ class FormBuilderOnSubmitHelpers
             );
     }
 
-    public static function Navigate(&$internal_vars, &$as_node, &$action, &$fvars, &$export, &$navigate, &$navigate_replace): void
+    public static function Navigate(&$internal_vars, &$action, &$navigate, &$navigate_replace): void
     {
         // Handle navigation logic
         if(isset($action["replace_last_return_url"]))
