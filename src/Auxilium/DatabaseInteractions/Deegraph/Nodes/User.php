@@ -11,12 +11,17 @@ class User extends DeegraphNode
         parent::__construct($objectUuid);
     }
 
-    public static function get_system_node()
+    /**
+     * Retrieves the system node user instance.
+     *
+     * @return User Returns a User instance representing the system node.
+     */
+    public static function get_system_node(): User
     {
         return new User(INSTANCE_CREDENTIAL_DDS_LOGIN_NODE);
     }
 
-    public function getDisplayName()
+    public function getDisplayName(): mixed
     {
         if($this->getProperty("display_name") != null)
         {
@@ -29,7 +34,7 @@ class User extends DeegraphNode
         return null;
     }
 
-    public function getFullName()
+    public function getFullName(): mixed
     {
         if($this->getProperty("name") != null)
         {
@@ -38,7 +43,7 @@ class User extends DeegraphNode
         return null;
     }
 
-    public function getContactEmail()
+    public function getContactEmail(): mixed
     {
         if($this->getProperty("contact_email") != null)
         {
@@ -47,7 +52,7 @@ class User extends DeegraphNode
         return null;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         if($this->getProperty("name") == null)
         {

@@ -6,6 +6,10 @@ use Auxilium\Utilities\NavigationUtilities;
 
 class Security
 {
+    /**
+     * If called, this function will check to see if the user is logged in.
+     * If they are not, they are redirected to the login page.
+     */
     public static function RequireLogin(): void
     {
         if(Session::get_current()->sessionAuthenticated())

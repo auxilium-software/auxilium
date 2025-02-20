@@ -2,6 +2,9 @@
 
 namespace Auxilium;
 
+/**
+ * Represents a Data URL and provides methods to parse and retrieve its components.
+ */
 class DataURL
 {
     private $data = null;

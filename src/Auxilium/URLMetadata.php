@@ -6,6 +6,10 @@ use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\EncodingTools;
 
+/**
+ * Represents metadata that can be associated with a URL and includes
+ * methods for handling JSON Web Tokens (JWTs) and metadata operations.
+ */
 class URLMetadata
 {
     private $metadata = [];
