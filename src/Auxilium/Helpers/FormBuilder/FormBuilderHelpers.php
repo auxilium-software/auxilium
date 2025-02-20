@@ -17,19 +17,19 @@ class FormBuilderHelpers
 
     public static function CreateTempDirectory(): void
     {
-        if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress"))
+        if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/FormsInProgress"))
         {
-            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "FormsInProgress", 0700, true);
+            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/FormsInProgress", 0700, true);
         }
     }
 
-    public static function ResolveInternalVariables(&$fvars, &$internal_vars)
+    public static function ResolveInternalVariables(&$fvars, &$internal_vars): void
     {
         if(str_starts_with($fvars["target"], "\$"))
         {
             foreach($internal_vars as $key => &$prop)
             {
-                if(strpos($fvars["target"], "\$" . $key) === 0)
+                if(str_starts_with($fvars["target"], "\$" . $key))
                 {
                     if(is_a($prop, DeegraphNode::class))
                     {
