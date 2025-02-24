@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
 
@@ -12,7 +13,7 @@ $pb->setTemplate("Pages/query");
 if(isset($_POST["query"]))
 {
     $query = trim($_POST["query"]);
-    $result = Auxilium\GraphDatabaseConnection::query(Session::get_current()->getUser(), $query);
+    $result = GraphDatabaseConnection::query(Session::get_current()->getUser(), $query);
     $pb->setVariable("result", json_encode($result, JSON_PRETTY_PRINT));
     $pb->setVariable("query", $query, JSON_PRETTY_PRINT);
 }

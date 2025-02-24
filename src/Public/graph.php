@@ -111,9 +111,9 @@ for($i = 0; $i < count($path_primary); $i++)
 $deegraph_path = implode("/", $path_parsed);
 PageBuilder2::AddVariable("deegraph_path", $deegraph_path);
 
+$primary_node_path_order = [];
 if(PageBuilder2::GetVariable("progressive_load"))
 {
-    $primary_node_path_order = [];
     $primary_node_deegraph_paths = [];
     $absolute_path = "";
     for($i = 0; $i < count($path_primary); $i++)
@@ -123,7 +123,7 @@ if(PageBuilder2::GetVariable("progressive_load"))
         $pth_prim = $path_primary[$i];
         $absolute_path = $absolute_path . "/" . $path_primary[$i];
 
-        if((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim))
+        if((str_starts_with($pth_prim, "~")) || preg_match('/^[0-9]*$/', $pth_prim))
         {
             $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
         }
@@ -134,7 +134,6 @@ if(PageBuilder2::GetVariable("progressive_load"))
 }
 else
 {
-    $primary_node_path_order = [];
     $primary_node_path_names = [];
     $primary_node_path_nodes = [];
     for($i = 0; $i < count($path_primary); $i++)
@@ -143,7 +142,7 @@ else
         $primary_node_path_order[] = $np;
         $pth_prim = $path_primary[$i];
 
-        if((strpos($pth_prim, "~") === 0) || preg_match('/^[0-9]*$/', $pth_prim))
+        if((str_starts_with($pth_prim, "~")) || preg_match('/^[0-9]*$/', $pth_prim))
         {
             $absolute_path = implode("/", array_slice($path_parsed, 0, $i + 1));
             $primary_node_path_nodes[$np] = DeegraphNode::from_path($absolute_path);

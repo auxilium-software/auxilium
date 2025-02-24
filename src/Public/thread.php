@@ -5,6 +5,7 @@ use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Schemas\CaseSchema;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
@@ -53,7 +54,6 @@ try
     if(count($uri_components) == 0)
     {
         NavigationUtilities::Redirect(target: "/thread/new");
-        exit();
     }
 
     $path_primary = [];
@@ -64,17 +64,17 @@ try
     {
         if($sec_toggle)
         {
-            array_push($path_secondary, $uri_component);
+            $path_secondary[] = $uri_component;
         }
         else
         {
-            if(substr($uri_component, 0, 1) === "@")
+            if(str_starts_with($uri_component, "@"))
             {
                 $action = mb_strtolower($uri_component);
             }
             else
             {
-                array_push($path_primary, $uri_component);
+                $path_primary[] = $uri_component;
             }
         }
     }
@@ -142,7 +142,6 @@ try
                 else
                 {
                     NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                    exit();
                 }
                 break;
             case "@delete":
@@ -153,12 +152,10 @@ try
                     array_pop($path);
                     //echo implode("/", $path);
                     NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
-                    exit();
                 }
                 else
                 {
                     NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                    exit();
                 }
                 break;
             case "@edit":
@@ -185,7 +182,6 @@ try
                         $path = explode("/", $primary_string_path);
                         array_pop($path);
                         NavigationUtilities::Redirect(target: "/graph/" . implode("/", $path));
-                        exit();
                         //$new_node = \auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
                         //$query_result = $node->addProperty($_POST["name"], $return_node);
                     }
@@ -197,7 +193,6 @@ try
                 else
                 {
                     NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                    exit();
                 }
                 break;
             case "@unlink":
@@ -219,13 +214,11 @@ try
                         //exit();
                         //$node->unlinkProperty($last_prop);
                         NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                        exit();
                     }
                 }
                 else
                 {
                     NavigationUtilities::Redirect(target: "/graph/" . $primary_string_path);
-                    exit();
                     //$action = "@view";
                 }
                 break;
@@ -239,7 +232,7 @@ try
                             //echo $node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
 
                             //exit();
-                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(\Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe($url_metadata->getProperty("rcn")));
+                            $return_node_id = Auxilium\URLMetadata::expand_crushed_uuid(EncodingTools::Base64DecodeURLSafe($url_metadata->getProperty("rcn")));
                             $return_node = DeegraphNode::from_id($return_node_id);
                             $query_result = $node->addProperty($_POST["name"], $return_node);
                             if($query_result !== false)
@@ -253,17 +246,12 @@ try
                                 }
                                 $url_metadata->setProperty("rcn", null);
                                 NavigationUtilities::Redirect(target: $ret_url . "?" . $url_metadata);
-                                exit();
                             }
                             //echo "Could not link: ".$node->GetNodeID()." => ".$_POST["name"]." => ".\auxilium\URLMetadata::expand_crushed_uuid(\auxilium\EncodingTools::base64_decode_url_safe($url_metadata->getProperty("rcn")));
                             //exit();
                             $pb->setVariable("duplicate_property_name", $_POST["name"]);
-                            $pb->setTemplate("Pages/node-views/name-new-property");
                         }
-                        else
-                        {
-                            $pb->setTemplate("Pages/node-views/name-new-property");
-                        }
+                        $pb->setTemplate("Pages/node-views/name-new-property");
                     }
                     else
                     {

@@ -9,6 +9,7 @@ use Auxilium\EmailHandling\EmailBuilder;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\MessageSendException;
 use Auxilium\GraphDatabaseConnection;
+use Auxilium\InternetMessageTransport;
 use Auxilium\PersistentFormData;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\CookieHandling;
@@ -107,7 +108,7 @@ try
 
 
                         $user_node = DeegraphNode::from_id($returned_data["user_uuid"]);
-                        $email_prop = Auxilium\GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, User::get_system_node());
+                        $email_prop = GraphDatabaseConnection::new_node($returned_data["email_address"], "text/plain", null, User::get_system_node());
                         $user_node->addProperty("contact_email", $email_prop, User::get_system_node()); // Do all of this as the system node, since users shouldn't just be able to randomly change their email address
 
                         $db->RunDelete(
@@ -117,17 +118,12 @@ try
                         );
                         $form_data["form_step"] = null;
                         CookieHandling::SetSessionKey(sessionKey: $form_data["session_key"]);
-                        Auxilium\PersistentFormData::set($form_data);
+                        PersistentFormData::set($form_data);
+
                         $next_location = array_pop($form_data["form_stack"]);
                         if($next_location == null)
-                        {
                             NavigationUtilities::Redirect(target: "/dashboard");
-                        }
-                        else
-                        {
-                            NavigationUtilities::Redirect(target: $next_location);
-                        }
-                        exit();
+                        NavigationUtilities::Redirect(target: $next_location);
                     }
                 }
                 break;
@@ -266,7 +262,7 @@ try
                         ->setSubject(subject: "Account creation security code")
                         ->addRecipient(recipient: strtolower($_POST["email_address"]), name: $form_values["full_name"])
                         ->build();
-                    Auxilium\InternetMessageTransport::send($email, "MIME");
+                    InternetMessageTransport::send($email, "MIME");
 
                     $language_prop = GraphDatabaseConnection::new_node(
                         data      : strtoupper(PageBuilder2::GetVariable("lang", "en")),

@@ -2,9 +2,11 @@
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\EmailHandling\EmailBuilder;
+use Auxilium\RelationalDatabaseConnection;
 use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -205,7 +207,6 @@ switch($uri_components[1])
                         $statement->execute($bind_variables);
 
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
-                        exit();
                     }
                 }
                 $pb->setVariable("form_validation", $form_validation);
@@ -222,7 +223,6 @@ switch($uri_components[1])
                 $pb->setVariable("technical_details", $technical_details);
                 http_response_code(400);
                 $pb->render();
-                exit();
             }
         }
         else
@@ -234,7 +234,6 @@ switch($uri_components[1])
             $pb->setVariable("technical_details", $technical_details);
             http_response_code(403);
             $pb->render();
-            exit();
         }
         break;
     case "remove-login-method":
@@ -245,7 +244,7 @@ switch($uri_components[1])
                 switch($uri_components[2])
                 {
                     case "oauth":
-                        $sub = \Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe($uri_components[3]);
+                        $sub = EncodingTools::Base64DecodeURLSafe($uri_components[3]);
                         $bind_variables = [
                             "user_uuid" => $target_node->getId(),
                             "unique_sub" => $sub
@@ -254,9 +253,8 @@ switch($uri_components[1])
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
-                        exit();
                     case "standard":
-                        $sub = \Auxilium\Utilities\EncodingTools::Base64DecodeURLSafe($uri_components[3]);
+                        $sub = EncodingTools::Base64DecodeURLSafe($uri_components[3]);
                         $email = explode("/", $sub);
                         array_shift($email);
                         $email = implode("/", $email);
@@ -268,7 +266,6 @@ switch($uri_components[1])
                         $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
-                        exit();
                     default:
                         $pb->setDefaultVariables();
                         $pb->setTemplate("Pages/request-error");
@@ -340,7 +337,7 @@ switch($uri_components[1])
                 {
                     $sub_map[$session_row["unique_sub"]] = [];
                 }
-                array_push($sub_map[$session_row["unique_sub"]], $session_definition);
+                $sub_map[$session_row["unique_sub"]][] = $session_definition;
             }
 
             $login_methods = [];
@@ -348,7 +345,7 @@ switch($uri_components[1])
                 "user_uuid" => $target_node->getId(),
             ];
             $sql = "SELECT email_address, user_uuid FROM standard_logins WHERE user_uuid=:user_uuid";
-            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $user_data = $statement->fetch();
             if($user_data != null)
@@ -359,20 +356,19 @@ switch($uri_components[1])
                 {
                     $sessions = $sub_map[$unique_sub];
                 }
-                array_push($login_methods, [
-                        "type" => "classic",
-                        "is_current" => ($current_sub == $unique_sub),
-                        "sub" => \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe($unique_sub),
-                        "sessions" => $sessions
-                    ]
-                );
+                $login_methods[] = [
+                    "type" => "classic",
+                    "is_current" => ($current_sub == $unique_sub),
+                    "sub" => EncodingTools::Base64EncodeURLSafe($unique_sub),
+                    "sessions" => $sessions
+                ];
             }
 
             $bind_variables = [
                 "user_uuid" => $target_node->getId()
             ];
             $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE user_uuid=:user_uuid";
-            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $returned_data = $statement->fetch();
             while($returned_data != null)
@@ -382,14 +378,13 @@ switch($uri_components[1])
                 {
                     $sessions = $sub_map[$returned_data["unique_sub"]];
                 }
-                array_push($login_methods, [
-                        "type" => "oauth",
-                        "vendor" => explode("/", $returned_data["unique_sub"])[0],
-                        "sub" => \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe($returned_data["unique_sub"]),
-                        "is_current" => ($current_sub == $returned_data["unique_sub"]),
-                        "sessions" => $sessions
-                    ]
-                );
+                $login_methods[] = [
+                    "type" => "oauth",
+                    "vendor" => explode("/", $returned_data["unique_sub"])[0],
+                    "sub" => EncodingTools::Base64EncodeURLSafe($returned_data["unique_sub"]),
+                    "is_current" => ($current_sub == $returned_data["unique_sub"]),
+                    "sessions" => $sessions
+                ];
                 $returned_data = $statement->fetch();
             }
 
@@ -400,17 +395,14 @@ switch($uri_components[1])
 
             foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config)
             {
-                array_push($openid_configs_printable, [
-                        "unique_name" => $openid_config["unique_name"],
-                        "display_name" => $openid_config["brand_name"],
-                    ]
-                );
+                $openid_configs_printable[] = [
+                    "unique_name" => $openid_config["unique_name"],
+                    "display_name" => $openid_config["brand_name"],
+                ];
             }
 
             $pb->setVariable("openid_configs", $openid_configs_printable);
             $pb->setTemplate("Pages/users/login-methods");
-            $pb->render();
-            exit();
         }
         else
         {
@@ -420,10 +412,9 @@ switch($uri_components[1])
             $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $pb->setVariable("technical_details", $technical_details);
             http_response_code(403);
-            $pb->render();
-            exit();
         }
-        break;
+        $pb->render();
+        exit();
     default:
         var_dump($uri_components);
         exit();

@@ -2,11 +2,9 @@
 
 use Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
-use Auxilium\GraphDatabaseConnection;
 use Auxilium\Helpers\FormBuilder\FormBuilderHelpers;
 use Auxilium\Helpers\FormBuilder\FormBuilderOnSubmitHelpers;
 use Auxilium\SessionHandling\Session;
-use Auxilium\TwigHandling\PageBuilder;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\URLMetadata;
 use Auxilium\Utilities\EncodingTools;
@@ -53,15 +51,15 @@ else
 }
 
 PageBuilder2::AddVariable(
-    variableName: 'url_metadata',
+    variableName : 'url_metadata',
     variableValue: $url_metadata
 );
 PageBuilder2::AddVariable(
-    variableName: 'root_url_metadata',
+    variableName : 'root_url_metadata',
     variableValue: new URLMetadata()
 );
 PageBuilder2::AddVariable(
-    variableName: 'jwt_validation_passed',
+    variableName : 'jwt_validation_passed',
     variableValue: $jwt_validation_passed
 );
 
@@ -74,7 +72,7 @@ if($target_node != null)
 if(!isset($uri_components[0]))
 {
     PageBuilder2::Render(
-        template: 'Pages/invalid.html.twig',
+        template : 'Pages/invalid.html.twig',
         variables: [],
     );
 }
@@ -84,7 +82,7 @@ FormBuilderHelpers::CheckForPathTraversal($uri_components);
 if(!file_exists(__DIR__ . "/../Configuration/FormDefinitions/" . $uri_components[0] . ".json"))
 {
     PageBuilder2::Render(
-        template: 'Pages/invalid.html.twig',
+        template : 'Pages/invalid.html.twig',
         variables: [],
     );
 }
@@ -412,14 +410,14 @@ if($target_page_index == (count($allowed_page_keys) - 1))
         if($definition["final_review"])
         {
             PageBuilder2::AddVariable(
-                variableName: 'next_page_is_review',
+                variableName : 'next_page_is_review',
                 variableValue: true
             );
         }
         else
         {
             PageBuilder2::AddVariable(
-                variableName: 'next_page_is_send',
+                variableName : 'next_page_is_send',
                 variableValue: true
             );
         }
@@ -427,7 +425,7 @@ if($target_page_index == (count($allowed_page_keys) - 1))
     else
     {
         PageBuilder2::AddVariable(
-            variableName: 'next_page_is_send',
+            variableName : 'next_page_is_send',
             variableValue: true
         );
     }
@@ -435,7 +433,7 @@ if($target_page_index == (count($allowed_page_keys) - 1))
 elseif(!$review_page)
 {
     PageBuilder2::AddVariable(
-        variableName: 'next_page',
+        variableName : 'next_page',
         variableValue: $allowed_page_keys[$target_page_index + 1]
     );
 }
@@ -443,7 +441,7 @@ elseif(!$review_page)
 if($target_page_index > 0)
 {
     PageBuilder2::AddVariable(
-        variableName: 'last_page',
+        variableName : 'last_page',
         variableValue: $allowed_page_keys[$target_page_index - 1]
     );
 }
@@ -451,7 +449,7 @@ if($target_page_index > 0)
 if(!$review_page)
 {
     PageBuilder2::AddVariable(
-        variableName: 'current_page',
+        variableName : 'current_page',
         variableValue: $allowed_page_keys[$target_page_index]
     );
 }
@@ -460,7 +458,7 @@ if($form_submitted)
 {
     FormBuilderHelpers::UpdateTempFiles($form_persistence_file, $form_persistent_data);
     PageBuilder2::Render(
-        template: 'Pages/form-submitted.html.twig',
+        template : 'Pages/form-submitted.html.twig',
         variables: [],
     );
 }
@@ -533,7 +531,7 @@ if($review_page)
     $review_copy["components"] = $review_components;
     FormBuilderHelpers::UpdateTempFiles($form_persistence_file, $form_persistent_data);
     PageBuilder2::Render(
-        template: 'Pages/form-review.html.twig',
+        template : 'Pages/form-review.html.twig',
         variables: [
             'variables' => $form_persistent_data["variables"],
             'review_definition' => $review_copy,
@@ -568,7 +566,7 @@ foreach($definition["pages"] as &$page)
         }
 
         PageBuilder2::AddVariable(
-            variableName: 'page_definition',
+            variableName : 'page_definition',
             variableValue: $page
         );
     }
@@ -576,7 +574,7 @@ foreach($definition["pages"] as &$page)
 
 FormBuilderHelpers::UpdateTempFiles($form_persistence_file, $form_persistent_data);
 PageBuilder2::Render(
-    template: 'Pages/form-page.html.twig',
+    template : 'Pages/form-page.html.twig',
     variables: [
         'variables' => $form_persistent_data["variables"],
     ]

@@ -1,26 +1,29 @@
 <?php
 
 use Auxilium\Exceptions\DatabaseConnectionException;
-use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\SessionHandling\Security;
+use Auxilium\TwigHandling\PageBuilder2;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 
-$pb = PageBuilder::get_instance();
-
 try
 {
-    $pb->requireLogin();
+    Security::RequireLogin();
+    $isAdmin = false;
     if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()))
     {
-        $pb->setVariable("is_admin", true);
+        $isAdmin = true;
     }
-    $pb->setTemplate("Pages/all-cases");
-    $pb->render();
+    PageBuilder2::Render(
+        template : 'Pages/all-cases.html.twig',
+        variables: [
+            "is_admin" => $isAdmin,
+        ]
+    );
 }
 catch(DatabaseConnectionException $e)
 {
-    $pb->setTemplate("ErrorPages/InternalSystemError");
-    $pb->render();
+    PageBuilder2::RenderInternalSystemError($e);
 }

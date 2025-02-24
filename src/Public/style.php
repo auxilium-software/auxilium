@@ -27,7 +27,7 @@ function toggle_style($style_name)
     }
     else
     {
-        array_push($style_options, $style_name);
+        $style_options[] = $style_name;
     }
 }
 
@@ -56,8 +56,6 @@ if(isset($_SERVER["HTTP_REFERER"]))
     if(!str_contains($_SERVER["HTTP_REFERER"], "/style"))
     {
         NavigationUtilities::Redirect(target: $_SERVER["HTTP_REFERER"]);
-        exit();
     }
 }
 NavigationUtilities::Redirect(target: "/");
-exit();
