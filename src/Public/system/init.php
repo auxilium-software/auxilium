@@ -18,10 +18,10 @@ $setup_key = null;
 
 if(isset($_GET["setup_key"]))
 {
-    if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.key"))
+    if(file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.key"))
     {
-        $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "setup.key", "r") or die("Unable to read keyfile!");
-        $file_size = filesize(LOCAL_STORAGE_DIRECTORY . "setup.key");
+        $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "r") or die("Unable to read keyfile!");
+        $file_size = filesize(LOCAL_STORAGE_DIRECTORY . "/setup.key");
         $match_key = fread($key_file, $file_size);
         if(trim($match_key) == trim($_GET["setup_key"]))
         {
@@ -47,9 +47,9 @@ if(isset($_GET["setup_key"]))
 $mariaDBConnection = new MariaDBServerConnection();
 
 
-if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.lock"))
+if(file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.lock"))
 {
-    if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.key"))
+    if(file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.key"))
     {
         if($setup_key == null)
         {
@@ -70,25 +70,31 @@ if(file_exists(LOCAL_STORAGE_DIRECTORY . "setup.lock"))
 else
 {
 
-    $lock_file = fopen(LOCAL_STORAGE_DIRECTORY . "setup.lock", "w") or die("Unable to write lockfile!");
+    $lock_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.lock", "w") or die("Unable to write lockfile!");
     fwrite($lock_file, date("c", time()));
     fclose($lock_file);
 
     $mariaDBConnection->InitialDatabaseSetup();
 
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE WHERE @creator === /");
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE,ACT WHERE . === /");
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ ON /*");
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ ON {" . INSTANCE_UUID . "}");
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE ON /cases/# ON /cases/#/*");
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ ON /messages/#");
-    GraphDatabaseConnection::query(User::get_system_node(), "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE");
+    $initialQueries = [
+        "GRANT READ,WRITE,DELETE WHERE @creator === /", // grant CRUD permissions where the creator is the current node
+        "GRANT READ,WRITE,DELETE,ACT WHERE . === /",    // grant all permissions where the current node is the root node
+        "GRANT READ ON /*",                             //
+        "GRANT READ ON {" . INSTANCE_UUID . "}",        //
+        "GRANT READ,WRITE ON /cases/# ON /cases/#/*",   //
+        "GRANT READ,WRITE ON /cases/todos/# ON /cases/todos/#/*",   //
+        "GRANT READ ON /messages/#",                    //
+        "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE",  //
+    ];
+    foreach($initialQueries as $query)
+        GraphDatabaseConnection::query(User::get_system_node(), $query);
+
 }
 
 if($setup_key == null)
 {
     $setup_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '=');
-    $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "setup.key", "w") or die("Unable to write keyfile!");
+    $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "w") or die("Unable to write keyfile!");
     fwrite($key_file, $setup_key);
     fclose($key_file);
 }
@@ -174,7 +180,7 @@ switch(strtolower($_GET["page"]))
             $user_node->addProperty("contact_email", $email_name_prop, $user_node);
 
 
-            if(unlink(LOCAL_STORAGE_DIRECTORY . "setup.key"))
+            if(unlink(LOCAL_STORAGE_DIRECTORY . "/setup.key"))
             {
                 PageBuilder2::Render(
                     template : "Pages/system/init-step-3-done.html.twig",
