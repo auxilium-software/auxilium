@@ -1,6 +1,5 @@
-
-
-class AuxiliumNode {
+class AuxiliumNode
+{
     #uuid = null;
     #updatedAt = null;
     #deleteCallbacks = [];
@@ -11,14 +10,35 @@ class AuxiliumNode {
     #originalClient = null;
     #maxCacheTime = null;
 
-    fetchNodeInfo(onReady) {
-        if (this.#dataLoading) {
+    constructor(uuid = null, originalClient = null, maxCacheTime = 5000)
+    {
+        if ((typeof uuid !== 'string') && !(uuid instanceof String))
+        {
+            throw new Error("UUID must be supplied on node creation");
+        }
+        if (!originalClient instanceof AuxiliumClient)
+        {
+            throw new Error("Node must reference a creating Auxilium client");
+        }
+        this.#maxCacheTime = maxCacheTime;
+        this.#originalClient = originalClient;
+        this.#uuid = uuid;
+    }
+
+    fetchNodeInfo(onReady)
+    {
+        if (this.#dataLoading)
+        {
             this.#changeCallbacks.push(onReady);
-        } else {
-            if (this.#updatedAt == null) {
+        }
+        else
+        {
+            if (this.#updatedAt == null)
+            {
                 this.#updatedAt = 0;
             }
-            if (this.#updatedAt < (Date.now() - this.#maxCacheTime)) {
+            if (this.#updatedAt < (Date.now() - this.#maxCacheTime))
+            {
                 this.#updatedAt = Date.now();
                 this.#dataLoading = true;
                 this.#changeCallbacks.push(onReady);
@@ -32,28 +52,37 @@ class AuxiliumNode {
 
                 let responseHad = false;
 
-                http.onreadystatechange = (e) => {
-                    if (http.readyState == 4 && !responseHad) {
+                http.onreadystatechange = (e) =>
+                {
+                    if (http.readyState == 4 && !responseHad)
+                    {
                         let response = {};
                         responseHad = true;
 
-                        try {
+                        try
+                        {
                             response = JSON.parse(http.responseText);
                             let result = response["result"];
-                            if (result.hasOwnProperty("@error")) {
+                            if (result.hasOwnProperty("@error"))
+                            {
                                 console.log(result);
-                            } else {
+                            }
+                            else
+                            {
                                 this.#properties = result;
                                 this.#dataLoading = false;
-                                this.#changeCallbacks.forEach((cb) => {
+                                this.#changeCallbacks.forEach((cb) =>
+                                {
                                     cb(this);
                                 });
-                                this.#loadCallbacks.forEach((cb) => {
+                                this.#loadCallbacks.forEach((cb) =>
+                                {
                                     cb(this);
                                 });
                                 this.#loadCallbacks = [];
                             }
-                        } catch(e) {
+                        } catch (e)
+                        {
                             console.log(e);
                             console.log(http.responseText);
                         }
@@ -62,14 +91,18 @@ class AuxiliumNode {
 
                 http.send(data);
 
-            } else {
+            }
+            else
+            {
                 onReady(this);
             }
         }
     }
 
-    destroy() {
-        return new Promise((resolve, reject) => {
+    destroy()
+    {
+        return new Promise((resolve, reject) =>
+        {
             let http = new XMLHttpRequest();
             let url = "/api/v2/nodes/" + this.#uuid;
 
@@ -77,20 +110,28 @@ class AuxiliumNode {
 
             let responseHad = false;
 
-            http.onreadystatechange = (e) => {
-                if (http.readyState == 4 && !responseHad) {
+            http.onreadystatechange = (e) =>
+            {
+                if (http.readyState == 4 && !responseHad)
+                {
                     responseHad = true;
 
-                    try {
-                        if (http.status == 200 || http.status == 202 || http.status == 204 || http.status == 404) {
-                            this.#deleteCallbacks.forEach((cb) => {
+                    try
+                    {
+                        if (http.status == 200 || http.status == 202 || http.status == 204 || http.status == 404)
+                        {
+                            this.#deleteCallbacks.forEach((cb) =>
+                            {
                                 cb(this);
                             });
                             resolve();
-                        } else {
+                        }
+                        else
+                        {
                             reject("FAILED_TO_DELETE");
                         }
-                    } catch(e) {
+                    } catch (e)
+                    {
                         console.log(e);
                         console.log(http.responseText);
                     }
@@ -101,29 +142,22 @@ class AuxiliumNode {
         });
     }
 
-    triggerUpdate() {
-        this.#changeCallbacks.forEach((cb) => {
+    triggerUpdate()
+    {
+        this.#changeCallbacks.forEach((cb) =>
+        {
             cb(this);
         });
     }
 
-    constructor(uuid = null, originalClient = null, maxCacheTime = 5000) {
-        if ((typeof uuid !== 'string') && !(uuid instanceof String)) {
-            throw new Error("UUID must be supplied on node creation");
-        }
-        if (!originalClient instanceof AuxiliumClient) {
-            throw new Error("Node must reference a creating Auxilium client");
-        }
-        this.#maxCacheTime = maxCacheTime;
-        this.#originalClient = originalClient;
-        this.#uuid = uuid;
-    }
-
-    addEventListener(eventName, callback) {
-        if (!(callback instanceof Function)) {
+    addEventListener(eventName, callback)
+    {
+        if (!(callback instanceof Function))
+        {
             throw new Error("Callback function is not defined");
         }
-        switch (eventName) {
+        switch (eventName)
+        {
             case "change":
                 this.#changeCallbacks.push(callback);
                 break;
@@ -138,40 +172,59 @@ class AuxiliumNode {
         }
     }
 
-    getRawSchema() {
-        return new Promise((resolve, reject) => {
-            this.fetchNodeInfo(() => {
-                if (this.#properties.hasOwnProperty("@schema")) {
+    getRawSchema()
+    {
+        return new Promise((resolve, reject) =>
+        {
+            this.fetchNodeInfo(() =>
+            {
+                if (this.#properties.hasOwnProperty("@schema"))
+                {
                     resolve(this.#properties["@schema"]);
-                } else {
+                }
+                else
+                {
                     resolve(null);
                 }
             });
         });
     }
 
-    getRawData() {
-        return new Promise((resolve, reject) => {
-            this.fetchNodeInfo(() => {
-                if (this.#properties.hasOwnProperty("@data")) {
+    getRawData()
+    {
+        return new Promise((resolve, reject) =>
+        {
+            this.fetchNodeInfo(() =>
+            {
+                if (this.#properties.hasOwnProperty("@data"))
+                {
                     resolve(this.#properties["@data"]);
-                } else {
+                }
+                else
+                {
                     resolve(null);
                 }
             });
         });
     }
 
-    getUuid() {
+    getUuid()
+    {
         return this.#uuid;
     }
 
-    getData() {
-        return new Promise((resolve, reject) => {
-            this.getRawData().then((data) => {
-                if (data == null) {
+    getData()
+    {
+        return new Promise((resolve, reject) =>
+        {
+            this.getRawData().then((data) =>
+            {
+                if (data == null)
+                {
                     resolve(null);
-                } else {
+                }
+                else
+                {
                     this.#originalClient.urlToData(data).then(resolve).catch(reject);
                 }
             }).catch(reject);
