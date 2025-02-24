@@ -1,6 +1,9 @@
 {% if not max_inline_node_text_length %}
     {% set max_inline_node_text_length = 200 %}
 {% endif %}
+
+
+
 {% if inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json") %}
     {% if inline_node_expanded %}
         <h3 class="low-margin-heading"><a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %}class="navigational-link" href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if inline_node.properties.name %}{{ inline_node.properties.name }}{% else %}{{ "{" ~ inline_node.id ~ "}" }}{% endif %}</a></h3>
@@ -31,8 +34,14 @@
     {% else %}
         <a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %}class="navigational-link" href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin account-box-icon" title="User account"></span>{% if inline_node.properties.name %}{{ inline_node.properties.name }}{% else %}{{ "{" ~ inline_node.id ~ "}" }}{% endif %}</a>
     {% endif %}
+
+
+
 {% elseif inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json") %}
     <a {% if inline_node_new_tab %}class="navigational-link-new-tab" target="_blank"{% else %}class="navigational-link"{% endif %} href="{{ inline_node_path }}"><span class="inline-icon-shift-left inline-icon-low-margin work-icon" title="Case"></span>{% if inline_node.properties.title %}{{ inline_node.properties.title }}{% else %}{{ "{" ~ inline_node.id ~ "}" }}{% endif %}{% if inline_node.properties.clients %} - {% for client_number,client in inline_node.properties.clients.properties %}{{ client.properties.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</a>
+
+
+
 {% elseif inline_node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/collection.json") %}
     <ul class="collection-list">
         {% set list_temp_counter = 0 %}
@@ -57,7 +66,7 @@
             {% set list_temp_counter = list_temp_counter + 1 %}
         {% endfor %}
     </ul>
-    
+
     {% if list_temp_counter == 0 %}
         <em>Empty list</em>
     {% elseif list_temp_counter == 1 %}
@@ -65,10 +74,13 @@
     {% else %}
         <em>{{ list_temp_counter }} items in list</em>
     {% endif %}
-    
+
     {% if not hide_list_node_button %}
         <a class="navigational-link" href="{{ inline_node_path }}">View list node</a>
     {% endif %}
+
+
+
 {% else %}
     {% if (inline_node | length) > max_inline_node_text_length %}
         {% set ltid = [] %}

@@ -8,22 +8,6 @@ use JJG\Ping;
 
 class ICMPWrapper
 {
-    public static function CheckUp(string $target): bool
-    {
-        if ((!ip2long($target)) && dns_get_record($target) == [])
-            return false;
-
-        $ping = new Ping(
-            host: $target,
-            ttl: 255,
-            timeout: 0.5,
-        );
-        $latency = $ping->ping();
-        if ($latency !== false)
-            return true;
-        return false;
-    }
-
     public static function RequireSchemaRepo(): bool
     {
         $temp = parse_url(URLHandling::$URLBase);
@@ -39,5 +23,21 @@ class ICMPWrapper
                 "technical_details" => "A required service (https://" . $temp['host'] . ") is down/unavailable.",
             ]
         );
+    }
+
+    public static function CheckUp(string $target): bool
+    {
+        if((!ip2long($target)) && dns_get_record($target) == [])
+            return false;
+
+        $ping = new Ping(
+            host   : $target,
+            ttl    : 255,
+            timeout: 0.5,
+        );
+        $latency = $ping->ping();
+        if($latency !== false)
+            return true;
+        return false;
     }
 }
