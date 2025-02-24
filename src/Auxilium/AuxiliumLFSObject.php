@@ -94,16 +94,32 @@ class AuxiliumLFSObject
 
     public function exists()
     {
-        if(file_exists(LOCAL_STORAGE_DIRECTORY . "LFS/" . $this->getId()))
+        if(file_exists($this->getFilePath()))
         {
             return true;
         }
         return false;
     }
 
+    public function getFilePath(): string
+    {
+        return LOCAL_STORAGE_DIRECTORY . "/LFS/" . $this->getId();
+
+        if(str_starts_with(haystack: $this->getMimeType(), needle: "message"))
+        {
+            return LOCAL_STORAGE_DIRECTORY . "/Messages/" . $this->getId();
+        }
+        return LOCAL_STORAGE_DIRECTORY . "/LFS/" . $this->getId();
+    }
+
     public function getId()
     {
         return $this->uuid;
+    }
+
+    public function getMimeType()
+    {
+        return ($this->mimeType == null) ? "application/octet-stream" : $this->mimeType;
     }
 
     public function __toString()
@@ -114,11 +130,6 @@ class AuxiliumLFSObject
     public function getHash()
     {
         return $this->dataHash;
-    }
-
-    public function getMimeType()
-    {
-        return ($this->mimeType == null) ? "application/octet-stream" : $this->mimeType;
     }
 
     public function getSize()
@@ -138,7 +149,7 @@ class AuxiliumLFSObject
             {
                 if($this->exists())
                 {
-                    $this->data = file_get_contents(LOCAL_STORAGE_DIRECTORY . "LFS/" . $this->getId());
+                    $this->data = file_get_contents($this->getFilePath());
                 }
             }
             return $this->data;
