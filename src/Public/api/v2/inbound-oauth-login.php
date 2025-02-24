@@ -72,7 +72,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
     foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_config)
     {
         // cache jwks for INSTANCE_CREDENTIAL_OPENID_CACHE_TIME
-        $jwk_cache_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "jwk-cache-" . $openid_config["unique_name"] . ".json";
+        $jwk_cache_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/jwk-cache-" . $openid_config["unique_name"] . ".json";
         $jwk_cache = null;
         $refresh_jwk = false;
         if(file_exists($jwk_cache_path))

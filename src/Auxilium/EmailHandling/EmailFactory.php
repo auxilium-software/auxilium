@@ -177,9 +177,9 @@ class EmailFactory extends RFC822ObjectFactory
         {
             $msft_access_token = null;
 
-            if(file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json"))
+            if(file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/msft-access-token-primary.json"))
             {
-                $msft_access_token_json = file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json");
+                $msft_access_token_json = file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/msft-access-token-primary.json");
                 $msft_access_token = null;
                 if($msft_access_token_json === FALSE)
                 {
@@ -232,7 +232,7 @@ class EmailFactory extends RFC822ObjectFactory
                     $parsed = json_decode($result, true);
                     $parsed["expires_at"] = time() + $parsed["expires_in"];
                     $msft_access_token_json = json_encode($parsed, JSON_PRETTY_PRINT) . "\n";
-                    $bytes_written = file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "msft-access-token-primary.json", $msft_access_token_json);
+                    $bytes_written = file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/msft-access-token-primary.json", $msft_access_token_json);
                     if($bytes_written === FALSE)
                     {
                         // Throw an error maybe?

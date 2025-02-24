@@ -10,7 +10,7 @@ $c_time = time();
 $job_names = [];
 $total_jobs = 0;
 
-$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "Jobs");
+$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs");
 foreach($jobs as &$job_name)
 {
     if(!in_array($job_name, [".", "..", "done", "failed"]))

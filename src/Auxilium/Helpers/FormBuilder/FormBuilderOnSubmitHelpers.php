@@ -4,7 +4,9 @@ namespace Auxilium\Helpers\FormBuilder;
 
 use Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\GraphDatabaseConnection;
+use Auxilium\SessionHandling\Session;
 
 class FormBuilderOnSubmitHelpers
 {
@@ -37,7 +39,7 @@ class FormBuilderOnSubmitHelpers
             }
 
             // Resolve internal variable-referenced targets (target starts with "$")
-            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars);
+            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars, ['target']);
 
             // Build the query to link the node
             $query = "LINK \$property TO \$target";
@@ -60,14 +62,16 @@ class FormBuilderOnSubmitHelpers
             $fvars = [
                 // Evaluate the property and target from internal variables
                 "permissions" => implode(separator: ',', array: $action['permissions']),
-                "target" => $action["target"]
+                "target" => $action["target"],
+                "to" => $action["to"],
             ];
 
             // Resolve target if it references an internal variable
-            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars);
+            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars, ['target', 'to']);
 
-            $query = "GRANT " . $fvars['permissions'] . ' ON ' . $fvars["target"];
-            GraphDatabaseConnection::query($as_node, $query, $fvars);
+            $query = "GRANT " . $fvars['permissions'] . ' ON ' . $fvars["target"] . ' ON ' . $fvars["to"];
+
+            // GraphDatabaseConnection::query($as_node, $query, $fvars);
         }
     }
 
@@ -94,7 +98,7 @@ class FormBuilderOnSubmitHelpers
             }
 
             // Resolve target if it references an internal variable
-            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars);
+            FormBuilderHelpers::ResolveInternalVariables($fvars, $internal_vars, ['target']);
 
             // Build the query to link the property to the target
             $query = "LINK \$property TO \$target";
@@ -114,7 +118,14 @@ class FormBuilderOnSubmitHelpers
         // Set a variable in the internal_vars array
         if(isset($action["output_variable"]))
         {
-            $internal_vars["output_var_" . $action["output_variable"]] = isset($action["eval"]) ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars) : (isset($action["value"]) ? AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars) : null);
+            $internal_vars["output_var_" . $action["output_variable"]]
+                = isset($action["eval"])
+                ? AuxiliumScript::evaluate_expression($action["eval"], $internal_vars)
+                : (
+                    isset($action["value"])
+                    ? AuxiliumScript::evaluate_variable_path($action["value"], $internal_vars)
+                    : null
+                );
         }
     }
 

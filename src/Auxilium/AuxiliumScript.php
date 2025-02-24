@@ -9,11 +9,11 @@ class AuxiliumScript
     public static function evaluate_expression(string $string, array $vars)
     {
         $string = trim($string);
-        if(substr($string, 0, 1) === "\$")
+        if(str_starts_with($string, "\$"))
         {
             return AuxiliumScript::evaluate_variable_path($string, $vars);
         }
-        elseif(substr($string, 0, 1) === "\"")
+        elseif(str_starts_with($string, "\""))
         {
             $id = 1;
             $output = "";
@@ -65,7 +65,7 @@ class AuxiliumScript
                 {
                     if($bl == 1)
                     {
-                        array_push($args, $arg);
+                        $args[] = $arg;
                         $arg = "";
                     }
                     else
@@ -79,7 +79,7 @@ class AuxiliumScript
                 }
                 $id++;
             }
-            array_push($args, $arg);
+            $args[] = $arg;
             switch(strtolower($fn))
             {
                 case "true":
@@ -125,7 +125,7 @@ class AuxiliumScript
                     $evald_args = [];
                     for($i = 0; $i < count($args); $i++)
                     {
-                        array_push($evald_args, AuxiliumScript::evaluate_expression($args[$i], $vars));
+                        $evald_args[] = AuxiliumScript::evaluate_expression($args[$i], $vars);
                     }
                     return implode("", $evald_args);
                 default:
@@ -136,7 +136,7 @@ class AuxiliumScript
 
     public static function evaluate_variable_path(string $string, array $vars)
     {
-        if(substr($string, 0, 1) === "\$")
+        if(str_starts_with($string, "\$"))
         {
             $pth = explode("/", $string);
             $st = substr(array_shift($pth), 1);
@@ -146,7 +146,7 @@ class AuxiliumScript
                 {
                     array_unshift($pth, "{" . $vars[$st]->getId() . "}");
                     $fcn = "@view";
-                    if(substr(end($pth), 0, 1) === "@")
+                    if(str_starts_with(end($pth), "@"))
                     {
                         $fcn = array_pop($pth);
                     }
@@ -187,7 +187,7 @@ class AuxiliumScript
                 return null;
             }
         }
-        elseif(substr($string, 0, 2) === "\\\$")
+        elseif(str_starts_with($string, "\\\$"))
         {
             $string = substr($string, 1);
         }

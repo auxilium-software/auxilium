@@ -11,10 +11,10 @@ $at->requireLogin();
 
 
 $message_uuid = \Auxilium\Utilities\EncodingTools::GenerateNewUUID(); // We don't need to assign this to a table, this is just for convenience to get a unique file handle.
-$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $message_uuid . ".json";
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/"))
+$message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $message_uuid . ".json";
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "MessageDrafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true);
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true);
 }
 $new_message_template = [
     "body" => "",

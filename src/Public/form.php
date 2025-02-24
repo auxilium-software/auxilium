@@ -292,6 +292,7 @@ if(isset($_POST["submit_button"]))
         }
         if(!$skip)
         {
+            $fvars = [];
             switch($action["type"])
             {
                 case "NEW_NODE":

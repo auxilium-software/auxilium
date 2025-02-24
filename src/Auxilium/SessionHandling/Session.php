@@ -9,8 +9,8 @@ use Exception;
 
 class Session
 {
-    private static $current = null;
-    private $currentUser;
+    private static ?Session $current = null;
+    private ?User $currentUser;
 
     private function __construct()
     {
@@ -55,7 +55,7 @@ class Session
         return self::$current;
     }
 
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->currentUser;
     }

@@ -23,24 +23,30 @@ class FormBuilderHelpers
         }
     }
 
-    public static function ResolveInternalVariables(&$fvars, &$internal_vars): void
+    public static function ResolveInternalVariables(&$fvars, &$internal_vars, array $targets): void
     {
-        if(str_starts_with($fvars["target"], "\$"))
+        foreach($targets as $target)
         {
-            foreach($internal_vars as $key => &$prop)
+            //if(in_array(needle: $target, haystack: $fvars, strict: false))
+            //{
+            if(str_starts_with($fvars[$target], "\$"))
             {
-                if(str_starts_with($fvars["target"], "\$" . $key))
+                foreach($internal_vars as $key => &$prop)
                 {
-                    if(is_a($prop, DeegraphNode::class))
+                    if(str_starts_with($fvars[$target], "\$" . $key))
                     {
-                        $fvars["target"] = "{" . $prop->getId() . "}" . substr($fvars["target"], strlen($key) + 1);
-                    }
-                    else
-                    {
-                        $fvars["target"] = $prop . substr($fvars["target"], strlen($key) + 1);
+                        if(is_a($prop, DeegraphNode::class))
+                        {
+                            $fvars[$target] = "{" . $prop->getId() . "}" . substr($fvars[$target], strlen($key) + 1);
+                        }
+                        else
+                        {
+                            $fvars[$target] = $prop . substr($fvars[$target], strlen($key) + 1);
+                        }
                     }
                 }
             }
+            //}
         }
     }
 
