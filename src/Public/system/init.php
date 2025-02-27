@@ -10,11 +10,26 @@ use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Wrappers\QueryParamWrapper;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
+use JetBrains\PhpStorm\NoReturn;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
 
 $setup_key = null;
+
+
+#[NoReturn] function renderCriticalError(string $errorMessage): void
+{
+    unlink(filename: LOCAL_STORAGE_DIRECTORY . "/setup.lock");
+    $errorFile = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.error", "w") or die("Unable to write error file!");
+    fwrite($errorFile, $errorMessage);
+    fclose($errorFile);
+    PageBuilder2::Render(
+        template : "Pages/system/init-failure.html.twig",
+        variables: []
+    );
+}
+
 
 if(isset($_GET["setup_key"]))
 {
@@ -44,6 +59,15 @@ if(isset($_GET["setup_key"]))
     }
 }
 
+if($setup_key == null)
+{
+    $setup_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '=');
+    $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "w") or die("Unable to write keyfile!");
+    fwrite($key_file, $setup_key);
+    fclose($key_file);
+}
+
+
 $mariaDBConnection = new MariaDBServerConnection();
 
 
@@ -69,12 +93,15 @@ if(file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.lock"))
 }
 else
 {
-
     $lock_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.lock", "w") or die("Unable to write lockfile!");
     fwrite($lock_file, date("c", time()));
     fclose($lock_file);
 
-    $mariaDBConnection->InitialDatabaseSetup();
+    $success = $mariaDBConnection->InitialDatabaseSetup();
+    if(!$success)
+    {
+        renderCriticalError(errorMessage: "Something went wrong with the MariaDB setup... is it online?");
+    }
 
     $initialQueries = [
         "GRANT READ,WRITE,DELETE WHERE @creator === /", // grant CRUD permissions where the creator is the current node
@@ -87,17 +114,18 @@ else
         "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE",  //
     ];
     foreach($initialQueries as $query)
-        GraphDatabaseConnection::query(User::get_system_node(), $query);
-
+    {
+        try
+        {
+            GraphDatabaseConnection::query(User::get_system_node(), $query);
+        }
+        catch(Exception $e)
+        {
+            renderCriticalError(errorMessage: "Deegraph is not reachable... is it online?");
+        }
+    }
 }
 
-if($setup_key == null)
-{
-    $setup_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '=');
-    $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "w") or die("Unable to write keyfile!");
-    fwrite($key_file, $setup_key);
-    fclose($key_file);
-}
 
 
 PageBuilder2::AddVariable(
