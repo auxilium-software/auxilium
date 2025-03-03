@@ -112,10 +112,10 @@ else
         // case permissions
         "GRANT READ,WRITE ON /cases/# ON /cases/#/*",   // grant read and write permissions on the user's cases
         "GRANT READ,WRITE ON /cases/#/todos/#",         // grant read and write (for deletion) permissions on the to do items on a case
-        "GRANT READ ON /cases/#/workers/#/*",           // grant read permissions for case beneficiaries to see their caseworkers
+        "GRANT READ ON /cases/#/workers/#/name ON /cases/#/workers/#/display_name ON /cases/#/workers/#/preferred_language ON /cases/#/workers/#/contact_email", // grant read permissions for case beneficiaries to see their caseworkers
         // misc permissions
         "GRANT READ ON /messages/#",                    //
-        "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE",  //
+        "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE", //
     ];
     foreach($initialQueries as $query)
     {
