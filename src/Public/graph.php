@@ -64,15 +64,15 @@ foreach($uri_components as &$uri_component)
 {
     if($sec_toggle)
     {
-        array_push($path_secondary, $uri_component);
+        $path_secondary[] = $uri_component;
     }
     else
     {
-        if(substr($uri_component, 0, 1) === "@")
+        if(str_starts_with($uri_component, "@"))
         {
             if(mb_strtolower($uri_component) == "@creator")
             {
-                array_push($path_primary, $uri_component);
+                $path_primary[] = $uri_component;
             }
             else
             {
@@ -81,7 +81,7 @@ foreach($uri_components as &$uri_component)
         }
         else
         {
-            array_push($path_primary, $uri_component);
+            $path_primary[] = $uri_component;
         }
     }
 }

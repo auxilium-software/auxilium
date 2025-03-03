@@ -36,4 +36,5 @@ class QueryParamWrapper
         }
         return $default;
     }
+
 }
