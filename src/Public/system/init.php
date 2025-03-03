@@ -104,12 +104,15 @@ else
     }
 
     $initialQueries = [
+        // system permissions
         "GRANT READ,WRITE,DELETE WHERE @creator === /", // grant CRUD permissions where the creator is the current node
         "GRANT READ,WRITE,DELETE,ACT WHERE . === /",    // grant all permissions where the current node is the root node
         "GRANT READ ON /*",                             //
         "GRANT READ ON {" . INSTANCE_UUID . "}",        //
-        "GRANT READ,WRITE ON /cases/# ON /cases/#/*",   //
-        "GRANT READ,WRITE ON /cases/todos/# ON /cases/todos/#/*",   //
+        // case permissions
+        "GRANT READ,WRITE ON /cases/# ON /cases/#/*",   // grant read and write permissions on the user's cases
+        "GRANT READ,WRITE ON /cases/#/todos/#",         // grant read and write (for deletion) permissions on the to do items on a case
+        // misc permissions
         "GRANT READ ON /messages/#",                    //
         "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE",  //
     ];
