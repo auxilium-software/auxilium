@@ -1,28 +1,28 @@
 
 # Dev Files
-src/.idea/
-src/composer.phar
-src/vendor
+Auxilium/.idea/
+Auxilium/composer.phar
+Auxilium/vendor
 
 # Dev (Testing) Files
-src/.phpunit.result.cache
+Auxilium/.phpunit.result.cache
 
 # Dev (Documentation) Files
-src/.phpdoc
-src/.phpdoc-export
-src/phpunit.phar
-src/phpDocumentor.phar
+Auxilium/.phpdoc
+Auxilium/.phpdoc-export
+Auxilium/phpunit.phar
+Auxilium/phpDocumentor.phar
 
 # Dev (Misc) Files
 *.jar
 nohup.out
 
 # Config Files
-src/Configuration/Configuration/Secrets.yaml
-src/Configuration/Configuration/Credentials.php
-src/Configuration/Configuration/Environment.php
+Auxilium/Configuration/Configuration/Secrets.yaml
+Auxilium/Configuration/Configuration/Credentials.php
+Auxilium/Configuration/Configuration/Environment.php
 
 # Local Storage Files
-!src/LocalStorage/.gitkeep
-!src/LocalStorage/**/.gitkeep
-src/LocalStorage
+!Auxilium/LocalStorage/.gitkeep
+!Auxilium/LocalStorage/**/.gitkeep
+Auxilium/LocalStorage
