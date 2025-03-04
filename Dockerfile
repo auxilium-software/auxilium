@@ -27,7 +27,7 @@ COPY config/apache2 /etc/apache2
 COPY config/php.ini /etc/php/php.ini.tmp
 RUN export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`; mv /etc/php/php.ini.tmp /etc/php/$PHP_VER/apache2/php.ini;
 
-COPY src/composer.json /var/www/composer.json
+COPY Auxilium/composer.json /var/www/composer.json
 RUN chown www-data:www-data /var/www -R
 
 WORKDIR /var/www
@@ -36,7 +36,7 @@ USER www-data
 RUN composer config allow-plugins.endroid/installer true
 RUN composer install
 
-COPY src /var/www
+COPY Auxilium /var/www
 
 COPY templates/Environment.php /var/www/Configuration/Configuration/Environment.php
 
