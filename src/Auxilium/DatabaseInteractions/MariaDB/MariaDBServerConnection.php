@@ -6,7 +6,6 @@ use Aura\SqlQuery\Common\DeleteInterface;
 use Aura\SqlQuery\Common\InsertInterface;
 use Aura\SqlQuery\Common\SelectInterface;
 use PDO;
-use PDOStatement;
 
 class MariaDBServerConnection
 {
@@ -62,8 +61,10 @@ class MariaDBServerConnection
     {
         $filePath = __DIR__ . "/../../../Public/system/first-setup/schema.sql";
         $schema = file_get_contents($filePath);
+
         $result = $this->pdo->exec(statement: $schema);
-        if($result === 0) return true;
+        if($result === 0)
+            return true;
         return false;
     }
 }

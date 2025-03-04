@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Provides custom Twig filters for handling various application-specific functionalities.
+ */
+
 namespace Auxilium\TwigHandling\Extensions;
 
 use Auxilium\Enumerators\CookieKey;
@@ -9,6 +13,9 @@ use Auxilium\Utilities\EncodingTools;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
+/**
+ * Provides a set of custom Twig filters for use in templates.
+ */
 class CommonFilters extends AbstractExtension
 {
     public function getFilters()
@@ -37,6 +44,9 @@ class CommonFilters extends AbstractExtension
 
     public function JSONDecode($value): array { return json_decode($value, true); }
 
+    /**
+     *
+     */
     public function uiprop($string): string
     {
         return MicroTemplate::data_type_to_human_name($string, CookieHandling::GetCookieValue(CookieKey::LANGUAGE));
@@ -91,6 +101,13 @@ class CommonFilters extends AbstractExtension
         return EncodingTools::Base64DecodeURLSafe($string);
     }
 
+    /**
+     * Converts a numeric string representing a file size into a human-readable format.
+     *
+     * @param string $string The input numeric string to be converted.
+     *
+     * @return string The formatted file size with appropriate units (B, KiB, MiB, GiB, or TiB).
+     */
     public function human_filesize($string): string
     {
         $size = intval($string);

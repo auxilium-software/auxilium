@@ -44,14 +44,6 @@ class DeegraphNode
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * Fetches a Node from the database by its path.
      * @param string $path The path to the Node.
@@ -62,60 +54,19 @@ class DeegraphNode
         return GraphDatabaseConnection::node_from_path($path);
     }
 
-
-    /**
-     * Fetches a Node by its ID, using a static cache for optimisation.
-     * @param string|null $id The ID of the Node.
-     * @return DeegraphNode|null The Node if found or created, null otherwise.
-     * @throws InvalidUUIDFormatException
-     */
-    public static function from_id(string $id = null): ?DeegraphNode
-    {
-        if($id == null)
-        {
-            return null;
-        }
-
-        if(isset(self::$cached_nodes[$id]))
-        {
-            if(self::$cached_nodes[$id] instanceof DeegraphNode)
-            {
-                return self::$cached_nodes[$id]; // Skip creating the node representation - we've already loaded it!
-            }
-        }
-
-        // Do stuff
-
-        self::$cached_nodes[$id] = new DeegraphNode($id);
-
-        if(isset(self::$cached_nodes[$id]))
-        {
-            return self::$cached_nodes[$id];
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-
-
-
-
-
-
-
-
-
     /**
      * Converts the Node to a string by fetching its data.
      * If the data is a string, it returns that string; otherwise, it returns an empty string.
      * @return string
      */
-    public function __toString() {
-        if (is_string($this->getData())) {
+    public function __toString()
+    {
+        if(is_string($this->getData()))
+        {
             return $this->getData();
-        } else {
+        }
+        else
+        {
             return "";
         }
     }
@@ -172,15 +123,6 @@ class DeegraphNode
         return $this->RawContent;
     }
 
-
-    /**
-     * Returns the UUID of the Node as a string.
-     * @return string Node UUID.
-     */
-    public function getId(): string
-    {
-        return $this->NodeID->GetPlainUUID();
-    }
     public function getUuid(): string
     {
         return $this->NodeID->GetPlainUUID();
@@ -287,6 +229,15 @@ class DeegraphNode
     }
 
     /**
+     * Returns the UUID of the Node as a string.
+     * @return string Node UUID.
+     */
+    public function getId(): string
+    {
+        return $this->NodeID->GetPlainUUID();
+    }
+
+    /**
      * Fetches the permissions of the Node from the database.
      * @param User|null $actor The user performing the operation.
      * @return array|null Permissions data or null if not fetched.
@@ -366,12 +317,47 @@ class DeegraphNode
     }
 
     /**
+     * Fetches a Node by its ID, using a static cache for optimisation.
+     * @param string|null $id The ID of the Node.
+     * @return DeegraphNode|null The Node if found or created, null otherwise.
+     * @throws InvalidUUIDFormatException
+     */
+    public static function from_id(string $id = null): ?DeegraphNode
+    {
+        if($id == null)
+        {
+            return null;
+        }
+
+        if(isset(self::$cached_nodes[$id]))
+        {
+            if(self::$cached_nodes[$id] instanceof DeegraphNode)
+            {
+                return self::$cached_nodes[$id]; // Skip creating the node representation - we've already loaded it!
+            }
+        }
+
+        // Do stuff
+
+        self::$cached_nodes[$id] = new DeegraphNode($id);
+
+        if(isset(self::$cached_nodes[$id]))
+        {
+            return self::$cached_nodes[$id];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
      * Retrieves a property of the Node by its key.
      * @param string $property Property name to fetch.
      * @param User|null $actor The user performing the operation.
      * @return mixed|null Property value or null if not found.
      */
-    public function getProperty(string $property, User $actor = null)
+    public function getProperty(string $property, User $actor = null): mixed
     {
         if($actor == null)
         {

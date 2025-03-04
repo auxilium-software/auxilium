@@ -133,7 +133,11 @@ class GraphDatabaseConnection
 
         foreach($lookup_table as $key => &$var)
         {
-            $query = str_replace($key, $var, $query);
+            $query = str_replace(
+                search : $key,
+                replace: $var,
+                subject: $query
+            );
         }
 
         //echo $query;

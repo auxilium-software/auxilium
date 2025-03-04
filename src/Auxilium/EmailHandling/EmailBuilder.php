@@ -2,21 +2,21 @@
 
 namespace Auxilium\EmailHandling;
 
-use Auxilium\Exception;
 use Auxilium\MicroTemplate;
 use Auxilium\Utilities\EncodingTools;
+use Exception;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 
 class EmailBuilder
 {
-    private $emailData = null;
-    private $recipients = [];
+    private $EmailData = null;
+    private $Recipients = [];
 
     public function __construct()
     {
-        $this->emailData = [
+        $this->EmailData = [
             "sender" => null,
             "template" => "generic-case-email",
             "template_properties" => [],
@@ -24,25 +24,25 @@ class EmailBuilder
         ];
     }
 
-    public function setSubject($subject)
+    public function setSubject($subject): EmailBuilder
     {
-        $this->emailData["subject"] = $subject;
+        $this->EmailData["subject"] = $subject;
         return $this;
     }
 
-    public function setTemplate($template)
+    public function setTemplate($template): EmailBuilder
     {
-        $this->emailData["template"] = $template;
+        $this->EmailData["template"] = $template;
         return $this;
     }
 
-    public function setTemplateProperty($key, $value)
+    public function setTemplateProperty($key, $value): EmailBuilder
     {
-        $this->emailData["template_properties"][$key] = $value;
+        $this->EmailData["template_properties"][$key] = $value;
         return $this;
     }
 
-    public function addRecipient($recipient, $name = null)
+    public function addRecipient($recipient, $name = null): EmailBuilder
     {
         if(filter_var($recipient, FILTER_VALIDATE_EMAIL))
         {
@@ -51,7 +51,7 @@ class EmailBuilder
             {
                 $recipientString = "\"" . mb_ereg_replace("\"", "\\\"", $name) . "\" <" . $recipientString . ">";
             }
-            array_push($this->recipients, $recipientString);
+            array_push($this->Recipients, $recipientString);
             return $this;
         }
         else
@@ -60,9 +60,9 @@ class EmailBuilder
         }
     }
 
-    public function build()
+    public function build(): string
     {
-        $twigLoader = new FilesystemLoader(WEB_ROOT_DIRECTORY . "/Templates");
+        $twigLoader = new FilesystemLoader(__DIR__ . "/../../Templates");
         $twig = new Environment($twigLoader, [
                 "cache" => false,
             ]
@@ -70,7 +70,7 @@ class EmailBuilder
 
         //$this->emailData["template_properties"]["selected_lang"] = "en";
 
-        $templatePath = "Emails/" . $this->emailData["template"] . ".html";
+        $templatePath = "Emails/" . $this->EmailData["template"] . ".html.twig";
         $content = null;
         $fixedTemplateProperties = [
             "INSTANCE_BRANDING_LOGO" => INSTANCE_BRANDING_LOGO,
@@ -91,7 +91,7 @@ class EmailBuilder
 
             "INSTANCE_UUID" => INSTANCE_UUID,
         ];
-        $fullTemplateProperties = array_merge($fixedTemplateProperties, $this->emailData["template_properties"]);
+        $fullTemplateProperties = array_merge($fixedTemplateProperties, $this->EmailData["template_properties"]);
 
         $filter = new TwigFilter("uiprop", function ($string)
         {
@@ -119,7 +119,7 @@ class EmailBuilder
         $twig->addFilter($filter);
         $content = $twig->render($templatePath, $fullTemplateProperties);
 
-        $this->emailData["body"] = $content;
+        $this->EmailData["body"] = $content;
 
         $build_content = "MIME-Version: 1.0\r\n";
         $boundary = EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(48));
@@ -128,7 +128,7 @@ class EmailBuilder
 
         $build_content .= "To: ";
         $first = true;
-        foreach($this->recipients as &$recipient)
+        foreach($this->Recipients as &$recipient)
         {
             if($first)
             {
@@ -142,14 +142,14 @@ class EmailBuilder
         }
         $build_content .= "\r\n";
 
-        $build_content .= "Subject: " . $this->emailData["subject"] . "\r\n";
+        $build_content .= "Subject: " . $this->EmailData["subject"] . "\r\n";
         $build_content .= "Content-Type: multipart/alternative; boundary=$boundary\r\n";
         $build_content .= "\r\n";
 
         $contents = [
             [
                 "content_type" => "text/html",
-                "content" => $this->emailData["body"]
+                "content" => $this->EmailData["body"]
             ]
         ];
 

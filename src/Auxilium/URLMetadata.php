@@ -16,7 +16,19 @@ class URLMetadata
     private $jwtValidated = false;
     private $jwtMatchedUser = false;
 
-    public static function from_jwt(string $jwt)
+    /**
+     * Parses a JWT (JSON Web Token) and extracts its metadata if the token is valid.
+     *
+     * This method attempts to decode a JWT, validate its structure and headers,
+     * and ensure its signature is authenticated using the application's secret key.
+     * If the JWT is valid and contains user and metadata information, these are
+     * extracted and populated into a URLMetadata object.
+     *
+     * @param string $jwt The JSON Web Token to process and validate.
+     * @return URLMetadata A URLMetadata object that contains the extracted
+     *                      metadata and validation status from the given JWT.
+     */
+    public static function from_jwt(string $jwt): URLMetadata
     {
         $mdo = new URLMetadata();
 
@@ -36,14 +48,8 @@ class URLMetadata
 
             $valid = true;
 
-            if($header == false)
-            {
-                $valid = false;
-            }
-            if($payload == false)
-            {
-                $valid = false;
-            }
+            if(!$header) $valid = false;
+            if(!$payload) $valid = false;
 
             $matchHeader = [
                 "alg" => "HS256",
@@ -60,7 +66,12 @@ class URLMetadata
 
             if($valid)
             {
-                $valid = hash_hmac("sha256", $components[0] . "." . $components[1], base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true) == EncodingTools::Base64DecodeURLSafe($components[2]);
+                $valid = hash_hmac(
+                        algo  : "sha256",
+                        data  : $components[0] . "." . $components[1],
+                        key   : base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET),
+                        binary: true,
+                    ) == EncodingTools::Base64DecodeURLSafe($components[2]);
             }
 
             if($valid)
@@ -89,28 +100,42 @@ class URLMetadata
         return $mdo;
     }
 
-    public static function crush_uuid(string $input)
+    /**
+     * Converts a UUID string into a binary representation.
+     *
+     * @param string $input The UUID string to be converted, expected in standard hexadecimal format with dashes.
+     *
+     * @return false|string Returns the binary string representation of the UUID on success, or false on failure.
+     */
+    public static function crush_uuid(string $input): false|string
     {
         return hex2bin(str_replace("-", "", $input));
     }
 
-    public static function expand_crushed_uuid(string $input)
+    /**
+     * Expands a crushed UUID string into its full, hyphenated form.
+     *
+     * @param string $input The crushed UUID input as a binary string.
+     *
+     * @return string The expanded UUID in the standard format.
+     */
+    public static function expand_crushed_uuid(string $input): string
     {
         $uuid_bin = bin2hex($input);
         return substr($uuid_bin, 0, 8) . "-" . substr($uuid_bin, 8, 4) . "-" . substr($uuid_bin, 12, 4) . "-" . substr($uuid_bin, 16, 4) . "-" . substr($uuid_bin, 20, 32);
     }
 
-    public function isValid()
+    public function isValid(): bool
     {
         return $this->jwtValidated;
     }
 
-    public function isSecureMatch()
+    public function isSecureMatch(): bool
     {
         return $this->jwtValidated && $this->jwtMatchedUser;
     }
 
-    public function setPath(string $path, DeegraphNode $node = null)
+    public function setPath(string $path, DeegraphNode $node = null): static
     {
         $this->metadata["rp"] = rtrim(ltrim($path, "/"), "/"); // Relative Path
         if($node == null)
@@ -126,17 +151,17 @@ class URLMetadata
         return $this;
     }
 
-    public static function standard_metadata_checksum(string $input)
+    public static function standard_metadata_checksum(string $input): string
     {
         return substr(hash("sha256", $input, true), 0, 8);
     }
 
-    public function checkPath(string $path)
+    public function checkPath(string $path): bool
     {
         return (isset($this->metadata["rc"])) ? (URLMetadata::standard_metadata_checksum($path) == $this->metadata["rc"]) : false;
     }
 
-    public function checkNode(?DeegraphNode $node)
+    public function checkNode(?DeegraphNode $node): bool
     {
         if($node == null)
         {
@@ -160,11 +185,11 @@ class URLMetadata
         {
             $this->metadata["rts"] = [];
         }
-        array_push($this->metadata["rts"], $url);
+        $this->metadata["rts"][] = $url;
         return $this;
     }
 
-    public function pushCurrentToReturnStack()
+    public function pushCurrentToReturnStack(): static
     {
         $url = $_SERVER["REQUEST_URI"];
         $pos = strpos($url, "?");
@@ -173,7 +198,7 @@ class URLMetadata
         {
             $this->metadata["rts"] = [];
         }
-        array_push($this->metadata["rts"], $url);
+        $this->metadata["rts"][] = $url;
         return $this;
     }
 
