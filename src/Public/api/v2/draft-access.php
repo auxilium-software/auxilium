@@ -90,8 +90,7 @@ elseif($action == "send")
     $boundary = EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(48));
 
     $message_parties = [];
-
-    array_push($message_parties, Session::get_current()->getUser());
+    $message_parties[] = Session::get_current()->getUser();
     $from_user_name = Session::get_current()->getUser()->getDisplayName();
     if($from_user_name != null)
     {
@@ -126,7 +125,7 @@ elseif($action == "send")
             }
             else
             {
-                array_push($message_parties, $recipient);
+                $message_parties[] = $recipient;
             }
             $to_user_name = $recipient->getDisplayName();
             if($to_user_name != null)
@@ -228,11 +227,11 @@ elseif($action == "send")
                     {
                         $message_party->getProperty("messages")->addProperty("#", $message_node);
                     }
-                    array_push($notified_parties, $message_party->getId());
+                    $notified_parties[] = $message_party->getId();
                 }
                 catch(Exception $e)
                 {
-                    array_push($attach_failures, $message_party->getId());
+                    $attach_failures[] = $message_party->getId();
                 }
             }
         }

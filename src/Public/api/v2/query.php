@@ -1,12 +1,14 @@
 <?php
 
+use Auxilium\APITools;
 use Auxilium\Exceptions\DeegraphException;
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = Auxilium\APITools::get_instance();
+$at = APITools::get_instance();
 $at->requireLogin();
 
 $queries = [];
@@ -34,7 +36,7 @@ if(isset($_POST["query"]))
 {
     if(strlen($_POST["query"]) > 0)
     {
-        array_push($queries, trim($_POST["query"]));
+        $queries[] = trim($_POST["query"]);
     }
 }
 
@@ -67,7 +69,7 @@ try
     {
         for($i = 0; $i < count($queries); $i++)
         {
-            $results[$i] = Auxilium\GraphDatabaseConnection::query(Session::get_current()->getUser(), $queries[$i]);
+            $results[$i] = GraphDatabaseConnection::query(Session::get_current()->getUser(), $queries[$i]);
         }
         $at->setVariable("results", $results);
         $at->setVariable("queries", $queries);
@@ -75,7 +77,7 @@ try
     }
     elseif(count($queries) > 0)
     {
-        $results[0] = Auxilium\GraphDatabaseConnection::query(Session::get_current()->getUser(), $queries[0]);
+        $results[0] = GraphDatabaseConnection::query(Session::get_current()->getUser(), $queries[0]);
         if($paginate)
         {
             if(array_key_exists("@rows", $results[0]))

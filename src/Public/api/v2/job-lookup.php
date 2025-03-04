@@ -47,12 +47,12 @@ $at->setVariable("status", "PENDING");
 if(!file_exists($job_path))
 {
     $at->setVariable("status", "DONE");
-    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/done/" . $job_id . ".json";
+    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/" . $job_id . ".json";
 }
 if(!file_exists($job_path))
 {
     $at->setVariable("status", "FAILED");
-    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/failed/" . $job_id . ".json";
+    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_id . ".json";
 }
 if(!file_exists($job_path))
 {

@@ -24,6 +24,7 @@
             <a href="/system" class="navigational-link">{{ "system_settings" | uitxt | ndsentence }}</a><br />
             <a href="/all-cases" class="navigational-link">{{ "all_cases" | uitxt | ndsentence }}</a><br />
         {% endif %}
+        <a href="/message-centre" class="navigational-link">{{ "message center" | uitxt | ndsentence }}</a><br />
         <a href="/chats/new-message" class="navigational-link">{{ "send_a_message" | uitxt | ndsentence }}</a><br />
         
         <div class="large-spacer"></div>
@@ -72,7 +73,17 @@
         <div class="left-preferential-box">
             <div class="marked-section">
                 {% set latest_comms = current_user.getLatestCommunications(3) %}
-                <h2 class="heading-of-hideable-content">{{ "my_messages" | uihdg }} <a href="/chats/new-message" class="inline-icon add-comment-icon" title="{{ "new_message" | uitxt | ndsentence }}"></a> <a href="javascript:toggle_hidden_box('{{ ltid }}');"><span id="hidden_box_{{ ltid }}_toggle_button" class="inline-icon-low-margin expand-more-icon" style="display: none;"></span></a></h2>
+                <h2 class="heading-of-hideable-content">
+                    {{ "my_messages" | uihdg }}
+                    <a href="/chats/new-message" class="inline-icon add-comment-icon" title="{{ "new_message" | uitxt | ndsentence }}">
+
+                    </a>
+                    <a href="javascript:toggle_hidden_box('{{ ltid }}');">
+                        <span id="hidden_box_{{ ltid }}_toggle_button" class="inline-icon-low-margin expand-more-icon" style="display: none;">
+
+                        </span>
+                    </a>
+                </h2>
                 <div id="hidden_box_{{ ltid }}" class="logical-box">
                     {% if progressive_load %}
                         <div class="logical-box" id="messages_container">

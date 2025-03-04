@@ -4,6 +4,7 @@ namespace Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\SessionHandling\Session;
+use DateTime;
 
 class AuxiliumLFSObject
 {
@@ -103,12 +104,8 @@ class AuxiliumLFSObject
 
     public function getFilePath(): string
     {
-        return LOCAL_STORAGE_DIRECTORY . "/LFS/" . $this->getId();
-
         if(str_starts_with(haystack: $this->getMimeType(), needle: "message"))
-        {
             return LOCAL_STORAGE_DIRECTORY . "/Messages/" . $this->getId();
-        }
         return LOCAL_STORAGE_DIRECTORY . "/LFS/" . $this->getId();
     }
 

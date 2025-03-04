@@ -2,6 +2,7 @@
 
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\Utilities\EncodingTools;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
@@ -23,7 +24,7 @@ else
     http_response_code(400);
     exit();
 }
-$ret_url = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(explode("?", $_SERVER["REQUEST_URI"])[0]);
+$ret_url = EncodingTools::Base64EncodeURLSafe(explode("?", $_SERVER["REQUEST_URI"])[0]);
 $pb->setVariable("encoded_return_url", $ret_url);
 
 $message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $message_uuid . ".json";

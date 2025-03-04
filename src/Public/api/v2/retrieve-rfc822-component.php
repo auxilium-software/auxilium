@@ -37,7 +37,8 @@ if(count($uri_components) > 4)
 
 if($mime_type == null)
 {
-    $mime_type = "application/octet-stream";
+    // $mime_type = "application/octet-stream";
+    $mime_type = "message/rfc822";
 }
 
 $desired_components = explode(",", strtolower($get_params));

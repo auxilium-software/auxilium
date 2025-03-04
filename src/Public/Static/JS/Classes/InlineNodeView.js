@@ -628,8 +628,8 @@ class InlineNodeView
 
                     response = JSON.parse(http.responseText);
 
-                    console.log(response.from);
-                    if (response.from === "auxiliuminbox+70be7ef8-2aa6-43f7-93b1-3108d347ee14@localhost")
+                    const uid = "2ed3d7cf-460e-47b8-bebb-2157924ccf7f";
+                    if (response.from.startsWith("auxiliuminbox+" + uid))
                         messageBox.classList.add("sent");
                     else
                         messageBox.classList.add("received");

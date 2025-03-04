@@ -30,13 +30,13 @@ if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/"))
 {
     mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/", 0700, true);
 }
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/done/"))
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/done/", 0700, true);
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/", 0700, true);
 }
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/failed/"))
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/failed/", 0700, true);
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/", 0700, true);
 }
 
 if($run_diff > REFRESH_RATE)
@@ -119,7 +119,7 @@ foreach($jobs as &$job_name)
         if($success)
         {
             unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name);
-            file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/done/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+            file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
         }
         else
         {
@@ -130,7 +130,7 @@ foreach($jobs as &$job_name)
             else
             {
                 unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name);
-                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
             }
         }
         if((hrtime(true) - $time_pre) > EXEC_TIME_LIMIT)
