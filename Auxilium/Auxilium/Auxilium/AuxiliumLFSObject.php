@@ -1,10 +1,10 @@
 <?php
 
-namespace Auxilium;
+namespace Auxilium\Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
-use DateTime;
 
 class AuxiliumLFSObject
 {

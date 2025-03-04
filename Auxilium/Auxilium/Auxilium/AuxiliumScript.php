@@ -1,8 +1,9 @@
 <?php
 
-namespace Auxilium;
+namespace Auxilium\Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\GraphDatabaseConnection;
 
 class AuxiliumScript
 {

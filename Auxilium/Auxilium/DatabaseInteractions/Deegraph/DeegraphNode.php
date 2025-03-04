@@ -2,7 +2,7 @@
 
 namespace Auxilium\DatabaseInteractions\Deegraph;
 
-use Auxilium\AuxiliumLFSObject;
+use Auxilium\Auxilium\AuxiliumLFSObject;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DataURL;
 use Auxilium\GraphDatabaseConnection;

@@ -43,7 +43,7 @@ if($mime_type == null)
 
 $desired_components = explode(",", strtolower($get_params));
 
-$lfsobj = new Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
+$lfsobj = new \Auxilium\Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
 
 if(!$lfsobj->canRead())
 {

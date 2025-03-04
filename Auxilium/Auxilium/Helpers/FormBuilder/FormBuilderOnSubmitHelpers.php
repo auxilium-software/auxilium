@@ -2,11 +2,9 @@
 
 namespace Auxilium\Helpers\FormBuilder;
 
-use Auxilium\AuxiliumScript;
+use Auxilium\Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
-use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\GraphDatabaseConnection;
-use Auxilium\SessionHandling\Session;
 
 class FormBuilderOnSubmitHelpers
 {

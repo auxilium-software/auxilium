@@ -1,6 +1,6 @@
 <?php
 
-use Auxilium\AuxiliumScript;
+use Auxilium\Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\Helpers\FormBuilder\FormBuilderHelpers;
 use Auxilium\Helpers\FormBuilder\FormBuilderOnSubmitHelpers;
@@ -188,7 +188,7 @@ foreach(array_keys($page_index) as $page_key)
     {
         $allowed_page_keys[] = $page_key;
     }
-    elseif(Auxilium\AuxiliumScript::evaluate_expression($page_index[$page_key]["if"], $internal_vars))
+    elseif(\Auxilium\Auxilium\AuxiliumScript::evaluate_expression($page_index[$page_key]["if"], $internal_vars))
     {
         $allowed_page_keys[] = $page_key;
     }

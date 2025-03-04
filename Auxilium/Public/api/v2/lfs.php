@@ -46,7 +46,7 @@ if(strtolower($get_params) == "metadata")
     $metadata = true;
 }
 
-$lfsobj = new Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
+$lfsobj = new \Auxilium\Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
 
 if(!$lfsobj->canRead())
 {
