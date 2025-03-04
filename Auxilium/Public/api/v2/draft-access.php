@@ -219,7 +219,13 @@ elseif($action == "send")
                     // Due to caching, we MUST add property using the node returned from creation
                     if($message_party->getProperty("messages") == null)
                     {
-                        $messages_node = GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
+                        $messages_node = GraphDatabaseConnection::new_node(
+                            data      : null,
+                            media_type: null,
+                            schema    : URLHandling::GetURLForSchema(
+                                targetSchemaClassName: CollectionSchema::class
+                            )
+                        );
                         $message_party->addProperty("messages", $messages_node);
                         $messages_node->addProperty("#", $message_node);
                     }
@@ -236,7 +242,12 @@ elseif($action == "send")
             }
         }
 
-        $job_reference = InternetMessageTransport::send(file_get_contents(LOCAL_STORAGE_DIRECTORY . '/Messages/' . $message_node->getId()), "MIME");
+        $job_reference = InternetMessageTransport::send(
+            internet_message: file_get_contents(
+                filename: LOCAL_STORAGE_DIRECTORY . '/Messages/' . $message_node->getId()
+            ),
+            type            : "MIME"
+        );
 
         $at->setVariable("job_reference", $job_reference);
 

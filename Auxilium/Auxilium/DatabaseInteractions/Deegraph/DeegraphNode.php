@@ -263,7 +263,7 @@ class DeegraphNode
         {
             foreach($response["@permissions"] as $value)
             {
-                array_push($outputMap, $value);
+                $outputMap[] = $value;
             }
             $this->CachedPermissions = $outputMap;
             return $this->CachedPermissions;
@@ -303,7 +303,7 @@ class DeegraphNode
                 $arr = [];
                 foreach($value as $refNodeId)
                 {
-                    array_push($arr, DeegraphNode::from_id($refNodeId));
+                    $arr[] = DeegraphNode::from_id($refNodeId);
                 }
                 $outputMap[$key] = $arr;
             }

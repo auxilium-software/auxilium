@@ -2,6 +2,7 @@
 
 use Auxilium\Enumerators\CookieKey;
 use Auxilium\Exceptions\DatabaseConnectionException;
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\TwigHandling\PageBuilder2;
@@ -23,7 +24,7 @@ try
             "is_admin" => (
             in_array(
                 needle  : "ACT",
-                haystack: Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()
+                haystack: GraphDatabaseConnection::get_instance_node()->getPermissions()
             )
             ),
         ]
