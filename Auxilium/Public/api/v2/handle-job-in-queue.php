@@ -1,4 +1,7 @@
 <?php
+
+use Auxilium\InternetMessageTransport;
+
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
@@ -17,27 +20,22 @@ $completed_jobs = 0;
 $attempted_jobs = 0;
 $total_jobs = 0;
 
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/last-job-run"))
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun"))
 {
-    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/last-job-run", time());
+    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun", time());
 }
-$last_run = intval(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/last-job-run"));
+$last_run = intval(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun"));
 $this_run = time();
 $run_diff = $this_run - $last_run;
-file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/last-job-run", $this_run);
+file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun", $this_run);
 
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/"))
-{
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/", 0700, true);
-}
-if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/"))
-{
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/", 0700, true);
-}
+// create directories
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/"))
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/", 0700, true);
+if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/"))
+    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/", 0700, true);
 if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/"))
-{
     mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/", 0700, true);
-}
 
 if($run_diff > REFRESH_RATE)
 {
@@ -47,13 +45,16 @@ if($run_diff > REFRESH_RATE)
         "tries" => 0,
         "max_tries" => 1
     ];
-    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+    file_put_contents(
+        LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name,
+        json_encode($job_payload, JSON_PRETTY_PRINT)
+    );
 }
 
-$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs");
+$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/");
 foreach($jobs as &$job_name)
 {
-    if(!in_array($job_name, [".", "..", "done", "failed"]))
+    if(!in_array($job_name, [".", "..", "Completed", "Failed"]))
     {
         $total_jobs++;
     }
@@ -61,9 +62,9 @@ foreach($jobs as &$job_name)
 
 foreach($jobs as &$job_name)
 {
-    if(!in_array($job_name, [".", "..", "done", "failed"]))
+    if(!in_array($job_name, [".", "..", "Completed", "Failed"]))
     {
-        $job_payload = json_decode(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name), true);
+        $job_payload = json_decode(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name), true);
         $success = false;
         $error_message = null;
         $exception = null;
@@ -74,10 +75,10 @@ foreach($jobs as &$job_name)
             switch($job_payload["type"])
             {
                 case "SEND_EMAIL":
-                    $success = Auxilium\InternetMessageTransport::send_now($job_payload["content"]);
+                    $success = InternetMessageTransport::send_now($job_payload["content"]);
                     break;
                 case "SCAN_INBOXES":
-                    $success = Auxilium\InternetMessageTransport::scan_inboxes();
+                    $success = InternetMessageTransport::scan_inboxes();
                     break;
                 case "INGEST_S3_EMAIL":
                     //$success = \auxilium\InternetMessageTransport::ingest_s3_object($job_payload["key"]);
@@ -113,23 +114,23 @@ foreach($jobs as &$job_name)
             {
                 $job_payload["errors"] = [];
             }
-            array_push($job_payload["errors"], $error_message);
+            $job_payload["errors"][] = $error_message;
         }
 
         if($success)
         {
-            unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name);
-            file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Complete/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+            unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name);
+            file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
         }
         else
         {
             if($job_payload["tries"] < $job_payload["max_tries"])
             {
-                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+                file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
             }
             else
             {
-                unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_name);
+                unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name);
                 file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
             }
         }

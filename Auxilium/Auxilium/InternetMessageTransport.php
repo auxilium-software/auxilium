@@ -46,7 +46,7 @@ class InternetMessageTransport
                 foreach($response["Contents"] as $object)
                 {
                     $job_id = bin2hex(pack("J", time())) . "." . EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(3 * 8));
-                    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_id . ".json";
+                    $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_id . ".json";
 
                     $job = [
                         "type" => "INGEST_S3_EMAIL",
@@ -117,9 +117,9 @@ class InternetMessageTransport
         {
             $msft_access_token = null;
 
-            if(file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/msft-access-token-primary.json"))
+            if(file_exists(__DIR__ . "/../Configuration/Configuration/msft-access-token-primary.json"))
             {
-                $msft_access_token_json = file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/msft-access-token-primary.json");
+                $msft_access_token_json = file_get_contents(__DIR__ . "/../Configuration/Configuration/msft-access-token-primary.json");
                 $msft_access_token = null;
                 if($msft_access_token_json === FALSE)
                 {
@@ -172,7 +172,7 @@ class InternetMessageTransport
                     $parsed = json_decode($result, true);
                     $parsed["expires_at"] = time() + $parsed["expires_in"];
                     $msft_access_token_json = json_encode($parsed, JSON_PRETTY_PRINT) . "\n";
-                    $bytes_written = file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/msft-access-token-primary.json", $msft_access_token_json);
+                    $bytes_written = file_put_contents(__DIR__ . "/../Configuration/Configuration/msft-access-token-primary.json", $msft_access_token_json);
                     if($bytes_written === FALSE)
                     {
                         // Throw an error maybe?
@@ -322,7 +322,7 @@ class InternetMessageTransport
     {
         $job_id = bin2hex(pack("J", time())) . "." . EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(3 * 8));
         $job_change_key = EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(3 * 16));
-        $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/" . $job_id . ".json";
+        $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_id . ".json";
 
         if($type == "MIME")
         {

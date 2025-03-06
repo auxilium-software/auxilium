@@ -10,20 +10,30 @@ $c_time = time();
 $job_names = [];
 $total_jobs = 0;
 
-$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs");
+$jobs = scandir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/");
 foreach($jobs as &$job_name)
 {
-    if(!in_array($job_name, [".", "..", "done", "failed"]))
+    if(!in_array($job_name, [".", "..", "Completed", "Failed"]))
     {
         $total_jobs++;
         $job_name = substr($job_name, 0, -5);
-        $time = unpack("Jtime", hex2bin(substr($job_name, 0, 16)))["time"];
+        var_dump($job_name);
+        $time = unpack(
+            format: "Jtime",
+            string: hex2bin(
+                string: substr(
+                    string: $job_name,
+                    offset: 0,
+                    length: 16
+                )
+            )
+        )["time"];
         $job_info = [
             "id" => $job_name,
             "created" => $time,
             "time_elapsed" => $c_time - $time
         ];
-        array_push($job_names, $job_info);
+        $job_names[] = $job_info;
     }
 }
 
