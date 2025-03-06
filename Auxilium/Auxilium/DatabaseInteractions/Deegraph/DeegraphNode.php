@@ -4,7 +4,7 @@ namespace Auxilium\DatabaseInteractions\Deegraph;
 
 use Auxilium\Auxilium\AuxiliumLFSObject;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
-use Auxilium\DataURL;
+use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 use Auxilium\GraphDatabaseConnection;
 use Auxilium\Schema;
 use Auxilium\SessionHandling\Session;
@@ -85,11 +85,11 @@ class DeegraphNode
     {
         if($this->getRawContent($actor) != null)
         {
-            if(substr($this->getRawContent($actor), 0, 5) === "data:")
+            if(str_starts_with($this->getRawContent($actor), "data:"))
             {
                 return new DataURL($this->getRawContent($actor));
             }
-            elseif(substr($this->getRawContent($actor), 0, 7) === "auxlfs:")
+            elseif(str_starts_with($this->getRawContent($actor), "auxlfs:"))
             {
                 return new AuxiliumLFSObject($this->getRawContent($actor));
             }
@@ -147,10 +147,10 @@ class DeegraphNode
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "LINK {".$node->NodeID."} AS ".$key." OF {".$this->NodeID."}".($force ? " FORCE" : "");
             $query = QueryBuilder::Link()
-                ->LinkOfRelativePath($node->NodeID, $this->NodeID)
-                ->As($key);
-            if($force) $query = $query->Force();
-            $query = $query->Build();
+                ->linkOfRelativePath($node->NodeID, $this->NodeID)
+                ->as($key);
+            if($force) $query = $query->force();
+            $query = $query->build();
             return GraphDatabaseConnection::query($actor, $query);
         }
         else
@@ -176,9 +176,9 @@ class DeegraphNode
         { // Let's not allow injections! (Even though DDS handles permissions and damage will be limited to this user anyway, there's not really a benefit to *not* preventing injections)
             // $query = "UNLINK ".$key." FROM {".$this->GetNodeID()."}";
             $query = QueryBuilder::Unlink()
-                ->UnlinkWhat($key)
-                ->From($this->NodeID)
-                ->Build();
+                ->unlinkWhat($key)
+                ->from($this->NodeID)
+                ->build();
             if($this->CachedProperties != null)
             {
                 if(isset($this->CachedProperties[$key]))
@@ -209,8 +209,8 @@ class DeegraphNode
 
         // $query = "DELETE {".$this->GetNodeID()."}";
         $query = QueryBuilder::Delete()
-            ->RelativePath($this->NodeID)
-            ->Build();
+            ->relativePath($this->NodeID)
+            ->build();
         return GraphDatabaseConnection::query($actor, $query);
     }
 
@@ -256,8 +256,8 @@ class DeegraphNode
         $outputMap = [];
         // $query = "PERMS ON {".$this->GetNodeID()."}";
         $query = QueryBuilder::Permission()
-            ->On($this->NodeID)
-            ->Build();
+            ->on($this->NodeID)
+            ->build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@permissions"]))
         {
@@ -293,8 +293,8 @@ class DeegraphNode
         $outputMap = [];
         // $query = "REFERENCES {".$this->GetNodeID()."}";
         $query = QueryBuilder::References()
-            ->RelativePath($this->NodeID)
-            ->Build();
+            ->relativePath($this->NodeID)
+            ->build();
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@map"]))
         {
@@ -382,8 +382,8 @@ class DeegraphNode
         $outputMap = [];
         // $query = "DIRECTORY {".$this->GetNodeID()."}";
         $query = QueryBuilder::Directory()
-            ->RelativePath($this->NodeID)
-            ->Build();
+            ->relativePath($this->NodeID)
+            ->build();
 
         $response = GraphDatabaseConnection::query($actor, $query);
         if(isset($response["@map"]))
