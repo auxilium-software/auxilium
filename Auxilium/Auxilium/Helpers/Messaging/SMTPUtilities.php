@@ -29,7 +29,7 @@ class SMTPUtilities
         $this->Mailer->Password = INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["password"];            // SMTP account password example
     }
 
-    public function SetMessage(string $rawRFC822Message)
+    public function SetMessage(string $rawRFC822Message): void
     {
         //Recipients
         //$mail->setFrom(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["address"], INSTANCE_BRANDING_NAME);
