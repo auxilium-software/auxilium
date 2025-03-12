@@ -3,7 +3,10 @@
 namespace Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
+use Auxilium\Enumerators\InternetMessageTransportService;
 use Auxilium\Exceptions\MessageSendException;
+use Auxilium\Helpers\Messaging\SMTPUtilities;
+use Auxilium\Helpers\MSGraph\MSGraphInteractions;
 use Auxilium\Utilities\EncodingTools;
 use Aws\S3\S3Client;
 use Aws\Ses\SesClient;
@@ -17,15 +20,15 @@ class InternetMessageTransport
 {
     public static function scan_inboxes()
     {
-        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "MS_APP_GRAPH")
+        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == InternetMessageTransportService::MS_GRAPH->value)
         {
 
         }
-        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "STANDARD")
+        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == InternetMessageTransportService::STANDARD->value)
         {
 
         }
-        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "AWS_SES")
+        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == InternetMessageTransportService::AWS->value)
         {
             try
             {
@@ -106,215 +109,49 @@ class InternetMessageTransport
             }
         }
 
-        return send($internet_message, $type);
+        return self::send($internet_message, $type);
     }
 
     public static function send_now(string $rfc822_raw_message)
     {
         $debug = false;
 
-        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "MS_APP_GRAPH")
+        switch(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"])
         {
-            $msft_access_token = null;
+            case InternetMessageTransportService::MS_GRAPH->value:
+                $graph = new MSGraphInteractions();
+                $graph->SendMail(
+                    $rfc822_raw_message,
+                    $debug,
+                );
+                return true;
+            case InternetMessageTransportService::STANDARD->value:
+                $mailer = new SMTPUtilities();
+                $mailer->SetMessage($rfc822_raw_message);
 
-            if(file_exists(__DIR__ . "/../Configuration/Configuration/msft-access-token-primary.json"))
-            {
-                $msft_access_token_json = file_get_contents(__DIR__ . "/../Configuration/Configuration/msft-access-token-primary.json");
-                $msft_access_token = null;
-                if($msft_access_token_json === FALSE)
-                {
-                    $msft_access_token = null;
-                }
-                else
-                {
-                    $msft_access_token_json = json_decode($msft_access_token_json, true);
-                    $msft_access_token = $msft_access_token_json["access_token"];
-                }
-            }
+                if(!$mailer->Mailer->send())
+                    throw new MessageSendException($mailer->Mailer->ErrorInfo);
 
-            if($msft_access_token != null)
-            {
-                if($msft_access_token_json["expires_at"] <= (time() + 60))
-                { // If we've only got 60 seconds just refresh now - MS graph takes a while to do *anything*
-                    $msft_access_token = null;
-                }
-            }
-
-            if($msft_access_token == null)
-            {
-                $url = "https://login.microsoftonline.com/" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["tenant_guid"] . "/oauth2/v2.0/token";
-                $data = [
-                    "client_id" => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["client_guid"],
-                    "client_secret" => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["client_secret"],
-                    "username" => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["username"],
-                    "password" => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["password"],
-                    "scope" => "user.read",
-                    "grant_type" => "password",
-                ];
-
-                // Use key 'http' even if you send the request to https://...
-                $options = [
-                    "http" => [
-                        "header" => "Content-type: application/x-www-form-urlencoded",
-                        "ignore_errors" => true,
-                        "method" => "POST",
-                        "content" => http_build_query($data)
+                echo "\n";
+                echo $mailer->Mailer->getSentMIMEMessage();
+                return true;
+            case InternetMessageTransportService::AWS->value:
+                $client = new SesClient([
+                        'region' => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["region"],
+                        'version' => '2010-12-01',
+                        'credentials' => [
+                            'key' => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["access_key"],
+                            'secret' => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["access_secret"],
+                        ]
                     ]
-                ];
-                $context = stream_context_create($options);
-                $result = file_get_contents($url, false, $context);
-                if($result === FALSE)
-                {
-                    // Throw an error maybe?
-                }
-                else
-                {
-                    $parsed = json_decode($result, true);
-                    $parsed["expires_at"] = time() + $parsed["expires_in"];
-                    $msft_access_token_json = json_encode($parsed, JSON_PRETTY_PRINT) . "\n";
-                    $bytes_written = file_put_contents(__DIR__ . "/../Configuration/Configuration/msft-access-token-primary.json", $msft_access_token_json);
-                    if($bytes_written === FALSE)
-                    {
-                        // Throw an error maybe?
-                    }
-                    $msft_access_token_json = json_decode($msft_access_token_json, true);
-                    $msft_access_token = $msft_access_token_json["access_token"];
-                }
-            }
-
-            $url = "https://graph.microsoft.com/v1.0/users/" . INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["user_guid"] . "/sendMail";
-
-            $curl_handle = curl_init();
-            curl_setopt($curl_handle, CURLOPT_URL, $url);
-            curl_setopt($curl_handle, CURLOPT_POST, 1);
-            curl_setopt($curl_handle, CURLOPT_HTTPHEADER, ["Content-Type: text/plain", "Authorization: Bearer " . $msft_access_token . ""]);
-            curl_setopt($curl_handle, CURLOPT_POSTFIELDS, base64_encode($rfc822_raw_message));
-            curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
-            $server_output = curl_exec($curl_handle); // Send the message
-            curl_close($curl_handle);
-
-            if($debug)
-            {
-                echo "<pre>" . htmlentities($server_output) . "</pre>";
-                die();
-            }
-
-            return true;
-        }
-
-        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "STANDARD")
-        {
-            $mail = new PHPMailer();
-
-            // Settings
-            $mail->IsSMTP();
-            $mail->CharSet = 'UTF-8';
-
-            $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-            $mail->Host = INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["smtp"];    // SMTP server example
-            $mail->SMTPDebug = 0;                     // enables SMTP debug information (for testing)
-            $mail->SMTPAuth = true;                  // enable SMTP authentication
-            $mail->Port = 465;                    // set the SMTP port for the GMAIL server
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Username = INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["address"];            // SMTP account username example
-            $mail->Password = INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["password"];            // SMTP account password example
-
-            //Recipients
-            //$mail->setFrom(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["address"], INSTANCE_BRANDING_NAME);
-            //$mail->addAddress('joe@example.net', 'Joe User');     //Add a recipient
-            //$mail->addAddress('ellen@example.com');               //Name is optional
-            //$mail->addReplyTo('info@example.com', 'Information');
-            //$mail->addCC('cc@example.com');
-            //$mail->addBCC('bcc@example.com');
-
-            //$this->emailData["recipients"] = [];
-            //foreach($this->recipients as &$user) {
-            //    if ($user != null) {
-            //        if ($user instanceof \Auxilium\User) {
-            //            $mail->addAddress($user->getEmailAddress(), $user->getFullName());
-            //            array_push($this->emailData["recipients"], $user->getUuid());
-            //        } else {
-            //            $mail->addAddress($user);
-            //        }
-            //    }
-            //}
-
-            // Content
-            //$mail->isHTML(true);                       // Set email format to HTML
-            //$mail->Subject = \Auxilium\MicroTemplate::from_packed_template($this->emailData["subject"], $this->emailData["template_properties"]["selected_lang"]);
-            //$mail->Body = $content;
-
-            $message = Message::from($rfc822_raw_message, false);
-            //$message->getHeaderValue(HeaderConsts::FROM)->getEmail()
-
-
-            $senderName = $message->getHeader(HeaderConsts::FROM)->getPersonName();
-            if($senderName)
-                $mail->setFrom(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["address"], $senderName);
-            foreach($message->getHeader(HeaderConsts::TO)->getAddresses() as &$user)
-            {
-                $mail->addAddress($user->getEmail(), $user->getName());
-            }
-
-            $text = $message->getTextContent();
-            $html = $message->getHtmlContent();
-
-            if($html == null)
-            {
-                $mail->Body = $text;
-            }
-            else
-            {
-                $mail->isHTML(true);
-                $mail->Body = $html;
-            }
-
-            /*
-            $mail->Subject = $message->getHeaderValue(\ZBateson\MailMimeParser\Header\HeaderConsts::SUBJECT);
-            */
-
-            foreach($message->getAllHeaders() as &$header)
-            {
-                $headerName = $header->getName();
-                switch($headerName)
-                {
-                    default:
-                        echo "CH: " . $headerName . ": " . $header->getRawValue() . "\n";
-                        $mail->addCustomHeader($headerName, $header->getRawValue());
-                        break;
-                }
-            }
-
-            if(!$mail->send())
-            {
-                throw new MessageSendException($mail->ErrorInfo);
-            }
-
-            echo "\n";
-
-            echo $mail->getSentMIMEMessage();
-
-            return true;
-        }
-
-        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "AWS_SES")
-        {
-            $client = new SesClient([
-                    'region' => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["region"],
-                    'version' => '2010-12-01',
-                    'credentials' => [
-                        'key' => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["access_key"],
-                        'secret' => INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["access_secret"],
+                );
+                $response = $client->sendRawEmail([
+                        'RawMessage' => [
+                            'Data' => $rfc822_raw_message
+                        ]
                     ]
-                ]
-            );
-            $response = $client->sendRawEmail([
-                    'RawMessage' => [
-                        'Data' => $rfc822_raw_message
-                    ]
-                ]
-            );
-            return true;
+                );
+                return true;
         }
     }
 
@@ -334,7 +171,7 @@ class InternetMessageTransport
                 $sender_header_parts = $sender_header->getParts();
                 foreach($sender_header_parts as &$sender_header_part)
                 {
-                    array_push($senders, $sender_header_part->getValue());
+                    $senders[] = $sender_header_part->getValue();
                 }
             }
             $sender = end($senders); // We should only really have one "from"
@@ -345,7 +182,7 @@ class InternetMessageTransport
                 $recipient_header_parts = $recipient_header->getParts();
                 foreach($recipient_header_parts as &$recipient_header_part)
                 {
-                    array_push($recipients, $recipient_header_part->getValue());
+                    $recipients[] = $recipient_header_part->getValue();
                 }
             }
             //var_dump($sender);
@@ -396,12 +233,12 @@ class InternetMessageTransport
                     $recipient_user = new User($matches[1]);
                     if($recipient_user->getContactEmail() != null)
                     {
-                        array_push($recipient_strings, $recipient_user->getFullName() . " <" . $recipient_user->getContactEmail() . ">");
+                        $recipient_strings[] = $recipient_user->getFullName() . " <" . $recipient_user->getContactEmail() . ">";
                     }
                 }
                 else
                 {
-                    array_push($recipient_strings, $recipient);
+                    $recipient_strings[] = $recipient;
                 }
             }
             $mime_message->setRawHeader("To", implode(", ", $recipient_strings));
@@ -426,15 +263,15 @@ class InternetMessageTransport
 
     public static function get_default_smtp_outbound_address()
     {
-        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "MS_APP_GRAPH")
+        if(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == InternetMessageTransportService::MS_GRAPH->value)
         {
             return INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["external_smtp_address"];
         }
-        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "STANDARD")
+        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == InternetMessageTransportService::STANDARD->value)
         {
             return INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["address"];
         }
-        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == "AWS_SES")
+        elseif(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["type"] == InternetMessageTransportService::AWS->value)
         {
             return INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["outbound_email_address"];
         }
