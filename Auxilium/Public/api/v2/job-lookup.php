@@ -1,5 +1,7 @@
 <?php
 
+use Auxilium\Utilities\URIUtilities;
+
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
@@ -9,20 +11,15 @@ $at->requireLogin();
 $draft_content = null;
 $put_data = false;
 $draft_id = null;
-$uri_components = explode("/", $_SERVER["REQUEST_URI"]);
-$last_uri_component = explode("?", end($uri_components));
-$get_params = "";
-if(count($last_uri_component) > 1)
-{
-    $get_params = $last_uri_component[1];
-}
-$uri_components[count($uri_components) - 1] = $last_uri_component[0];
 
-$job_id = $uri_components[4];
+
+$uri = new URIUtilities();
+
+$job_id = $uri->getURIComponents()[4];
 $action = "access";
-if(count($uri_components) > 5)
+if(count($uri->getURIComponents()) > 5)
 {
-    $action = strtolower($uri_components[5]);
+    $action = strtolower($uri->getURIComponents()[5]);
 }
 $job_key = null;
 

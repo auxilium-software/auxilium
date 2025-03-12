@@ -17,14 +17,13 @@ $at->requireLogin();
 
 $nonce = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(16));
 
-$uri_components = explode("/", $_SERVER["REQUEST_URI"]);
-$last_uri_component = explode("?", end($uri_components))[0];
+$uri = new URIUtilities();
 
 $openid_config = null;
 
 foreach(INSTANCE_CREDENTIAL_OPENID_SOURCES as &$openid_candidate_config)
 {
-    if($openid_candidate_config["unique_name"] == $last_uri_component)
+    if($openid_candidate_config["unique_name"] == $uri->getLastURIComponent())
     {
         $openid_config = $openid_candidate_config;
     }

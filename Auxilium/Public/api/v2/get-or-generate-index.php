@@ -1,6 +1,9 @@
 <?php
 
+use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
+use Auxilium\Utilities\URIUtilities;
+use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
@@ -8,15 +11,8 @@ require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 $at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
-$uri_components = explode("/", $_SERVER["REQUEST_URI"]);
-$last_uri_component = explode("?", end($uri_components));
-$get_params = "";
-if(count($last_uri_component) > 1)
-{
-    $get_params = $last_uri_component[1];
-}
-$uri_components[count($uri_components) - 1] = $last_uri_component[0];
-$index_id = $uri_components[count($uri_components) - 1];
+$uri = new URIUtilities();
+$index_id = $uri->getURIComponents()[count($uri->getURIComponents()) - 1];
 $index_id = explode(".", $index_id)[0];
 
 if(!preg_match("/^[0-9a-z_-]+$/", $index_id))
@@ -77,14 +73,14 @@ if($regenerate_index)
 
     foreach($queries as &$query)
     {
-        $results = Auxilium\GraphDatabaseConnection::query(Session::get_current()->getUser(), $query)["@rows"];
+        $results = GraphDatabaseConnection::query(Session::get_current()->getUser(), $query)["@rows"];
         foreach($results as &$row)
         {
             foreach($row as $column_name => &$cell)
             {
                 foreach($cell as $path => $value)
                 {
-                    $value = mb_strtolower((new Auxilium\DataURL($value))->getData());
+                    $value = mb_strtolower((new DataURL($value))->getData());
                     if(!array_key_exists($value, $new_index["lookup_table"]))
                     {
                         $new_index["lookup_table"][$value] = [];

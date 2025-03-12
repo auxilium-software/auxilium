@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\Utilities\URIUtilities;
 use ZBateson\MailMimeParser\Message;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
@@ -12,18 +13,12 @@ $file_id = null;
 $file_hash = null;
 $metadata = false;
 $mime_type = null;
-$uri_components = explode("/", $_SERVER["REQUEST_URI"]);
-$last_uri_component = explode("?", end($uri_components));
-$get_params = "";
-if(count($last_uri_component) > 1)
-{
-    $get_params = $last_uri_component[1];
-}
-$uri_components[count($uri_components) - 1] = $last_uri_component[0];
 
-if(count($uri_components) > 4)
+$uri = new URIUtilities();
+
+if(count($uri->getURIComponents()) > 4)
 {
-    $spl = explode("+", $uri_components[4]);
+    $spl = explode("+", $uri->getURIComponents()[4]);
     $file_id = strtolower($spl[0]);
     if(count($spl) > 1)
     {
@@ -41,7 +36,7 @@ if($mime_type == null)
     $mime_type = "message/rfc822";
 }
 
-$desired_components = explode(",", strtolower($get_params));
+$desired_components = explode(",", strtolower($uri->getGetParameters()));
 
 $lfsobj = new \Auxilium\Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
 
