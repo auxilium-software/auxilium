@@ -4,10 +4,10 @@ namespace Auxilium\DatabaseInteractions\Deegraph;
 
 use Auxilium\Auxilium\AuxiliumLFSObject;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
-use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
-use Auxilium\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Schema;
 use Auxilium\SessionHandling\Session;
+use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use Darksparrow\DeegraphInteractions\Exceptions\InvalidUUIDFormatException;
 use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;

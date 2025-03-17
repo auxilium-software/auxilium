@@ -25,7 +25,7 @@ try
                 "is_admin" => (
                     in_array(
                         needle  : "ACT",
-                        haystack: Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()
+                        haystack: \Auxilium\DatabaseInteractions\GraphDatabaseConnection::get_instance_node()->getPermissions()
                     )
                 ),
             ]

@@ -1,8 +1,8 @@
 <?php
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\DatabaseInteractions\RelationalDatabaseConnection;
 use Auxilium\EmailHandling\EmailBuilder;
-use Auxilium\RelationalDatabaseConnection;
 use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
@@ -114,7 +114,7 @@ switch($uri_components[1])
                         "email_address" => strtolower($_POST["email_address"]),
                     ];
                     $sql = "SELECT COUNT(*) FROM standard_logins WHERE email_address=:email_address";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
 
                     if($statement->fetchColumn() > 0)
@@ -140,7 +140,7 @@ switch($uri_components[1])
                             "verification_code" => str_replace(" ", "", $verification_code),
                         ];
                         $sql = "INSERT INTO email_verification_codes (user_uuid, verification_code, email_address) VALUES (:user_uuid, :verification_code, :email_address)";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($temporary_data);
 
                         $pb->setVariable("encoded_password_hash", base64_encode($hashed_password));
@@ -167,7 +167,7 @@ switch($uri_components[1])
                             ->setSubject("Login security code")
                             ->addRecipient(strtolower($_POST["email_address"]), $user_name)
                             ->build();
-                        Auxilium\InternetMessageTransport::send($email, "MIME");
+                        \Auxilium\EmailHandling\InternetMessageTransport::send($email, "MIME");
 
                         $pb->setVariable("form_validation", $form_validation);
                         $pb->setTemplate("Pages/users/add-basic-login-verify");
@@ -182,7 +182,7 @@ switch($uri_components[1])
                         "user_uuid" => $target_node->getId(),
                     ];
                     $sql = "SELECT user_uuid, email_address FROM email_verification_codes WHERE verification_code=:verification_code AND user_uuid=:user_uuid";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     $returned_data = $statement->fetch();
                     if($returned_data == null)
@@ -203,7 +203,7 @@ switch($uri_components[1])
                             "password" => base64_decode($_POST["encoded_password_hash"])
                         ];
                         $sql = "INSERT INTO standard_logins (email_address, user_uuid, password) VALUES (:email_address, :user_uuid, :password)";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
 
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
@@ -250,7 +250,7 @@ switch($uri_components[1])
                             "unique_sub" => $sub
                         ];
                         $sql = "DELETE FROM oauth_logins WHERE user_uuid=:user_uuid AND unique_sub=:unique_sub";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                     case "standard":
@@ -263,7 +263,7 @@ switch($uri_components[1])
                             "email_address" => $email
                         ];
                         $sql = "DELETE FROM standard_logins WHERE user_uuid=:user_uuid AND email_address=:email_address";
-                        $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                        $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                         $statement->execute($bind_variables);
                         NavigationUtilities::Redirect(target: "/users/" . $target_node->getId() . "/login-methods");
                     default:
@@ -316,7 +316,7 @@ switch($uri_components[1])
                 "user_uuid" => $target_node->getId()
             ];
             $sql = "SELECT session_uuid, ip_address, unique_sub, session_key, active, start_timestamp FROM portal_sessions WHERE user_uuid=:user_uuid";
-            $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+            $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
             $statement->execute($bind_variables);
             $session_rows = $statement->fetchAll();
 

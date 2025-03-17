@@ -184,7 +184,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     "unique_sub" => $combined_id
                 ];
                 $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE unique_sub=:unique_sub";
-                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 $returned_data = $statement->fetch();
                 if($returned_data == null)
@@ -194,7 +194,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                         "unique_sub" => $combined_id
                     ];
                     $sql = "INSERT INTO oauth_logins (unique_sub, user_uuid) VALUES (:unique_sub, :user_uuid)";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($bind_variables);
                     NavigationUtilities::Redirect(target: "/graph/~" . $state_claims["sub"]);
                     exit();
@@ -211,7 +211,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                     "unique_sub" => $combined_id
                 ];
                 $sql = "SELECT unique_sub, user_uuid FROM oauth_logins WHERE unique_sub=:unique_sub";
-                $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                 $statement->execute($bind_variables);
                 $returned_data = $statement->fetch();
                 if($returned_data == null)
@@ -231,7 +231,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                         "active" => 1,
                     ];
                     $sql = "INSERT INTO portal_sessions (session_uuid, session_key, user_uuid, ip_address, active, unique_sub) VALUES (:session_uuid, :session_key, :user_uuid, :ip_address, :active, :unique_sub)";
-                    $statement = Auxilium\RelationalDatabaseConnection::get_pdo()->prepare($sql);
+                    $statement = \Auxilium\DatabaseInteractions\RelationalDatabaseConnection::get_pdo()->prepare($sql);
                     $statement->execute($session_info);
                     CookieHandling::SetSessionKey(sessionKey: $session_key);
                     if($form_data == null)

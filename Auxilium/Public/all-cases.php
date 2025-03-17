@@ -12,7 +12,7 @@ try
 {
     Security::RequireLogin();
     $isAdmin = false;
-    if(in_array("ACT", Auxilium\GraphDatabaseConnection::get_instance_node()->getPermissions()))
+    if(in_array("ACT", \Auxilium\DatabaseInteractions\GraphDatabaseConnection::get_instance_node()->getPermissions()))
     {
         $isAdmin = true;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Auxilium;
+namespace Auxilium\EmailHandling;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\Enumerators\InternetMessageTransportService;
@@ -11,9 +11,6 @@ use Auxilium\Utilities\EncodingTools;
 use Aws\S3\S3Client;
 use Aws\Ses\SesClient;
 use Exception;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use ZBateson\MailMimeParser\Header\HeaderConsts;
 use ZBateson\MailMimeParser\Message;
 
 class InternetMessageTransport

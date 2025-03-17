@@ -1,7 +1,7 @@
 <?php
 
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
-use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 

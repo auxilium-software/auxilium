@@ -52,7 +52,7 @@ if(count($uri_components) > 2)
 switch($action)
 {
     case "collection":
-        $new_node = Auxilium\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
+        $new_node = \Auxilium\DatabaseInteractions\GraphDatabaseConnection::new_node(null, null, URLHandling::GetURLForSchema(CollectionSchema::class));
         $ret_url = $url_metadata->popFromReturnStack();
         $url_metadata->setProperty("rcn", \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(Auxilium\URLMetadata::crush_uuid($new_node->getId())));
         //echo $ret_url."?".$url_metadata;
@@ -67,7 +67,7 @@ switch($action)
         if(isset($_POST["text"]))
         {
             $data = trim($_POST["text"]);
-            $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+            $new_node = \Auxilium\DatabaseInteractions\GraphDatabaseConnection::new_node($data, "text/plain");
             $ret_url = $url_metadata->popFromReturnStack();
             $url_metadata->setProperty("rcn", \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(Auxilium\URLMetadata::crush_uuid($new_node->getId())));
             //echo $ret_url."?".$url_metadata;

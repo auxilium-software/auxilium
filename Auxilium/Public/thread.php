@@ -169,7 +169,7 @@ try
                         //echo "PEND: ".end($path_primary)." // ".implode("--", array_keys($refs));
 
                         $data = $_POST["value"];
-                        $new_node = Auxilium\GraphDatabaseConnection::new_node($data, "text/plain");
+                        $new_node = \Auxilium\DatabaseInteractions\GraphDatabaseConnection::new_node($data, "text/plain");
 
                         foreach($refs as $ref_name => &$ref_nodes)
                         {

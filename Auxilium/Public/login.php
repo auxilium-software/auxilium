@@ -3,8 +3,8 @@
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
+use Auxilium\DatabaseInteractions\RelationalDatabaseConnection;
 use Auxilium\PersistentFormData;
-use Auxilium\RelationalDatabaseConnection;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\EncodingTools;

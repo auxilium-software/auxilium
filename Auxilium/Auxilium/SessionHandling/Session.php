@@ -3,8 +3,8 @@
 namespace Auxilium\SessionHandling;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
+use Auxilium\DatabaseInteractions\RelationalDatabaseConnection;
 use Auxilium\Enumerators\CookieKey;
-use Auxilium\RelationalDatabaseConnection;
 use Exception;
 
 class Session

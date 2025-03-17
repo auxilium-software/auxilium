@@ -2,6 +2,7 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\RelationalDatabaseConnection;
 use PDO;
 
 class PersistentFormData

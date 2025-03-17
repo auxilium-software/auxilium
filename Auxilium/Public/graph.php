@@ -1,10 +1,10 @@
 <?php
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\RelationalDatabaseConnection;
 use Auxilium\Enumerators\CookieKey;
-use Auxilium\GraphDatabaseConnection;
 use Auxilium\MicroTemplate;
-use Auxilium\RelationalDatabaseConnection;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;

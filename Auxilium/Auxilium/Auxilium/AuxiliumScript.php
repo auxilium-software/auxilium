@@ -3,7 +3,7 @@
 namespace Auxilium\Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
-use Auxilium\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 
 class AuxiliumScript
 {

@@ -1,8 +1,8 @@
 <?php
 
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Enumerators\CookieKey;
 use Auxilium\Exceptions\DatabaseConnectionException;
-use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\TwigHandling\PageBuilder2;

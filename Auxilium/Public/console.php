@@ -15,7 +15,7 @@ if(isset($_POST["query"]))
     $query = trim($_POST["query"]);
     try
     {
-        $result = Auxilium\GraphDatabaseConnection::query(Session::get_current()->getUser(), $query);
+        $result = \Auxilium\DatabaseInteractions\GraphDatabaseConnection::query(Session::get_current()->getUser(), $query);
         if(isset($_POST["return_format"]))
         {
             if(strtoupper($_POST["return_format"]) == "RAW")

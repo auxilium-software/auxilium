@@ -1,6 +1,6 @@
 <?php
 
-namespace Auxilium;
+namespace Auxilium\DatabaseInteractions;
 
 use PDO;
 

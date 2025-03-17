@@ -1,6 +1,6 @@
 <?php
 
-namespace Auxilium;
+namespace Auxilium\DatabaseInteractions;
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphServerConnection;
@@ -296,7 +296,7 @@ class GraphDatabaseConnection
 
         if($creator == null)
         {
-            $creator = Session::get_current()->getUser()->getId();
+            $creator = Session::get_current()->getUser();
         }
 
         /*

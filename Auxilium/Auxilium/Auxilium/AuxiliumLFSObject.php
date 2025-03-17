@@ -3,7 +3,7 @@
 namespace Auxilium\Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
-use Auxilium\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 
 class AuxiliumLFSObject

@@ -1,6 +1,6 @@
 <?php
 
-use Auxilium\InternetMessageTransport;
+use Auxilium\EmailHandling\InternetMessageTransport;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';

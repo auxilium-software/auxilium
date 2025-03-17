@@ -4,7 +4,7 @@ namespace Auxilium\Helpers\FormBuilder;
 
 use Auxilium\Auxilium\AuxiliumScript;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
-use Auxilium\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 
 class FormBuilderOnSubmitHelpers
 {

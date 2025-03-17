@@ -2,8 +2,8 @@
 
 use Auxilium\APITools;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
-use Auxilium\GraphDatabaseConnection;
-use Auxilium\InternetMessageTransport;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\EmailHandling\InternetMessageTransport;
 use Auxilium\Schemas\CollectionSchema;
 use Auxilium\Schemas\MessageSchema;
 use Auxilium\SessionHandling\Session;

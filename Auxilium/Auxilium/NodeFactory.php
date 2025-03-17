@@ -2,6 +2,8 @@
 
 namespace Auxilium;
 
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+
 class NodeFactory
 {
     protected $mimeType = null;

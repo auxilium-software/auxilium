@@ -1,6 +1,6 @@
 <?php
 
-use Auxilium\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Auxilium\TwigHandling\PageBuilder;
 

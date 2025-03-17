@@ -1,8 +1,8 @@
 <?php
 
 use Auxilium\APITools;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
-use Auxilium\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
