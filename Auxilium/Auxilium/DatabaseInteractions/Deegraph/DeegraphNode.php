@@ -5,7 +5,6 @@ namespace Auxilium\DatabaseInteractions\Deegraph;
 use Auxilium\Auxilium\AuxiliumLFSObject;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
-use Auxilium\Schema;
 use Auxilium\SessionHandling\Session;
 use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
