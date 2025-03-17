@@ -312,8 +312,8 @@ try
                             ->bindValue(name: '__session_uuid__', value: EncodingTools::GenerateNewUUID())
                             ->bindValue(name: '__session_key__', value: $session_key)
                             ->bindValue(name: '__user_uuid__', value: $user_node->getId())
-                            ->bindValue(name: '__unique_sub__', value: $_SERVER["REMOTE_ADDR"])
-                            ->bindValue(name: '__ip_address__', value: strtolower($_POST["email_address"]))
+                            ->bindValue(name: '__unique_sub__', value: strtolower($_POST["email_address"]))
+                            ->bindValue(name: '__ip_address__', value: $_SERVER["REMOTE_ADDR"])
                             ->bindValue(name: '__active__', value: 1)
                     );
 
