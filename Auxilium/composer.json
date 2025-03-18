@@ -50,7 +50,7 @@
 
         "ezyang/htmlpurifier": "^4.14",
 
-        "aura/sqlquery": "2.8.1",
+        "aura/sqlquery": "3.0.0",
 
         "darksparrow/deegraph-interactions": "dev-dev",
         "darksparrow/auxilium-schema-builder": "v0.1",
