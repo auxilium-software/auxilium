@@ -65,6 +65,7 @@ HOSTNAME=$(hostname --fqdn)
 INSTANCE_IDENITIFIER=$(echo $HOSTNAME | cut -d"." -f1)
 INSTALL_ID=$(cat /dev/urandom | base32 | cut -c-16 | head -n 1)
 CERT_LOC=$(pwd)/certs
+ACCEPT_SELF_SIGNED_CERTIFICATES=true
 ####################################################################################################
 
 
@@ -92,15 +93,15 @@ function checkUserIsInGroup {
     fi
 }
 function checkPackageIsInstalled {
-    if dpkg -l | grep -q "^ii\s*${1}\s"; then
         # No action, just continue
+    if dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed"; then
         :
     else
         fatalErrorMessage "Package '${1}' is not installed"
     fi
 }
 function dockerVolumeExists {
-    checkPackageIsInstalled 'docker'
+    checkPackageIsInstalled docker-ce
     checkUserIsInGroup 'docker'
 
     if [ "$(docker volume ls -f name=$1 | awk '{print $NF}' | grep -E '^'$1'$')" ]; then
@@ -138,6 +139,9 @@ function showHelp {
     echo -e "\t${FONT__HELP_ARG}-c ${FONT__HELP_PARAM}<dir>${FONT_RESET}, ${FONT__HELP_ARG}--certs ${FONT__HELP_PARAM}<dir>${FONT_RESET}"
     echo -e "\t\tPoint to real certificates, and don't create self-signed certs."
     echo -e ""
+    echo -e "\t${FONT__HELP_ARG}-a ${FONT__HELP_PARAM}<dir>${FONT_RESET}, ${FONT__HELP_ARG}--allow-self-signed-certs ${FONT__HELP_PARAM}<dir>${FONT_RESET}"
+    echo -e "\t\tConfigures Auxilium to allow self signed certs for Deegraph."
+    echo -e ""
     echo -e "\t${FONT__HELP_ARG}-y${FONT_RESET}"
     echo -e "\t\tSkip questions."
 }
@@ -166,13 +170,14 @@ _MODE__PREEXISTING_VOLUME=0
 for arg in "$@"; do
     shift
     case "$arg" in
-        '--help')           set -- "$@" '-h'   ;;
-        '--hostname')       set -- "$@" '-n'   ;;
-        '--identifier')     set -- "$@" '-i'   ;;
-        '--build-only')     set -- "$@" '-b'   ;;
-        '--local')          set -- "$@" '-l'   ;;
-        '--certs')          set -- "$@" '-c'   ;;
-        *)                  set -- "$@" "$arg" ;;
+        '--help')                       set -- "$@" '-h'   ;;
+        '--hostname')                   set -- "$@" '-n'   ;;
+        '--identifier')                 set -- "$@" '-i'   ;;
+        '--build-only')                 set -- "$@" '-b'   ;;
+        '--local')                      set -- "$@" '-l'   ;;
+        '--certs')                      set -- "$@" '-c'   ;;
+        '--allow-self-signed-certs')    set -- "$@" '-a'   ;;
+        *)                              set -- "$@" "$arg" ;;
     esac
 done
 
@@ -198,6 +203,8 @@ while getopts ":hylbi:n:c:" opt; do
         c)
             CERT_LOC=$OPTARG
             _MODE__CREATE_SELF_SIGNED_CERTS=0;;
+        a) # Enter a name
+            ACCEPT_SELF_SIGNED_CERTIFICATES=true;;
         \?) # Invalid option
             fatalErrorMessage "Invalid option $OPTARG";;
     esac
@@ -324,21 +331,21 @@ if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`
     sudo mv /etc/php/php.ini.tmp /etc/php/$PHP_VER/apache2/php.ini;
 
-    sudo cp src/composer.json /var/www/composer.json
+    sudo cp Auxilium/composer.json /var/www/composer.json
     
-    cd src
+    cd Auxilium
     composer config allow-plugins.endroid/installer true
     composer install
     cd ..
     
-    cp templates/environment-local.php src/environment.php
+    cp templates/EnvironmentLocal.php Auxilium/Configuration/Configuration/Environment.php
     
-    sudo chown www-data:www-data src/ -R
-    f=$(pwd)/src
+    sudo chown www-data:www-data Auxilium/ -R
+    f=$(pwd)/Auxilium
     while [[ $f != / ]]; do sudo chmod +rx "$f"; f=$(dirname "$f"); done;
-    sudo ln -s $(pwd)/src/ /var/www/auxilium2 
+    sudo ln -s $(pwd)/Auxilium/ /var/www/auxilium2 
     
-    #cp scripts/new-keys.php /var/www/new-keys.php
+    #cp Scripts/new-keys.php /var/www/new-keys.php
 
     sudo mkdir /var/auxilium
     
@@ -499,7 +506,7 @@ if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     sudo cp bin/deegraph.jar /opt/deegraph/deegraph.jar
     sudo chmod +x /opt/deegraph/deegraph.jar
 
-    JSON_KEYS=$(php scripts/new-keys.php --user=nobody)
+    JSON_KEYS=$(php Scripts/new-keys.php --user=nobody)
 
     MYSQL_PASSWORD=$(echo $JSON_KEYS | jq -r '.mysqlPassword')
     DEEGRAPH_ROOT_AUTH_TOKEN=$(echo $JSON_KEYS | jq -r '.deegraphRootToken')
@@ -531,7 +538,7 @@ EOF
 cat > apache-auxilium.conf << EOF
 
 <VirtualHost *:80>
-        DocumentRoot /var/www/auxilium2
+        DocumentRoot /var/www/auxilium2/Public
 
         ServerName $HOSTNAME
 
@@ -545,7 +552,7 @@ cat > apache-auxilium.conf << EOF
 
 
 <VirtualHost *:443>
-        DocumentRoot /var/www/auxilium2
+        DocumentRoot /var/www/auxilium2/Public
 
         ServerName $HOSTNAME
 
@@ -662,6 +669,8 @@ const INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS = [
         "client_secret" => 'REDACTED'
     ]
 ];
+
+const ACCEPT_SELF_SIGNED_CERTIFICATES = $ACCEPT_SELF_SIGNED_CERTIFICATES
 ?>
 EOF
     sudo mv credentials.php /var/auxilium/credentials.php
@@ -723,8 +732,8 @@ else
                 #echo "https://$HOSTNAME:$HTTPS_PORT/system/init" | qrencode -o - -t ANSI256
                 #echo ""
             fi
-            echo "Run './scripts/reset.sh $INSTANCE_IDENITIFIER' to reset to a new instance"
-            echo "Run './scripts/shutdown.sh $INSTANCE_IDENITIFIER' to close the instance cleanly"
+            echo "Run './Scripts/reset.sh $INSTANCE_IDENITIFIER' to reset to a new instance"
+            echo "Run './Scripts/shutdown.sh $INSTANCE_IDENITIFIER' to close the instance cleanly"
         else
             tput bold
             tput rev
