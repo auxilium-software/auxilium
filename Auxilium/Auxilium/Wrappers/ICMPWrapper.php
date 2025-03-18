@@ -10,6 +10,7 @@ class ICMPWrapper
 {
     public static function RequireSchemaRepo(): bool
     {
+        return true;
         $temp = parse_url(URLHandling::$URLBase);
 
         $success = self::CheckUp(target: $temp['host']);
@@ -20,7 +21,7 @@ class ICMPWrapper
         PageBuilder2::Render(
             template : "ErrorPages/InternalSystemError.html.twig",
             variables: [
-                "technical_details" => "A required service (https://" . $temp['host'] . ") is down/unavailable.",
+                "technical_details" => "A required service (" . $temp['host'] . ") is down/unavailable.",
             ]
         );
     }

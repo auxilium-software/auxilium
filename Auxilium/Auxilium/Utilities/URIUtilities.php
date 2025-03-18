@@ -13,14 +13,13 @@ use BadMethodCallException;
 class URIUtilities
 {
     private array $uriComponents = [];
-    private string $lastURIComponent;
     private string $getParameters;
 
     public function __construct()
     {
         $this->uriComponents = explode(
             separator: "/",
-            string: $_SERVER["REQUEST_URI"],
+            string   : $_SERVER["REQUEST_URI"],
         );
 
         $temp = explode("?", end($this->uriComponents));
@@ -34,9 +33,10 @@ class URIUtilities
 
     public function __call(string $name, array $arguments): string|array
     {
-        return match ($name) {
+        return match ($name)
+        {
             "getURIComponents" => $this->uriComponents,
-            "getLastURIComponent"=>explode("?", end($this->uriComponents))[0],
+            "getLastURIComponent" => explode("?", end($this->uriComponents))[0],
             "getGetParameters" => $this->getParameters,
             default => throw new BadMethodCallException("Method $name does not exist."),
         };

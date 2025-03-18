@@ -15,7 +15,6 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
-
 class PageBuilder2
 {
     private static array $AdditionalVariables = [];

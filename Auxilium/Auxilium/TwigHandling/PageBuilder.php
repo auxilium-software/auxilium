@@ -11,6 +11,9 @@ use Twig\Environment;
 use Twig\Error\RuntimeError;
 use Twig\Loader\FilesystemLoader;
 
+/**
+ * @deprecated
+ */
 class PageBuilder
 {
     private static $instance = null;
