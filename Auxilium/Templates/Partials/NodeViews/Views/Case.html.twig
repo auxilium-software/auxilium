@@ -128,6 +128,8 @@
         <a class="action-link action-link-delete" href="/graph/{{ primary_string_path | raw }}/@delete_confirm?{{ url_metadata }}">{{ "node_page_text/case/delete_node" | uitxtrt | ndsentence }}</a><br />
     {% endif %}
     <a class="navigational-link" href="/graph/{{ primary_string_path | raw }}/@references?{{ url_metadata }}">{{ "node_page_text/case/see_references" | uitxtrt | ndsentence }}</a>
+    <br>
+    <a class="navigational-link" href="/graph/{{ primary_string_path | raw }}/@pdf?{{ url_metadata }}">{{ "node_page_text/generic/generate_pdf" | uitxtrt | ndsentence }}</a>
 </div>
 
 {% endblock %}

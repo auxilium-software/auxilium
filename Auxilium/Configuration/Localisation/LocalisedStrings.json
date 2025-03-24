@@ -293,6 +293,9 @@
             "see_references": {
                 "en": "see references to this node",
                 "cy": "gweler cyfeiriadau at y nod hwn"
+            },
+            "generate_pdf": {
+                "en": "Generate a PDF"
             }
         },
         "user": {
