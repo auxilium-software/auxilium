@@ -4,7 +4,12 @@ use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\DatabaseInteractions\RelationalDatabaseConnection;
 use Auxilium\Enumerators\CookieKey;
+use Auxilium\Enumerators\GraphAction;
 use Auxilium\MicroTemplate;
+use Auxilium\Schemas\CaseSchema;
+use Auxilium\Schemas\MessageSchema;
+use Auxilium\Schemas\OrganisationSchema;
+use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\SessionHandling\Security;
 use Auxilium\SessionHandling\Session;
@@ -12,6 +17,8 @@ use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\URLMetadata;
 use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
+use Auxilium\Utilities\URIUtilities;
+use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
@@ -57,7 +64,7 @@ if(count($uri_components) == 0)
 }
 
 $path_primary = [];
-$action = "@view";
+$action = GraphAction::VIEW;
 $path_secondary = [];
 $sec_toggle = false;
 foreach($uri_components as &$uri_component)
@@ -76,7 +83,11 @@ foreach($uri_components as &$uri_component)
             }
             else
             {
-                $action = mb_strtolower($uri_component);
+                $action = GraphAction::tryFrom(mb_strtolower($uri_component));
+                if ($action == null)
+                {
+                    NavigationUtilities::Redirect(target: " /graph/" . $uri_components[0]);
+                }
             }
         }
         else
@@ -87,7 +98,7 @@ foreach($uri_components as &$uri_component)
 }
 
 $last_prop = null;
-if($action == "@unlink")
+if($action == GRAPHACTION::UNLINK)
 { // Remove the last element of the url
     $last_prop = array_pop($path_primary);
 }
@@ -148,7 +159,7 @@ else
             $primary_node_path_nodes[$np] = DeegraphNode::from_path($absolute_path);
             if($primary_node_path_nodes[$np] != null)
             {
-                if($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json"))
+                if($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
                 {
                     if($primary_node_path_nodes[$np]->is(Session::get_current()->getUser()))
                     {
@@ -160,15 +171,15 @@ else
                         $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("name");
                     }
                 }
-                elseif($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json"))
+                elseif($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
                 {
                     $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("title");
                 }
-                elseif($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/message.json"))
+                elseif($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(MessageSchema::class)))
                 {
                     $primary_node_path_names[$np] = "Message";
                 }
-                elseif($primary_node_path_nodes[$np]->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json"))
+                elseif($primary_node_path_nodes[$np]->extendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
                 {
                     $primary_node_path_names[$np] = $primary_node_path_nodes[$np]->getProperty("name");
                 }
@@ -250,16 +261,16 @@ if($node == null)
 PageBuilder2::AddVariable("node", $node);
 switch($action)
 {
-    case "@delete_confirm":
+    case GraphAction::DELETE_CONFIRM:
         if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: " /graph/" . $primary_string_path);
-        if($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json"))
+        if($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
         {
             PageBuilder2::Render(
                 template : "Pages/delete-views/generic.html.twig",
                 variables: []
             );
         }
-        elseif($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json"))
+        elseif($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
         {
             PageBuilder2::Render(
                 template : "Pages/delete-views/generic.html.twig",
@@ -270,14 +281,14 @@ switch($action)
             template : "Pages/delete-views/generic.html.twig",
             variables: []
         );
-    case "@delete":
+    case GraphAction::DELETE:
         if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: " /graph/" . $primary_string_path);
         $node->delete();
         $path = explode("/", $primary_string_path);
         array_pop($path);
         //echo implode("/", $path);
         NavigationUtilities::Redirect(target: " /graph/" . implode("/", $path));
-    case "@edit":
+    case GraphAction::EDIT:
         if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: " /graph/" . $primary_string_path);
         //echo "EDIT";
         if(!isset($_POST["value"]))
@@ -307,7 +318,7 @@ switch($action)
         NavigationUtilities::Redirect(target: " /graph/" . implode("/", $path));
     //$new_node = GraphDatabaseConnection::new_node($data, "text/plain");
     //$query_result = $node->addProperty($_POST["name"], $return_node);
-    case "@unlink":
+    case GraphAction::UNLINK:
         if(!$jwt_validation_passed) NavigationUtilities::Redirect(target: " /graph/" . $primary_string_path);
 
         //echo "Unlinking: ".$node->getId()." => ".$last_prop;
@@ -329,7 +340,7 @@ switch($action)
         }
 
         break;
-    case "@new_property":
+    case GraphAction::NEW_PROPERTY:
         if($jwt_validation_passed)
             PageBuilder2::Render(
                 template : "Bases/StandardWebPage/GenericNodeViews.html.twig",
@@ -390,23 +401,29 @@ switch($action)
             template : "Partials/NodeViews/MiscViews/NewProperty.html.twig",
             variables: []
         );
-    case "@search":
+    case GraphAction::SEARCH:
         PageBuilder2::Render(
             template : "Pages/node-views/search.html.twig",
             variables: []
         );
         break;
-    case "@references":
+    case GraphAction::REFERENCES:
         PageBuilder2::Render(
             template : "Partials/NodeViews/MiscViews/References.html.twig",
             variables: []
         );
         break;
-    case "@ref_error":
+    case GraphAction::REF_ERROR:
         PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
-    case "@view":
+    case GraphAction::PDF:
+        PageBuilder2::Render(
+            template : "Partials/NodeViews/MiscViews/PDF.html.twig",
+            variables: []
+        );
+        break;
+    case GraphAction::VIEW:
     default:
-        if($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/user.json"))
+        if($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
         {
             $login_methods = [];
             $bind_variables = [
@@ -458,7 +475,7 @@ switch($action)
 
             //PageBuilder2::AddVariable("traditional_login_method", []);
         }
-        elseif($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json"))
+        elseif($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(CaseSchema::class)))
         {
             PageBuilder2::AddVariable("hidden_props", ["description", "clients", "messages", "documents", "todos", "timeline", "workers"]);
             //var_dump($node);
@@ -469,7 +486,7 @@ switch($action)
                 ]
             );
         }
-        elseif($node->extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/organisation.json"))
+        elseif($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(OrganisationSchema::class)))
         {
             PageBuilder2::AddVariable("hidden_props", ["departments", "cases", "staff"]);
             PageBuilder2::Render(
