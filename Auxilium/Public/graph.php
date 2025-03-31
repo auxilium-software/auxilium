@@ -413,14 +413,14 @@ switch($action)
             variables: []
         );
         break;
-    case GraphAction::REF_ERROR:
-        PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
     case GraphAction::PDF:
         PageBuilder2::Render(
             template : "Partials/NodeViews/MiscViews/PDF.html.twig",
             variables: []
         );
         break;
+    case GraphAction::REF_ERROR:
+        PageBuilder2::AddVariable("top_error_message", "PATH_REFERENCE_MISMATCH");
     case GraphAction::VIEW:
     default:
         if($node->extendsOrInstanceOf(URLHandling::GetURLForSchema(UserSchema::class)))
