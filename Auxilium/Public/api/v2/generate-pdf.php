@@ -18,4 +18,7 @@ switch($type)
 {
     case "case":
         PDFGeneration::GenerateCaseOverviewPage(caseID: "{{$uuid}}")->Render();
+    default:
+        $at->setErrorText(value: "PDF Type not recognized");
+        $at->output();
 }
