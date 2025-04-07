@@ -10,6 +10,7 @@ use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use Darksparrow\DeegraphInteractions\QueryBuilder\QueryBuilder;
 use Fpdf\Fpdf;
 use ICalendarOrg\ZCiCal;
+use JetBrains\PhpStorm\NoReturn;
 
 class PDFGeneration
 {
@@ -67,9 +68,10 @@ class PDFGeneration
 
 
 
-    public function Render()
+    #[NoReturn] public function Render()
     {
         $this->pdf->Output();
+        die();
     }
 
 
