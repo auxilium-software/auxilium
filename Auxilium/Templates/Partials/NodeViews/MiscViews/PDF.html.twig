@@ -22,6 +22,11 @@
                 </style>
                 <script src="https://unpkg.com/pdfobject"></script>
                 <script>
+                    {% if node.extendsOrInstanceOf("https://schemas.auxiliumsoftware.co.uk/v1/case.json") %}
+                        {% set PDFType = "case" %}
+                    {% endif %}
+
+                    PDFObject.embed("/api/v2/pdf/{{ PDFType }}/{{ primary_string_path|slice(1) }}", "#PDFContainer");
                 </script>
             </div>
 
