@@ -35,7 +35,7 @@
 
         "twig/twig": "^3.15.0",
 
-        "endroid/qr-code-bundle": "^4.0",
+        "endroid/qr-code-bundle": "^6.0",
         "fpdf/fpdf": "^1.83",
         "bigfish/pdf417": "^0.3.0",
 
