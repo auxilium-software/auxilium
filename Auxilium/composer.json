@@ -41,7 +41,7 @@
 
         "zbateson/mail-mime-parser": "^3.0",
         "phpmailer/phpmailer": "^6.6",
-        "webklex/php-imap": "^3.2",
+        "webklex/php-imap": "^6.1",
 
         "lcobucci/jwt": "^5.4.2",
         "web-token/jwt-core": "^3.4.6",
