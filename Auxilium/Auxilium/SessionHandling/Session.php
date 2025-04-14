@@ -47,7 +47,7 @@ class Session
 
     public static function get_current()
     {
-        if(self::$current == null)
+        if(self::$current === null)
         {
             self::$current = new Session();
         }
@@ -65,8 +65,8 @@ class Session
         return $this->currentUser = $user;
     }
 
-    public function sessionAuthenticated()
+    public function sessionAuthenticated(): bool
     {
-        return !($this->currentUser == null);
+        return !($this->currentUser === null);
     }
 }

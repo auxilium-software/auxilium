@@ -34,12 +34,12 @@ class MSGraphInteractions
             json: file_get_contents(
                 filename: self::$ConfigFileLocation
             ),
-            associative: true ,
+            associative: true,
         );
         $this->AccessToken = $this->AccessTokenPayload["access_token"];
 
 
-        if($this->AccessToken != null)
+        if($this->AccessToken !== null)
         {
             /**
              * If we've only got 60 seconds just refresh now - MS graph takes a while to do *anything*
@@ -53,7 +53,7 @@ class MSGraphInteractions
         /**
          * Get a new access token...
          */
-        if($this->AccessToken == null)
+        if($this->AccessToken === null)
         {
             $this->GetNewAccessToken();
         }
@@ -93,18 +93,18 @@ class MSGraphInteractions
         }
         else
         {
-            $parsed = json_decode($result, true);
+            $parsed = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
             $parsed["expires_at"] = time() + $parsed["expires_in"];
             $this->AccessTokenPayload = $parsed;
             $bytes_written = file_put_contents(
                 filename: self::$ConfigFileLocation,
-                data: json_encode($this->AccessTokenPayload, JSON_PRETTY_PRINT) . "\n"
+                data: json_encode($this->AccessTokenPayload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT) . "\n"
             );
             if($bytes_written === false)
             {
                 // Throw an error maybe?
             }
-            $this->AccessTokenPayload = json_decode($this->AccessTokenPayload, true);
+            $this->AccessTokenPayload = json_decode($this->AccessTokenPayload, true, 512, JSON_THROW_ON_ERROR);
             $this->AccessToken = $this->AccessTokenPayload["access_token"];
         }
     }

@@ -3,6 +3,7 @@
 namespace Auxilium;
 
 use Auxilium\SessionHandling\Session;
+use JetBrains\PhpStorm\NoReturn;
 
 class APITools
 {
@@ -69,7 +70,7 @@ class APITools
         http_response_code($responseCode);
     }
 
-    public function output()
+    #[NoReturn] public function output(): void
     {
         header("Content-Type: application/json; charset=utf-8");
         $this->returnData["response_code"] = http_response_code();

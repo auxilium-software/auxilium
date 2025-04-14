@@ -12,7 +12,7 @@ class AuxiliumScript
         $string = trim($string);
         if(str_starts_with($string, "\$"))
         {
-            return AuxiliumScript::evaluate_variable_path($string, $vars);
+            return self::evaluate_variable_path($string, $vars);
         }
         elseif(str_starts_with($string, "\""))
         {

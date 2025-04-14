@@ -19,7 +19,10 @@ class FormBuilderHelpers
     {
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/FormsInProgress"))
         {
-            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/FormsInProgress", 0700, true);
+            if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/FormsInProgress", 0700, true) && !is_dir($concurrentDirectory))
+            {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
         }
     }
 
@@ -52,7 +55,7 @@ class FormBuilderHelpers
 
     public static function UpdateTempFiles($form_persistence_file, $form_persistent_data): void
     {
-        fwrite($form_persistence_file, json_encode($form_persistent_data));
+        fwrite($form_persistence_file, json_encode($form_persistent_data, JSON_THROW_ON_ERROR));
         fclose($form_persistence_file);
     }
 }
