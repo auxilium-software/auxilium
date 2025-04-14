@@ -43,7 +43,10 @@ if(!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 $message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".json";
 if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/"))
 {
-    mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true);
+    if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true) && !is_dir($concurrentDirectory))
+    {
+        throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+    }
 }
 
 if($_SERVER["REQUEST_METHOD"] === "POST" || $_SERVER["REQUEST_METHOD"] === "PUT")
@@ -53,7 +56,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" || $_SERVER["REQUEST_METHOD"] === "PUT"
     $put_data = true;
 }
 
-if($action == "access")
+if($action === "access")
 {
     $at->setVariable("draft_id", $draft_id);
     if($put_data)
@@ -75,9 +78,9 @@ if($action == "access")
     }
     $at->output();
 }
-elseif($action == "send")
+elseif($action === "send")
 {
-    $draft_content = json_decode(file_get_contents($message_draft_path), true);
+    $draft_content = json_decode(file_get_contents($message_draft_path), true, 512, JSON_THROW_ON_ERROR);
     $message_build_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".eml";
     $build_content = "X-Auxilium-Message-Version: 2.0\r\n";
     $build_content .= "MIME-Version: 1.0\r\n";
@@ -87,7 +90,7 @@ elseif($action == "send")
     $message_parties = [];
     $message_parties[] = Session::get_current()->getUser();
     $from_user_name = Session::get_current()->getUser()->getDisplayName();
-    if($from_user_name != null)
+    if($from_user_name !== null)
     {
         $build_content .= "From: \"" . EncodingTools::RC2047Encode($from_user_name) . "\" <auxiliuminbox+" . Session::get_current()->getUser()->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . ">\r\n";
     }
@@ -113,7 +116,7 @@ elseif($action == "send")
         if(preg_match("/\{[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}\}/", $recipient_string))
         {
             $recipient = new User(substr($recipient_string, 1, 36));
-            if($recipient == null)
+            if($recipient === null)
             {
                 $at->setErrorText("Failed to create valid RFC822 object. Invalid local user id provided.");
                 $at->output();
@@ -123,7 +126,7 @@ elseif($action == "send")
                 $message_parties[] = $recipient;
             }
             $to_user_name = $recipient->getDisplayName();
-            if($to_user_name != null)
+            if($to_user_name !== null)
             {
                 $build_content .= "\"" . EncodingTools::RC2047Encode($to_user_name) . "\" <auxiliuminbox+" . $recipient->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . ">";
             }
@@ -160,7 +163,7 @@ elseif($action == "send")
 
     foreach($contents as &$content)
     {
-        if($content["content_type"] == "text/plain")
+        if($content["content_type"] === "text/plain")
         {
             $content["content_type"] = "text/plain; charset=\"UTF-8\"";
         }
@@ -187,7 +190,7 @@ elseif($action == "send")
     $build_content .= "--\r\n";
 
     $bytes_written = file_put_contents($message_build_path, $build_content);
-    if($bytes_written === FALSE)
+    if($bytes_written === false)
     {
         $at->setErrorText("Failed to write new RFC822 object to RAM disk");
         $at->output();
@@ -207,12 +210,12 @@ elseif($action == "send")
 
         foreach($message_parties as &$message_party)
         {
-            if(!in_array($message_party->getId(), $notified_parties))
+            if(!in_array($message_party->getId(), $notified_parties, true))
             {
                 try
                 {
                     // Due to caching, we MUST add property using the node returned from creation
-                    if($message_party->getProperty("messages") == null)
+                    if($message_party->getProperty("messages") === null)
                     {
                         $messages_node = GraphDatabaseConnection::new_node(
                             data      : null,
