@@ -151,7 +151,7 @@ class PDFGeneration
                 ->from("{$caseID}/{$key}")
                 ->build()
                 ->runQuery(
-                    new UUID(Session::get_current()->getUser()->getUuid()),
+                    new UUID(Session::get_current()?->getUser()?->getUuid()),
                     DeegraphServerConnection::GetConnection()
                 )
                 ->Rows[0]
@@ -163,30 +163,36 @@ class PDFGeneration
                 "ContactEmail"      => self::GetTextFromURL($temp['contact_email']["{$caseID}/{$key}/contact_email"]),
             ];
         }
-        foreach($caseWorkersData->Rows[0]->Properties as $key=>$value)
+        if(isset($caseWorkersData->Rows))
         {
-            $temp = QueryBuilder::Select()
-                ->relativePaths([
-                    '*',
-                ])
-                ->from("{$caseID}/{$key}")
-                ->build()
-                ->runQuery(
-                    new UUID(Session::get_current()->getUser()->getUuid()),
-                    DeegraphServerConnection::GetConnection()
-                )
-                ->Rows[0]
-                ->Properties;
-            $caseWorkers[] = [
-                "Name"              => self::GetTextFromURL($temp['name']["{$caseID}/{$key}/name"]),
-                "DisplayName"       => self::GetTextFromURL($temp['display_name']["{$caseID}/{$key}/display_name"]),
-                "PreferredLanguage" => self::GetTextFromURL($temp['preferred_language']["{$caseID}/{$key}/preferred_language"]),
-                "ContactEmail"      => self::GetTextFromURL($temp['contact_email']["{$caseID}/{$key}/contact_email"]),
-            ];
+            foreach($caseWorkersData->Rows[0]->Properties as $key=>$value)
+            {
+                $temp = QueryBuilder::Select()
+                    ->relativePaths([
+                        '*',
+                    ])
+                    ->from("{$caseID}/{$key}")
+                    ->build()
+                    ->runQuery(
+                        new UUID(Session::get_current()->getUser()->getUuid()),
+                        DeegraphServerConnection::GetConnection()
+                    )
+                    ->Rows[0]
+                    ->Properties;
+                $caseWorkers[] = [
+                    "Name"              => self::GetTextFromURL($temp['name']["{$caseID}/{$key}/name"]),
+                    "DisplayName"       => self::GetTextFromURL($temp['display_name']["{$caseID}/{$key}/display_name"]),
+                    "PreferredLanguage" => self::GetTextFromURL($temp['preferred_language']["{$caseID}/{$key}/preferred_language"]),
+                    "ContactEmail"      => self::GetTextFromURL($temp['contact_email']["{$caseID}/{$key}/contact_email"]),
+                ];
+            }
         }
-        foreach($timelineData->Rows[0]->Properties as $key=>$value)
+        if(isset($timelineData->Rows))
         {
-            $timeLineItems[] = self::GetTextFromURL($value["{$caseID}/{$key}"]);
+            foreach($timelineData->Rows[0]->Properties as $key => $value)
+            {
+                $timeLineItems[] = self::GetTextFromURL($value["{$caseID}/{$key}"]);
+            }
         }
 
 
