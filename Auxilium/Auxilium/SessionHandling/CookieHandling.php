@@ -12,9 +12,13 @@ class CookieHandling
         $cookieValue = self::GetCookieValue($targetCookie, "false");
 
         if(!$cookieValue)
+        {
             return $default;
-        if($cookieValue == "true")
+        }
+        if($cookieValue === "true")
+        {
             return true;
+        }
         return false;
     }
 
@@ -56,7 +60,7 @@ class CookieHandling
 
     public static function SetCookie(CookieKey $targetCookie, string $value): bool
     {
-        $success = setcookie(
+        return setcookie(
             $targetCookie->value,
             $value,
             time() + self::GetCookieTTL($targetCookie),
@@ -65,22 +69,20 @@ class CookieHandling
             true,
             true
         );
-        return $success;
     }
 
     private static function GetCookieTTL(CookieKey $targetCookie): int
     {
-        switch($targetCookie)
+        return match ($targetCookie)
         {
-            case CookieKey::SESSION_KEY:
-                return (3600 * 48);
-            case CookieKey::PROGRESSIVE_LOAD:
-                //     return 0;
-            case CookieKey::STYLE:
-            case CookieKey::LANGUAGE:
-                return (3600 * 24 * 30);
-        }
-        return 0;
+            CookieKey::SESSION_KEY  => (3600 * 48),
+
+            CookieKey::PROGRESSIVE_LOAD,
+            CookieKey::STYLE,
+            CookieKey::LANGUAGE     => (3600 * 24 * 30),
+
+            default                 => 0,
+        };
     }
 
     public static function SetProgressiveLoad(bool $progressiveLoad): void

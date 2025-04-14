@@ -38,7 +38,7 @@ if(isset($_GET["setup_key"]))
         $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "r") or die("Unable to read keyfile!");
         $file_size = filesize(LOCAL_STORAGE_DIRECTORY . "/setup.key");
         $match_key = fread($key_file, $file_size);
-        if(trim($match_key) == trim($_GET["setup_key"]))
+        if(trim($match_key) === trim($_GET["setup_key"]))
         {
             $setup_key = trim($_GET["setup_key"]);
         }

@@ -27,7 +27,7 @@ class Schema
     public static function from_url(?string $url)
     {
         $url = trim($url);
-        if($url == null || strlen($url) == 0)
+        if($url === null || strlen($url) === 0)
         {
             return null;
         }
@@ -40,7 +40,7 @@ class Schema
 
     public function getRawDefinition()
     {
-        if($this->data == null)
+        if($this->data === null)
         {
             $curl_handle = curl_init();
             curl_setopt($curl_handle, CURLOPT_URL, $this->url);
@@ -50,9 +50,9 @@ class Schema
             $server_output = curl_exec($curl_handle);
             if(curl_getinfo($curl_handle, CURLINFO_RESPONSE_CODE) >= 200 && curl_getinfo($curl_handle, CURLINFO_RESPONSE_CODE) < 300)
             {
-                if(strpos($server_output, "{") === 0)
+                if(str_starts_with($server_output, "{"))
                 {
-                    $this->data = json_decode($server_output, true);
+                    $this->data = json_decode($server_output, true, 512, JSON_THROW_ON_ERROR);
                 }
             }
             curl_close($curl_handle);

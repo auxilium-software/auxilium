@@ -34,10 +34,10 @@ class URLMetadata
 
         $components = explode(".", $jwt);
 
-        if(count($components) == 3)
+        if(count($components) === 3)
         {
-            $header = json_decode(EncodingTools::Base64DecodeURLSafe($components[0]), true);
-            $payload = json_decode(EncodingTools::Base64DecodeURLSafe($components[1]), true);
+            $header = json_decode(EncodingTools::Base64DecodeURLSafe($components[0]), true, 512, JSON_THROW_ON_ERROR);
+            $payload = json_decode(EncodingTools::Base64DecodeURLSafe($components[1]), true, 512, JSON_THROW_ON_ERROR);
 
             if(!is_array($header) || !is_array($payload))
             {
@@ -48,18 +48,24 @@ class URLMetadata
 
             $valid = true;
 
-            if(!$header) $valid = false;
-            if(!$payload) $valid = false;
+            if(!$header)
+            {
+                $valid = false;
+            }
+            if(!$payload)
+            {
+                $valid = false;
+            }
 
             $matchHeader = [
                 "alg" => "HS256",
                 "typ" => "JWT"
             ];
-            if($matchHeader["alg"] != $header["alg"])
+            if($matchHeader["alg"] !== $header["alg"])
             {
                 $valid = false;
             }
-            if($matchHeader["typ"] != $header["typ"])
+            if($matchHeader["typ"] !== $header["typ"])
             {
                 $valid = false;
             }
@@ -71,7 +77,7 @@ class URLMetadata
                         data  : $components[0] . "." . $components[1],
                         key   : base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET),
                         binary: true,
-                    ) == EncodingTools::Base64DecodeURLSafe($components[2]);
+                    ) === EncodingTools::Base64DecodeURLSafe($components[2]);
             }
 
             if($valid)
@@ -138,16 +144,16 @@ class URLMetadata
     public function setPath(string $path, DeegraphNode $node = null): static
     {
         $this->metadata["rp"] = rtrim(ltrim($path, "/"), "/"); // Relative Path
-        if($node == null)
+        if($node === null)
         {
             $node = DeegraphNode::from_path($this->metadata["rp"]);
         }
         $this->metadata["tn"] = $node;
-        if($this->metadata["tn"] != null)
+        if($this->metadata["tn"] !== null)
         {
-            $this->metadata["tn"] = URLMetadata::crush_uuid($this->metadata["tn"]->getId());
+            $this->metadata["tn"] = self::crush_uuid($this->metadata["tn"]->getId());
         }
-        $this->metadata["rc"] = URLMetadata::standard_metadata_checksum($this->metadata["rp"]);
+        $this->metadata["rc"] = self::standard_metadata_checksum($this->metadata["rp"]);
         return $this;
     }
 
@@ -163,7 +169,7 @@ class URLMetadata
 
     public function checkNode(?DeegraphNode $node): bool
     {
-        if($node == null)
+        if($node === null)
         {
             return false;
         }
@@ -214,7 +220,7 @@ class URLMetadata
         {
             return null;
         }
-        while($cstk == $estk)
+        while($cstk === $estk)
         { // Clear the stack until we have something different
             $cstk = array_pop($this->metadata["rts"]);
         }
@@ -241,7 +247,7 @@ class URLMetadata
 
     public function setProperty(string $key, ?string $property)
     {
-        if($property == null)
+        if($property === null)
         {
             if(isset($this->metadata[$key]))
             {
@@ -264,7 +270,7 @@ class URLMetadata
         return null;
     }
 
-    public function parent()
+    public function parent(): URLMetadata
     {
         $parent = $this->metadata;
         $pthcps = explode("/", $parent["rp"]);
@@ -273,10 +279,10 @@ class URLMetadata
         $parent["tn"] = DeegraphNode::from_path($parent["rp"]);
         if($parent["tn"] != null)
         {
-            $parent["tn"] = URLMetadata::crush_uuid($parent["tn"]->getId());
+            $parent["tn"] = self::crush_uuid($parent["tn"]->getId());
         }
-        $parent["rc"] = URLMetadata::standard_metadata_checksum($parent["rp"]);
-        $mdo = URLMetadata::from_metadata($parent);
+        $parent["rc"] = self::standard_metadata_checksum($parent["rp"]);
+        $mdo = self::from_metadata($parent);
         return $mdo;
     }
 
@@ -291,15 +297,15 @@ class URLMetadata
     {
         $childmd = $this->metadata;
         $pthcps = explode("/", $childmd["rp"]);
-        array_push($pthcps, $child);
+        $pthcps[] = $child;
         $childmd["rp"] = rtrim(ltrim(implode("/", $pthcps), "/"), "/");
         $childmd["tn"] = DeegraphNode::from_path($childmd["rp"]);
         if($childmd["tn"] != null)
         {
-            $childmd["tn"] = URLMetadata::crush_uuid($childmd["tn"]->getId());
+            $childmd["tn"] = self::crush_uuid($childmd["tn"]->getId());
         }
-        $childmd["rc"] = URLMetadata::standard_metadata_checksum($childmd["rp"]);
-        $mdo = URLMetadata::from_metadata($childmd);
+        $childmd["rc"] = self::standard_metadata_checksum($childmd["rp"]);
+        $mdo = self::from_metadata($childmd);
         return $mdo;
     }
 
@@ -325,9 +331,9 @@ class URLMetadata
         }
 
         $subject = null;
-        if(Session::get_current()->getUser() != null)
+        if(Session::get_current()?->getUser() !== null)
         {
-            $subject = EncodingTools::Base64EncodeURLSafe(URLMetadata::crush_uuid(Session::get_current()->getUser()->getId()));
+            $subject = EncodingTools::Base64EncodeURLSafe(self::crush_uuid(Session::get_current()?->getUser()?->getId()));
         }
         $header = [
             "alg" => "HS256",
@@ -339,8 +345,8 @@ class URLMetadata
             "mda" => $md
         ];
         // (new \DateTime("now", new \DateTimeZone("UTC")))->format("Y-m-d\\TH:i:s\\Z")
-        $header = EncodingTools::Base64EncodeURLSafe(json_encode($header));
-        $payload = EncodingTools::Base64EncodeURLSafe(json_encode($payload));
+        $header = EncodingTools::Base64EncodeURLSafe(json_encode($header, JSON_THROW_ON_ERROR));
+        $payload = EncodingTools::Base64EncodeURLSafe(json_encode($payload, JSON_THROW_ON_ERROR));
         $jwt = $header . "." . $payload . "." . EncodingTools::Base64EncodeURLSafe(hash_hmac("sha256", $header . "." . $payload, base64_decode(INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET), true));
 
         $this->jwtValidated = true;

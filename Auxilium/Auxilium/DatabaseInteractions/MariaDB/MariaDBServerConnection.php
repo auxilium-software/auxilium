@@ -30,8 +30,7 @@ class MariaDBServerConnection
     {
         $sth = $this->pdo->prepare($queryBuilder->getStatement());
         $sth->execute($queryBuilder->getBindValues());
-        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function RunOneRowSelect(SelectInterface $queryBuilder): array|null
@@ -40,7 +39,10 @@ class MariaDBServerConnection
         $sth->execute($queryBuilder->getBindValues());
         $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-        if(sizeof($result) == 1) return $result[0];
+        if(count($result) === 1)
+        {
+            return $result[0];
+        }
 
         return null;
     }
@@ -63,8 +65,6 @@ class MariaDBServerConnection
         $schema = file_get_contents($filePath);
 
         $result = $this->pdo->exec(statement: $schema);
-        if($result === 0)
-            return true;
-        return false;
+        return $result === 0;
     }
 }
