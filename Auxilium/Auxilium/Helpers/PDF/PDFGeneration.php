@@ -35,41 +35,44 @@ class PDFGeneration
 
         // header
         $this->pdf->Image(__DIR__ . '/../../../Public/Static/Favicons/Black.png',10,6,30);
-        $this->SetFontBold();
+        $this->SetFont_Heading();
         $this->pdf->Cell(80);
         $this->pdf->Cell(80,10, $title,1,0,'C');
         $this->pdf->Ln(25);
 
         //
-        $this->SetFontRegular();
+        $this->SetFont_Regular();
     }
 
-    private function SetFontRegular(): void
+    private function SetFont_Regular(): void
     {
-        $this->pdf->SetFont('AtkinsonHyperlegible-Regular', '', 14);
+        $this->pdf->SetFont(family: 'AtkinsonHyperlegible-Regular', style: '', size: 12);
     }
     private function SetFontItalic(): void
     {
-        $this->pdf->SetFont('AtkinsonHyperlegible-Italic', 'I', 14);
+        $this->pdf->SetFont(family: 'AtkinsonHyperlegible-Italic', style: 'I', size: 12);
     }
-    private function SetFontBold(): void
+    private function SetFont_Heading(): void
     {
-        $this->pdf->SetFont('AtkinsonHyperlegible-Bold', 'B', 14);
+        $this->pdf->SetFont(family: 'AtkinsonHyperlegible-Bold', style: 'B', size: 14);
     }
     private function SetFontBoldItalic(): void
     {
-        $this->pdf->SetFont('AtkinsonHyperlegible-BoldItalic', 'BI', 14);
+        $this->pdf->SetFont(family: 'AtkinsonHyperlegible-BoldItalic', style: 'BI', size: 12);
     }
-    private function SetFontOCR(): void
+    private function SetFont_OCR(): void
     {
-        $this->pdf->SetFont('OCRAbyBT-Regular', '', 14);
+        $this->pdf->SetFont(family: 'OCRAbyBT-Regular', style: '', size: 12);
     }
 
 
 
 
-    #[NoReturn] public function Render()
+    #[NoReturn] public function Render(): void
     {
+        // footer
+
+        // render
         $this->pdf->Output();
         die();
     }
@@ -223,24 +226,24 @@ class PDFGeneration
         $pdf->pdf->Ln(5);
 
         // Case Title
-        $pdf->SetFontBold();
+        $pdf->SetFont_Heading();
         $pdf->pdf->Cell(0, 10, 'Case Title:', 0, 1, 'L');
-        $pdf->SetFontRegular();
+        $pdf->SetFont_Regular();
         $pdf->pdf->MultiCell(0, 8, $caseTitle);
         $pdf->pdf->Ln(5);
 
         // Case Description
-        $pdf->SetFontBold();
+        $pdf->SetFont_Heading();
         $pdf->pdf->Cell(0, 10, 'Description:', 0, 1, 'L');
-        $pdf->SetFontRegular();
+        $pdf->SetFont_Regular();
         $pdf->pdf->MultiCell(0, 8, $caseDescription);
         $pdf->pdf->Ln(10);
 
         // Case Workers Section
-        $pdf->SetFontBold();
+        $pdf->SetFont_Heading();
         $pdf->pdf->Cell(0, 10, 'Case Workers', 0, 1, 'C');
         $pdf->pdf->Ln(3);
-        $pdf->SetFontRegular();
+        $pdf->SetFont_Regular();
         foreach ($caseWorkers as $worker) {
             $pdf->pdf->Cell(60, 8, $worker['DisplayName'], 1);
             $pdf->pdf->Cell(0, 8, $worker['ContactEmail'], 1, 1);
@@ -248,10 +251,10 @@ class PDFGeneration
         $pdf->pdf->Ln(10);
 
         // Beneficiaries Section
-        $pdf->SetFontBold();
+        $pdf->SetFont_Heading();
         $pdf->pdf->Cell(0, 10, 'Beneficiaries', 0, 1, 'C');
         $pdf->pdf->Ln(3);
-        $pdf->SetFontRegular();
+        $pdf->SetFont_Regular();
         foreach ($beneficiaries as $beneficiary) {
             $pdf->pdf->Cell(60, 8, $beneficiary['DisplayName'], 1);
             $pdf->pdf->Cell(0, 8, $beneficiary['ContactEmail'], 1, 1);
@@ -259,10 +262,10 @@ class PDFGeneration
         $pdf->pdf->Ln(10);
 
         // Timeline Section
-        $pdf->SetFontBold();
+        $pdf->SetFont_Heading();
         $pdf->pdf->Cell(0, 10, 'Timeline Events', 0, 1, 'C');
         $pdf->pdf->Ln(3);
-        $pdf->SetFontRegular();
+        $pdf->SetFont_Regular();
         foreach ($timeLineItemsSimplified as $eventDetails)
         {
             $pdf->pdf->MultiCell(0, 8, $eventDetails['DTSTAMP'] . ' - ' . $eventDetails['DESCRIPTION']);
