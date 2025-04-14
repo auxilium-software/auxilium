@@ -1,40 +1,29 @@
 <?php
 
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DatabaseConnectionException;
-use Auxilium\TwigHandling\PageBuilder;
+use Auxilium\SessionHandling\Security;
+use Auxilium\TwigHandling\PageBuilder2;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
 
-$pb = PageBuilder::get_instance();
-$pb->requireLogin();
+Security::RequireLogin();
 
-if(in_array("ACT", \Auxilium\DatabaseInteractions\GraphDatabaseConnection::get_instance_node()->getPermissions()))
+if(in_array("ACT", GraphDatabaseConnection::get_instance_node()->getPermissions(), true))
 {
     try
     {
-        $pb->setTemplate("Pages/system/index");
-        $pb->render();
+        PageBuilder2::Render(
+            template: '/Pages/System/index.html.twig'
+        );
     }
     catch(DatabaseConnectionException $e)
     {
-        $pb->setDefaultVariables();
-        $pb->setTemplate("ErrorPages/InternalSystemError");
-        $technical_details = "Exception Type:\n    " . get_class($e);
-        $technical_details .= "\nMessage:\n    " . $e->getMessage();
-        $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-        $pb->setVariable("technical_details", $technical_details);
-        http_response_code(500);
-        $pb->render();
+        PageBuilder2::RenderInternalSystemError($e);
     }
 }
 else
 {
-    $pb->setDefaultVariables();
-    $pb->setTemplate("ErrorPages/InternalSystemError");
-    $technical_details = "Exception Type:\n    InsufficientPermissions";
-    $technical_details .= "\nURI:\n    " . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-    $pb->setVariable("technical_details", $technical_details);
-    http_response_code(403);
-    $pb->render();
+    PageBuilder2::RenderInternalSystemError(new Exception("Insufficient permissions"));
 }
