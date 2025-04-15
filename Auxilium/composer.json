@@ -22,6 +22,8 @@
     "require": {
         "php": "^8.2",
 
+
+
         "ext-curl": "*",
         "ext-bcmath": "*",
         "ext-gd": "*",
@@ -31,12 +33,16 @@
         "ext-pdo": "*",
         "ext-mbstring": "*",
 
+
+
         "phpunit/phpunit": "11.4.4",
 
+
+
         "twig/twig": "^3.15.0",
+        "fpdf/fpdf": "^1.83",
 
         "endroid/qr-code-bundle": "^6.0",
-        "fpdf/fpdf": "^1.83",
         "bigfish/pdf417": "^0.3.0",
 
         "zbateson/mail-mime-parser": "^3.0",
@@ -55,7 +61,9 @@
         "darksparrow/deegraph-interactions": "dev-dev",
         "darksparrow/auxilium-schema-builder": "v0.1",
 
-        "geerlingguy/ping": "1.2.1"
+        "geerlingguy/ping": "1.2.1",
+
+        "phpfui/icalendar": "1.1.0"
     },
     "require-dev": {
         "phpdocumentor/shim": "*"

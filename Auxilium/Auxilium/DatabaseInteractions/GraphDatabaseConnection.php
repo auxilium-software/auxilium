@@ -27,9 +27,9 @@ class GraphDatabaseConnection
 
     public static function query(?User $actor, string $query, array $fvars = [])
     {
-        if($actor == null)
+        if($actor === null)
         {
-            $actor = Session::get_current()->getUser();
+            $actor = Session::get_current()?->getUser();
         }
 
         $lookup_table = [];
@@ -50,7 +50,7 @@ class GraphDatabaseConnection
             foreach($vars as $key => &$var)
             {
                 $var_id = null;
-                while($var_id == null)
+                while($var_id === null)
                 {
                     $var_id = bin2hex(openssl_random_pseudo_bytes(32));
                     if(strpos($query, $var_id) !== false)
@@ -79,7 +79,7 @@ class GraphDatabaseConnection
 
         foreach(mb_str_split($query) as $char)
         {
-            if($char == "`")
+            if($char === "`")
             {
                 if($escape_char)
                 {
@@ -100,7 +100,7 @@ class GraphDatabaseConnection
                     }
                 }
             }
-            elseif($char == "\\")
+            elseif($char === "\\")
             {
                 $escape_char = true;
             }
@@ -111,20 +111,20 @@ class GraphDatabaseConnection
                     $escape_char = false;
                     if($backtick_switch)
                     {
-                        $data_buffer = $data_buffer . "\\";
+                        $data_buffer .= "\\";
                     }
                     else
                     {
-                        $query_buffer = $query_buffer . "\\";
+                        $query_buffer .= "\\";
                     }
                 }
                 if($backtick_switch)
                 {
-                    $data_buffer = $data_buffer . $char;
+                    $data_buffer .= $char;
                 }
                 else
                 {
-                    $query_buffer = $query_buffer . $char;
+                    $query_buffer .= $char;
                 }
             }
         }
@@ -151,9 +151,9 @@ class GraphDatabaseConnection
 
     public static function raw_request(?User $actor, string $path, string $method = "GET", string $body_data = null)
     {
-        if($actor == null)
+        if($actor === null)
         {
-            $actor = Session::get_current()->getUser();
+            $actor = Session::get_current()?->getUser();
         }
 
         $method = strtoupper($method);
@@ -165,7 +165,7 @@ class GraphDatabaseConnection
         $url = "https://" . INSTANCE_CREDENTIAL_DDS_HOST . implode("/", $cmps);
         $curl_handle = curl_init();
         curl_setopt($curl_handle, CURLOPT_URL, $url);
-        if($method == "POST")
+        if($method === "POST")
         {
             curl_setopt($curl_handle, CURLOPT_POST, 1);
         }
@@ -177,7 +177,7 @@ class GraphDatabaseConnection
             curl_setopt($curl_handle, CURLOPT_SSL_VERIFYHOST, false);
         }
 
-        if($actor == null)
+        if($actor === null)
         {
             throw new DatabaseConnectionException("Client's user account is invalid");
         }
@@ -187,9 +187,9 @@ class GraphDatabaseConnection
                 "X-Auxilium-Actor: " . $actor->getId()
             ]
         );
-        if($method == "POST" || $method == "PUT")
+        if($method === "POST" || $method === "PUT")
         {
-            if($body_data != null)
+            if($body_data !== null)
             {
                 curl_setopt($curl_handle, CURLOPT_POSTFIELDS, $body_data);
             }
@@ -202,9 +202,9 @@ class GraphDatabaseConnection
             throw new DatabaseConnectionException("Deegraph server did not respond to Auxilium query");
         }
 
-        if(strpos($server_output, "{") === 0)
+        if(str_starts_with($server_output, "{"))
         {
-            $server_output = json_decode($server_output, true);
+            $server_output = json_decode($server_output, true, 512, JSON_THROW_ON_ERROR);
         }
 
         if(curl_getinfo($curl_handle, CURLINFO_RESPONSE_CODE) >= 500 && curl_getinfo($curl_handle, CURLINFO_RESPONSE_CODE) < 600)
@@ -218,17 +218,17 @@ class GraphDatabaseConnection
         return $server_output;
     }
 
-    public static function node_from_path(string $path, User $actor = null)
+    public static function node_from_path(string $path, User $actor = null): ?DeegraphNode
     {
-        if($actor == null)
+        if($actor === null)
         {
-            $actor = Session::get_current()->getUser();
+            $actor = Session::get_current()?->getUser();
         }
 
         $path_cmps = explode("/", $path);
         foreach($path_cmps as &$path_cmp)
         {
-            if(strpos($path_cmp, "~") === 0)
+            if(str_starts_with($path_cmp, "~"))
             {
                 $path_cmp = "{" . substr($path_cmp, 1) . "}";
             }
@@ -248,14 +248,16 @@ class GraphDatabaseConnection
 
     public static function get_raw_node_info(?User $actor, UUID $uuid): array
     {
-        if($actor == null)
-            $actor = Session::get_current()->getUser();
+        if($actor === null)
+        {
+            $actor = Session::get_current()?->getUser();
+        }
 
         $rawNode = DeegraphServerConnection::GetConnection()->GetRawNode(
             actorID: new UUID($actor->getId()),
             nodeID : $uuid,
         );
-        return json_decode($rawNode->AsJSON(), true);
+        return json_decode($rawNode->AsJSON(), true, 512, JSON_THROW_ON_ERROR);
 
         /*
         if (!preg_match("/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/", $uuid)) {
@@ -270,33 +272,29 @@ class GraphDatabaseConnection
         */
     }
 
-    public static function new_node($data = null, string $media_type = null, string $schema = null, User $creator = null)
+    public static function new_node($data = null, string $media_type = null, string $schema = null, User $creator = null): ?DeegraphNode
     {
         $data_url = null;
-        if($data != null && $media_type != null)
+        if($data !== null && $media_type !== null)
         {
             $media_type = mb_strtolower($media_type);
-            switch($media_type)
+            $data_url = match ($media_type)
             {
-                case "text/plain":
-                case "application/json":
-                    $data_url = "data:" . $media_type . "," . urlencode($data);
-                    break;
-                default:
-                    $data_url = "data:" . $media_type . ";base64," . base64_encode($data);
-                    break;
-            }
+                "text/plain",
+                "application/json"  => "data:" . $media_type . "," . urlencode($data),
+                default             => "data:" . $media_type . ";base64," . base64_encode($data),
+            };
         }
         return GraphDatabaseConnection::new_node_raw($data_url, $schema, $creator);
     }
 
     public static function new_node_raw(string $data_url = null, string $schema = null, User $creator = null)
     {
-        $actor = Session::get_current()->getUser();
+        $actor = Session::get_current()?->getUser();
 
-        if($creator == null)
+        if($creator === null)
         {
-            $creator = Session::get_current()->getUser();
+            $creator = Session::get_current()?->getUser();
         }
 
         /*
@@ -313,7 +311,7 @@ class GraphDatabaseConnection
             "@data" => $data_url,
         ];
 
-        if($schema != null)
+        if($schema !== null)
         {
             $body["@schema"] = $schema;
         }
@@ -322,7 +320,7 @@ class GraphDatabaseConnection
             actor    : $creator,
             path     : "/api/v1/@new",
             method   : "PUT",
-            body_data: json_encode($body)
+            body_data: json_encode($body, JSON_THROW_ON_ERROR)
         );
 
         if(is_array($server_response))

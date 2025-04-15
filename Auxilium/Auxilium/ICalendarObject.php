@@ -10,7 +10,7 @@ class ICalendarObject
 
     public function __construct($content = null)
     {
-        if($content = null)
+        if($content == null)
         {
             $this->sections = [];
         }
@@ -27,7 +27,7 @@ class ICalendarObject
                 switch($state)
                 {
                     case 2:
-                        if(strpos($line, "END:") === 0)
+                        if(str_starts_with($line, "END:"))
                         {
                             switch(substr($line, 4))
                             {
@@ -58,11 +58,11 @@ class ICalendarObject
                         }
                         else
                         {
-                            array_push($elines, $line);
+                            $elines[] = $line;
                         }
                         break;
                     case 1:
-                        if(strpos($line, "BEGIN:") === 0)
+                        if(str_starts_with($line, "BEGIN:"))
                         {
                             switch(substr($line, 6))
                             {
@@ -101,7 +101,7 @@ class ICalendarObject
 
     public static function stringify_datetime(DateTime $date)
     {
-        return $date->format("Ymd\THis\Z")
+        return $date->format("Ymd\THis\Z");
     }
 
     public static function escape(string $raw)

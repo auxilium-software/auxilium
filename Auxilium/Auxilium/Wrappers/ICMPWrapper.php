@@ -8,14 +8,17 @@ use JJG\Ping;
 
 class ICMPWrapper
 {
-    public static function RequireSchemaRepo(): bool
+    public static function RequireSchemaRepo(): void
     {
-        return true;
+        return;
+
         $temp = parse_url(URLHandling::$URLBase);
 
         $success = self::CheckUp(target: $temp['host']);
         if($success)
-            return true;
+        {
+            return;
+        }
 
         http_response_code(500);
         PageBuilder2::Render(
@@ -28,8 +31,10 @@ class ICMPWrapper
 
     public static function CheckUp(string $target): bool
     {
-        if((!ip2long($target)) && dns_get_record($target) == [])
+        if((!ip2long($target)) && dns_get_record($target) === [])
+        {
             return false;
+        }
 
         $ping = new Ping(
             host   : $target,
@@ -37,8 +42,6 @@ class ICMPWrapper
             timeout: 0.5,
         );
         $latency = $ping->ping();
-        if($latency !== false)
-            return true;
-        return false;
+        return $latency !== false;
     }
 }

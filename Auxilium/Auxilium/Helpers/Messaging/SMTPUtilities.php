@@ -65,10 +65,12 @@ class SMTPUtilities
         //$message->getHeaderValue(HeaderConsts::FROM)->getEmail()
 
 
-        $senderName = $message->getHeader(HeaderConsts::FROM)->getPersonName();
+        $senderName = $message->getHeader(HeaderConsts::FROM)?->getPersonName();
         if($senderName)
+        {
             $this->Mailer->setFrom(INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS["primary"]["address"], $senderName);
-        foreach($message->getHeader(HeaderConsts::TO)->getAddresses() as &$user)
+        }
+        foreach($message->getHeader(HeaderConsts::TO)?->getAddresses() as &$user)
         {
             $this->Mailer->addAddress($user->getEmail(), $user->getName());
         }
