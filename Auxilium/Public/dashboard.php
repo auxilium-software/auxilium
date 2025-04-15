@@ -21,14 +21,8 @@ try
 
         PageBuilder2::AutoRender(variables: [
             "progressive_load" => CookieHandling::GetBooleanCookie(CookieKey::PROGRESSIVE_LOAD, false),
-            "is_admin" => (
-            in_array(
-                needle  : "ACT",
-                haystack: GraphDatabaseConnection::get_instance_node()->getPermissions()
-            )
-            ),
-        ]
-        );
+            "is_admin" => Security::IsAdmin(),
+        ]);
     }
     catch(DatabaseConnectionException $e)
     {

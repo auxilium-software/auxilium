@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
 
 Security::RequireLogin();
 
-if(in_array("ACT", GraphDatabaseConnection::get_instance_node()->getPermissions(), true))
+if(Security::IsAdmin())
 {
     try
     {

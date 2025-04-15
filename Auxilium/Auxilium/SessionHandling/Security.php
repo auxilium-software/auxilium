@@ -2,6 +2,7 @@
 
 namespace Auxilium\SessionHandling;
 
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Utilities\NavigationUtilities;
 
 class Security
@@ -27,5 +28,14 @@ class Security
         {
             NavigationUtilities::Redirect(target: "/login");
         }
+    }
+
+    public static function IsAdmin(): bool
+    {
+        if(in_array("ACT", GraphDatabaseConnection::get_instance_node()->getPermissions(), true))
+        {
+            return true;
+        }
+        return false;
     }
 }
