@@ -221,9 +221,13 @@ class PageBuilder2
     public static function GetVariable(string $variableName, ?string $default = null): mixed
     {
         if(array_key_exists($variableName, self::$AdditionalVariables))
+        {
             return self::$AdditionalVariables[$variableName];
-        if($default != null)
+        }
+        if($default !== null)
+        {
             return $default;
+        }
         echo "variable \"" . $variableName . "\" does not exist";
         die();
     }
