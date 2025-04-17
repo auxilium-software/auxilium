@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7729acb2f28c76b6bb0b4067be6a8088",
+    "content-hash": "0d79d6edb4d9e33a3fc3d200599af95e",
     "packages": [
         {
             "name": "aura/sqlquery",
@@ -129,16 +129,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.342.24",
+            "version": "3.342.28",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "cd7e1cbed4cb52c3aad31a647d1645594ff208eb"
+                "reference": "16cec140483869b3d244a5995b55d5365465dc58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cd7e1cbed4cb52c3aad31a647d1645594ff208eb",
-                "reference": "cd7e1cbed4cb52c3aad31a647d1645594ff208eb",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/16cec140483869b3d244a5995b55d5365465dc58",
+                "reference": "16cec140483869b3d244a5995b55d5365465dc58",
                 "shasum": ""
             },
             "require": {
@@ -220,9 +220,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.342.24"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.342.28"
             },
-            "time": "2025-04-09T18:22:32+00:00"
+            "time": "2025-04-16T18:13:32+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -2583,6 +2583,71 @@
                 }
             ],
             "time": "2025-02-28T12:46:35+00:00"
+        },
+        {
+            "name": "phpfui/icalendar",
+            "version": "V1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpfui/icalendar.git",
+                "reference": "1642b0c200ba83912685940a7b76946fc158723f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpfui/icalendar/zipball/1642b0c200ba83912685940a7b76946fc158723f",
+                "reference": "1642b0c200ba83912685940a7b76946fc158723f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4 <8.5"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "phpfui/phpunit-syntax-coverage": "dev-master",
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "<12.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ICalendarOrg\\": "src/ICalendarOrg/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Bruce Wells",
+                    "email": "brucekwells@gmail.com"
+                }
+            ],
+            "description": "A modern fork of the icalendar.org PHP implementation of rfc5545, management of iCal formatted files",
+            "homepage": "https://icalendar.org/php-library.html",
+            "keywords": [
+                "calendar",
+                "daylight",
+                "file",
+                "iCalendar",
+                "management",
+                "rfc2445",
+                "rfc5545",
+                "rfc6321",
+                "standard",
+                "vCalendar",
+                "valarm",
+                "vevent",
+                "vfreebusy",
+                "vjournal",
+                "vtimezone",
+                "vtodo"
+            ],
+            "support": {
+                "issues": "https://github.com/phpfui/icalendar/issues",
+                "source": "https://github.com/phpfui/icalendar/tree/V1.1.0"
+            },
+            "time": "2019-10-31T00:00:00+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
