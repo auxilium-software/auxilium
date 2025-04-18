@@ -136,7 +136,7 @@ class CommonFilters extends AbstractExtension
     // Macro to insert a dynamically loaded node view
     public function dnd($path): string
     {
-        $rid = openssl_random_pseudo_bytes(16);
+        $rid = Security::GeneratePseudoRandomBytes(length: 16);
         $rid = bin2hex($rid);
         return "<span id=\"dynamic_inline_node_element_$rid\"></span><script>document.getElementById(\"dynamic_inline_node_element_$rid\").appendChild((new InlineNodeView(\"$path\")).render())</script>";
     }
