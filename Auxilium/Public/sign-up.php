@@ -28,14 +28,14 @@ try
 
     $form_data = Auxilium\PersistentFormData::get();
 
-    if($form_data == null)
+    if($form_data === null)
     {
         $form_data = [
             "form_step" => null,
             "form_stack" => []
         ];
     }
-    if($form_data["form_step"] == null)
+    if($form_data["form_step"] === null)
     {
         $form_data["form_step"] = "USER_TYPE";
     }
@@ -59,7 +59,7 @@ try
                             ->where(cond: 'invite_code=:__invite_code__')
                             ->bindValue(name: '__invite_code__', value: strtolower(str_replace(" ", "", $_POST["invite_code"])))
                     );
-                    if($returned_data == null)
+                    if($returned_data === null)
                     {
                         $form_validation_failures["invite_code"] = true;
                     }
@@ -91,7 +91,7 @@ try
                     );
 
 
-                    if($returned_data == null)
+                    if($returned_data === null)
                     {
                         $form_validation_failures["email_address_verify_code"] = true;
                     }
@@ -122,7 +122,7 @@ try
                         PersistentFormData::set($form_data);
 
                         $next_location = array_pop($form_data["form_stack"]);
-                        if($next_location == null)
+                        if($next_location === null)
                             NavigationUtilities::Redirect(target: "/dashboard");
                         NavigationUtilities::Redirect(target: $next_location);
                     }
@@ -240,7 +240,7 @@ try
 
                     $word_list = json_decode(file_get_contents(__DIR__ . "/../byte-word-list.json"), true);
 
-                    $garbage_data = openssl_random_pseudo_bytes(4);
+                    $garbage_data = Security::GeneratePseudoRandomBytes(length: 4);
 
                     $verification_code = $word_list[ord($garbage_data[0])] . " " . $word_list[ord($garbage_data[1])] . " " . $word_list[ord($garbage_data[2])] . " " . $word_list[ord($garbage_data[3])];
 
