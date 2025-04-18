@@ -8,6 +8,7 @@ use Auxilium\Schemas\CollectionSchema;
 use Auxilium\Schemas\MessageSchema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\EncodingTools;
+use Auxilium\Utilities\Security;
 use Auxilium\Utilities\URIUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
@@ -85,7 +86,7 @@ elseif($action === "send")
     $build_content = "X-Auxilium-Message-Version: 2.0\r\n";
     $build_content .= "MIME-Version: 1.0\r\n";
     $build_content .= "Message-ID: $draft_id." . Session::get_current()->getUser()->getId() . "@" . INSTANCE_BRANDING_DOMAIN_NAME . "\r\n";
-    $boundary = EncodingTools::Base64EncodeURLSafe(openssl_random_pseudo_bytes(48));
+    $boundary = EncodingTools::Base64EncodeURLSafe(Security::GeneratePseudoRandomBytes(length: 48));
 
     $message_parties = [];
     $message_parties[] = Session::get_current()->getUser();

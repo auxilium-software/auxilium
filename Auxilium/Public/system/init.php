@@ -8,6 +8,7 @@ use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use Auxilium\Enumerators\QueryParamKey;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Utilities\Security;
 use Auxilium\Wrappers\QueryParamWrapper;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 use JetBrains\PhpStorm\NoReturn;
@@ -61,7 +62,7 @@ if(isset($_GET["setup_key"]))
 
 if($setup_key == null)
 {
-    $setup_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '=');
+    $setup_key = rtrim(strtr(base64_encode(Security::GeneratePseudoRandomBytes(length: 64)), '+/', '-_'), '=');
     $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "w") or die("Unable to write keyfile!");
     fwrite($key_file, $setup_key);
     fclose($key_file);

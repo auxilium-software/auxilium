@@ -2,6 +2,7 @@
 
 use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\Utilities\NavigationUtilities;
+use Auxilium\Utilities\Security;
 use Jose\Component\Core\Util\RSAKey;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Signer\Eddsa;
@@ -220,7 +221,7 @@ if(isset($_POST["id_token"]) || isset($_GET["id_token"]))
                 }
                 else
                 {
-                    $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // Taken from /login
+                    $session_key = rtrim(strtr(base64_encode(Security::GeneratePseudoRandomBytes(length: 64)), '+/', '-_'), '='); // Taken from /login
 
                     $session_info = [
                         "session_uuid" => \Auxilium\Utilities\EncodingTools::GenerateNewUUID("sessions"),

@@ -16,6 +16,7 @@ use Auxilium\SessionHandling\CookieHandling;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
+use Auxilium\Utilities\Security;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -298,7 +299,7 @@ try
                         actor: $user_node
                     ); // Create this as default the user's first name - they can change it later if they want
 
-                    $session_key = rtrim(strtr(base64_encode(openssl_random_pseudo_bytes(64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
+                    $session_key = rtrim(strtr(base64_encode(Security::GeneratePseudoRandomBytes(length: 64)), '+/', '-_'), '='); // 512 bits should be long enough to be practically impossible to guess. Even allowing one guess per millesecond (which is already better than the bottleneck of the JISC network) it will take 5 395 141 535 403 007 094 485 264 577 years. This is conserably longer than the time we have left before the Earth is consumed by the Sun turning into a red giant.
 
 
                     $db->RunInsert(

@@ -1,9 +1,11 @@
 <?php
 
-namespace Auxilium\SessionHandling;
+namespace Auxilium\Utilities;
 
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
-use Auxilium\Utilities\NavigationUtilities;
+use Auxilium\SessionHandling\Session;
+use Exception;
+use RuntimeException;
 
 class Security
 {
@@ -38,4 +40,16 @@ class Security
         }
         return false;
     }
+
+    public static function GeneratePseudoRandomBytes(int $length): string
+    {
+        // Use openssl rand as mt_rand is known to produce duplicates.
+        $temp = openssl_random_pseudo_bytes($length, $isStrong);
+        if($temp == false || !$isStrong)
+        {
+            throw new RuntimeException("Failed to generate secure random bytes.");
+        }
+        return $temp;
+    }
+
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\Utilities\Security;
 use Auxilium\Utilities\URIUtilities;
 
 ob_start();
@@ -203,7 +204,7 @@ else
                         header("Accept-Ranges: bytes");
                         if(count($ranges) > 1)
                         {
-                            $boundary = bin2hex(openssl_random_pseudo_bytes(32)); // Set a random boundary - we better hope this doesn't show up in the file!
+                            $boundary = bin2hex(Security::GeneratePseudoRandomBytes(length: 32)); // Set a random boundary - we better hope this doesn't show up in the file!
                             $content_length = 0;
 
                             for($i = 0; $i < $rangecount; $i++)

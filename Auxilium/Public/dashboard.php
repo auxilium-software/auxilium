@@ -1,11 +1,10 @@
 <?php
 
-use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Enumerators\CookieKey;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\SessionHandling\CookieHandling;
-use Auxilium\SessionHandling\Security;
 use Auxilium\TwigHandling\PageBuilder2;
+use Auxilium\Utilities\Security;
 use Auxilium\Wrappers\ICMPWrapper;
 
 require_once __DIR__ . '/../vendor/autoload.php';
