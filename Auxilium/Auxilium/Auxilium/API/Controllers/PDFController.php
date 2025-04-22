@@ -3,6 +3,8 @@
 namespace Auxilium\Auxilium\API\Controllers;
 
 use Auxilium\APITools;
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\Helpers\PDF\PDFGeneration;
 use Auxilium\Utilities\URIUtilities;
 use JetBrains\PhpStorm\NoReturn;

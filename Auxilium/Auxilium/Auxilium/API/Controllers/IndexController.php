@@ -2,6 +2,7 @@
 
 namespace Auxilium\Auxilium\API\Controllers;
 
+use Auxilium\APITools;
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
@@ -11,41 +12,52 @@ use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 
 class IndexController
 {
-    public function GenerateIndex()
+    private IndexModel $Model;
+    private APITools2 $APITools;
+    private URIUtilities $URIUtilities;
+    
+    public function __construct()
     {
-        $model = new IndexModel();
-        $at = new APITools2($model);
-        $at->requireLogin();
-
-        $uri = new URIUtilities();
-        $index_id = $uri->getURIComponents()[count($uri->getURIComponents()) - 1];
+        $this->Model = new IndexModel();
+        $this->APITools = new APITools2($this->Model);
+        $this->URIUtilities = new URIUtilities();
+        
+        $this->APITools->requireLogin();
+    }
+    
+    
+    public function GenerateIndex(): void
+    {
+        $index_id = $this->URIUtilities->getURIComponents()[count($this->URIUtilities->getURIComponents()) - 1];
         $index_id = explode(".", $index_id)[0];
 
         if(!preg_match("/^[0-9a-z_-]+$/", $index_id))
         {
-            $at->setErrorText("Malformed index name");
-            $at->output();
+            $this->APITools->setErrorText("Malformed index name");
+            $this->APITools->output();
         }
 
 
         $regenerate_index = false;
-        $index_list = json_decode(file_get_contents(__DIR__ . "/../../../indexes.json"), true);
+        $index_list = json_decode(file_get_contents(__DIR__ . "/../../../indexes.json"), true, 512, JSON_THROW_ON_ERROR);
 
         if(!array_key_exists($index_id, $index_list))
         {
             $index_id = "global";
             if(!array_key_exists("global", $index_list))
             {
-                $at->setErrorText("Broken indexes.json file. Contact system administrator.");
-                $at->output();
-                die();
+                $this->APITools->setErrorText("Broken indexes.json file. Contact system administrator.");
+                $this->APITools->output();
             }
         }
 
         $index_store_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Indexes/" . Session::get_current()->getUser()->getId() . "/" . $index_id . ".json";
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Indexes/" . Session::get_current()->getUser()->getId() . "/"))
         {
-            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Indexes/" . Session::get_current()->getUser()->getId() . "/", 0700, true);
+            if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Indexes/" . Session::get_current()->getUser()->getId() . "/", 0700, true) && !is_dir($concurrentDirectory))
+            {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
         }
         $old_index = ["created" => "1970-01-01T00:00:00Z"];
         if(file_exists($index_store_path))
@@ -64,12 +76,12 @@ class IndexController
             $max_age = $index_list[$index_id]["max_age"];
         }
         $index_age = time() - strtotime($old_index["created"]);
-        $model->Age = $index_age;
-        $model->MaxAge = $max_age;
+        $this->Model->Age = $index_age;
+        $this->Model->MaxAge = $max_age;
         if((time() - strtotime($old_index["created"])) > $max_age)
         {
             $regenerate_index = true;
-            $model->Age = 0;
+            $this->Model->Age = 0;
         }
 
         if($regenerate_index)
@@ -105,7 +117,7 @@ class IndexController
             $new_index = $old_index;
         }
 
-        $model->Index = $new_index;
-        $at->output();
+        $this->Model->Index = $new_index;
+        $this->APITools->output();
     }
 }

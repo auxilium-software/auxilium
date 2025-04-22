@@ -3,16 +3,33 @@
 namespace Auxilium\Auxilium\API\Controllers;
 
 use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\Auxilium\API\Models\NodeModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
+use Auxilium\Utilities\URIUtilities;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
 
 class NodeController
 {
+    private NodeModel $Model;
+    private APITools2 $APITools;
+    private URIUtilities $URIUtilities;
+
+    public function __construct()
+    {
+        $this->Model = new NodeModel();
+        $this->APITools = new APITools2($this->Model);
+        $this->URIUtilities = new URIUtilities();
+
+        $this->APITools->requireLogin();
+    }
+    
+    
+    
     function debug_to_console($data)
     {
         $output = $data;
@@ -39,11 +56,6 @@ class NodeController
     )]
     public function GetNode()
     {
-        $model = new NodeModel();
-        $at = new APITools2($model);
-        $at->requireLogin();
-
-
         $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
         $last_uri_component = explode("?", end($uri_components));
         $get_params = "";
@@ -57,9 +69,9 @@ class NodeController
 
         if(!preg_match("/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/", $node_id))
         {
-            $at->setErrorText("Formatting error");
-            $at->setResponseCode(400);
-            $at->output();
+            $this->APITools->setErrorText("Formatting error");
+            $this->APITools->setResponseCode(400);
+            $this->APITools->output();
             exit();
         }
 
@@ -68,7 +80,7 @@ class NodeController
             case "DELETE":
                 $query = "DELETE {" . $node_id . "}";
                 GraphDatabaseConnection::query(Session::get_current()->getUser(), $query);
-                $at->output();
+                $this->APITools->output();
                 break;
             case "GET":
             default:
@@ -77,10 +89,10 @@ class NodeController
                     uuid : new UUID($node_id),
                 );
 
-                $model->Result = $node_info;
-                $model->Request = $node_id;
+                $this->Model->Result = $node_info;
+                $this->Model->Request = $node_id;
 
-                $at->output();
+                $this->APITools->output();
                 break;
         }
 
