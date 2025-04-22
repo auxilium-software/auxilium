@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\Auxilium\AuxiliumLFSObject;
 use Auxilium\Utilities\Security;
 use Auxilium\Utilities\URIUtilities;
 
@@ -45,7 +46,7 @@ if(strtolower($uri->getGetParameters()) == "metadata")
     $metadata = true;
 }
 
-$lfsobj = new \Auxilium\Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
+$lfsobj = new AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
 
 if(!$lfsobj->canRead())
 {
@@ -113,7 +114,7 @@ if(isset($_FILES["file"]["name"]))
                 exit();
             }
 
-            move_uploaded_file($_FILES["file"]["tmp_name"],  $lfsobj->getFilePath());
+            move_uploaded_file($_FILES["file"]["tmp_name"], $lfsobj->getFilePath());
 
             $at->setVariable("file_id", $file_id);
             $at->setVariable("file_hash", $file_hash);
@@ -150,13 +151,13 @@ else
             {
                 $at->setVariable("id", $file_id);
                 $at->setVariable("hash", $file_hash);
-                $at->setVariable("size", filesize( $lfsobj->getFilePath()));
+                $at->setVariable("size", filesize($lfsobj->getFilePath()));
                 $at->output();
             }
             else
             {
                 //header("Content-Disposition: filename=\"".$file_name."\"");
-                $data_size = filesize( $lfsobj->getFilePath());
+                $data_size = filesize($lfsobj->getFilePath());
                 if($_SERVER["REQUEST_METHOD"] == "GET" && isset($_SERVER["HTTP_RANGE"]) && $range = stristr(trim($_SERVER["HTTP_RANGE"]), "bytes="))
                 {
 
@@ -223,7 +224,7 @@ else
                                 ob_end_clean();
                             }
                             flush();
-                            $fh = fopen( $lfsobj->getFilePath(), 'r');
+                            $fh = fopen($lfsobj->getFilePath(), 'r');
                             for($i = 0; $i < $rangecount; $i++)
                             {
                                 echo "\r\n--$boundary\r\n";
@@ -240,7 +241,7 @@ else
                             header("Content-Length: " . ($lasts[0] - $firsts[0]));
                             header("Content-Range: bytes " . $firsts[0] . "-" . $lasts[0] . "/$data_size");
                             header("Content-Type: " . $mime_type . "");
-                            $fh = fopen( $lfsobj->getFilePath(), 'r');
+                            $fh = fopen($lfsobj->getFilePath(), 'r');
                             while(ob_get_level())
                             {
                                 ob_end_clean();
@@ -261,7 +262,7 @@ else
                             ob_end_clean();
                         }
                         flush();
-                        readfile( $lfsobj->getFilePath());
+                        readfile($lfsobj->getFilePath());
                     }
                 }
                 else
@@ -274,7 +275,7 @@ else
                         ob_end_clean();
                     }
                     flush();
-                    readfile( $lfsobj->getFilePath());
+                    readfile($lfsobj->getFilePath());
                 }
             }
         }

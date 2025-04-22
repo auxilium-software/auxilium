@@ -1,6 +1,6 @@
 <?php
 
-use Auxilium\APITools;
+use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\DraftModel;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
@@ -17,7 +17,7 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
 $model = new DraftModel();
-$at = new \Auxilium\Auxilium\API\APITools2($model);
+$at = new APITools2($model);
 $at->requireLogin();
 
 $draft_content = null;
@@ -48,7 +48,7 @@ if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::
 {
     if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/", 0700, true) && !is_dir($concurrentDirectory))
     {
-        throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
     }
 }
 

@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\Auxilium\AuxiliumLFSObject;
 use Auxilium\Utilities\URIUtilities;
 use ZBateson\MailMimeParser\Message;
 
@@ -38,7 +39,7 @@ if($mime_type == null)
 
 $desired_components = explode(",", strtolower($uri->getGetParameters()));
 
-$lfsobj = new \Auxilium\Auxilium\AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
+$lfsobj = new AuxiliumLFSObject("auxlfs://" . INSTANCE_CREDENTIAL_DDS_HOST . "/" . $file_id . "+" . $file_hash . "+" . urlencode($mime_type));
 
 if(!$lfsobj->canRead())
 {

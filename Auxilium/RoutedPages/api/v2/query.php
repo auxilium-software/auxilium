@@ -1,6 +1,5 @@
 <?php
 
-use Auxilium\APITools;
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
@@ -96,8 +95,8 @@ try
                 {
                     $results[0]["@rows"] = [];
                     $model->ResultSlice = $results[0];
-                    $model->StartIndex  = null;
-                    $model->Page        = $current_page;
+                    $model->StartIndex = null;
+                    $model->Page = $current_page;
                 }
                 else
                 {
@@ -117,8 +116,8 @@ try
                     }
                     $results[0]["@rows"] = $recontituted_rows;
                     $model->ResultSlice = $results[0];
-                    $model->StartIndex  = $slice;
-                    $model->Page        = $current_page;
+                    $model->StartIndex = $slice;
+                    $model->Page = $current_page;
                 }
             }
             else
@@ -129,8 +128,8 @@ try
         }
         else
         {
-            $model->Result  = $results[0];
-            $model->Query   = $queries[0];
+            $model->Result = $results[0];
+            $model->Query = $queries[0];
         }
         $at->output();
     }

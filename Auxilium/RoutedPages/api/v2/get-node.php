@@ -60,7 +60,7 @@ try
                 uuid : new UUID($node_id),
             );
 
-            $model->Result  = $node_info;
+            $model->Result = $node_info;
             $model->Request = $node_id;
 
             $at->output();
