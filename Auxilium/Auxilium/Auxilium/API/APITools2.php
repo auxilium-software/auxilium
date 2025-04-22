@@ -9,7 +9,14 @@ use Auxilium\Auxilium\API\Models\NodeModel;
 use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\SessionHandling\Session;
 use JetBrains\PhpStorm\NoReturn;
+use OpenApi\Attributes\Info;
+use OpenApi\Attributes\SecurityScheme;
+use OpenApi\Attributes\Server;
 
+#[Info(
+    version: "2.0-alpha",
+    title: "Auxilium API",
+)]
 class APITools2
 {
     private QueryModel|NodeModel|DraftModel $Model;

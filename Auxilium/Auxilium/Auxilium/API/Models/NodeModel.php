@@ -4,7 +4,17 @@ namespace Auxilium\Auxilium\API\Models;
 
 use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
 use OpenApi\Attributes\Property;
+use OpenApi\Attributes\Schema;
 
+#[Schema(
+    schema: "Node",
+    title: "Node",
+    description: "Stores information about a Deegraph Node.",
+    required: [
+        "Status",
+        "ResponseCode",
+    ],
+)]
 class NodeModel
 {
     #[Property(
