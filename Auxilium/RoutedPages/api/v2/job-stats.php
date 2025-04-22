@@ -1,8 +1,13 @@
 <?php
+
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\JobStatsModel;
+
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = Auxilium\APITools::get_instance();
+$model = new JobStatsModel();
+$at = new APITools2($model);
 //$at->requireInternalIpRange();
 //$at->requireInternalApiKey();
 
@@ -37,5 +42,5 @@ foreach($jobs as &$job_name)
     }
 }
 
-$at->setVariable("jobs", $job_names);
+$model->Jobs = $job_names;
 $at->output();

@@ -5,6 +5,10 @@ namespace Auxilium\Auxilium\API;
 use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
 use Auxilium\Auxilium\API\Models\APIResponsePayload;
 use Auxilium\Auxilium\API\Models\DraftModel;
+use Auxilium\Auxilium\API\Models\IndexModel;
+use Auxilium\Auxilium\API\Models\JobInQueueModel;
+use Auxilium\Auxilium\API\Models\JobLookupModel;
+use Auxilium\Auxilium\API\Models\JobStatsModel;
 use Auxilium\Auxilium\API\Models\NodeModel;
 use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\SessionHandling\Session;
@@ -19,11 +23,11 @@ use OpenApi\Attributes\Server;
 )]
 class APITools2
 {
-    private QueryModel|NodeModel|DraftModel $Model;
+    private QueryModel|NodeModel|DraftModel|IndexModel|JobInQueueModel|JobLookupModel|JobStatsModel $Model;
 
 
 
-    public function __construct(QueryModel|NodeModel|DraftModel $model)
+    public function __construct(QueryModel|NodeModel|DraftModel|IndexModel|JobInQueueModel|JobLookupModel|JobStatsModel $model)
     {
         $this->Model = $model;
         $this->clearReturnData();

@@ -1,11 +1,15 @@
 <?php
 
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\JobInQueueModel;
 use Auxilium\EmailHandling\InternetMessageTransport;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = Auxilium\APITools::get_instance();
+$model = new JobInQueueModel();
+
+$at = new APITools2($model);
 //$at->requireInternalIpRange();
 $at->requireInternalApiKey();
 
@@ -141,9 +145,10 @@ foreach($jobs as &$job_name)
     }
 }
 
-$at->setVariable("completed_jobs", $completed_jobs);
-$at->setVariable("attempted_jobs", $attempted_jobs);
-$at->setVariable("remaining_jobs", $total_jobs - $completed_jobs);
-$at->setVariable("elapsed_time_us", ceil((hrtime(true) - $time_pre) / 1000));
-$at->setVariable("exec_time_limit_us", EXEC_TIME_LIMIT);
+$model->CompletedJobs = $completed_jobs;
+$model->AttemptedJobs = $attempted_jobs;
+$model->RemainingJobs = $total_jobs - $completed_jobs;
+$model->ElapsedTimeUS = ceil((hrtime(true) - $time_pre) / 1000);
+$model->ExecTimeLimitUS = EXEC_TIME_LIMIT;
+
 $at->output();

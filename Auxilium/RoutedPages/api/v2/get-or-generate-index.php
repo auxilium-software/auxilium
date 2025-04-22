@@ -1,5 +1,7 @@
 <?php
 
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
@@ -8,7 +10,8 @@ use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = Auxilium\APITools::get_instance();
+$model = new IndexModel();
+$at = new APITools2($model);
 $at->requireLogin();
 
 $uri = new URIUtilities();
@@ -58,12 +61,12 @@ if(array_key_exists("max_age", $index_list[$index_id]))
     $max_age = $index_list[$index_id]["max_age"];
 }
 $index_age = time() - strtotime($old_index["created"]);
-$at->setVariable("age", $index_age);
-$at->setVariable("max_age", $max_age);
+$model->Age = $index_age;
+$model->MaxAge = $max_age;
 if((time() - strtotime($old_index["created"])) > $max_age)
 {
     $regenerate_index = true;
-    $at->setVariable("age", 0);
+    $model->Age = 0;
 }
 
 if($regenerate_index)
@@ -99,5 +102,5 @@ else
     $new_index = $old_index;
 }
 
-$at->setVariable("index", $new_index);
+$model->Index = $new_index;
 $at->output();

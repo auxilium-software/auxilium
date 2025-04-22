@@ -1,11 +1,15 @@
 <?php
 
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Enumerators\JobStatus;
+use Auxilium\Auxilium\API\Models\JobLookupModel;
 use Auxilium\Utilities\URIUtilities;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = Auxilium\APITools::get_instance();
+$model = new JobLookupModel();
+$at = new APITools2($model);
 $at->requireLogin();
 
 $draft_content = null;
@@ -34,21 +38,21 @@ if(!preg_match("/^[0-9a-f]{16}\\.[0-9a-zA-Z_-]{32}$/", $job_id))
     else
     {
         $at->setErrorText("Malformed job_id");
-        $at->setVariable("job_id", $job_id);
+        $model->JobID = $job_id;
         $at->output();
     }
 }
 
 $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_id . ".json";
-$at->setVariable("status", "PENDING");
+$model->JobStatus = JobStatus::PENDING;
 if(!file_exists($job_path))
 {
-    $at->setVariable("status", "DONE");
+    $model->JobStatus = JobStatus::DONE;
     $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/" . $job_id . ".json";
 }
 if(!file_exists($job_path))
 {
-    $at->setVariable("status", "FAILED");
+    $model->JobStatus = JobStatus::FAILED;
     $job_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_id . ".json";
 }
 if(!file_exists($job_path))
@@ -77,14 +81,14 @@ if(isset($job_content["job_key"]))
 
 if($action == "access")
 {
-    $at->setVariable("job_id", $job_id);
+    $model->JobID = $job_id;
     if($key_authed)
     {
-        $at->setVariable("content", $job_content);
+        $model->Content = $job_content;
     }
     else
     {
-        $at->setVariable("note", "KEY_REQUIRED_TO_VIEW_CONTENT");
+        $model->Note = "KEY_REQUIRED_TO_VIEW_CONTENT";
     }
     $at->output();
 }
