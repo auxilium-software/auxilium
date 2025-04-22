@@ -94,7 +94,7 @@ class APITools2
             $this->setStatus(APIResponseStatus::UNAUTHORISED);
             $this->setErrorText("Login required for this API. Check session token.");
             $this->setResponseCode(401);
-            $this->Render();
+            $this->output();
         }
     }
 }

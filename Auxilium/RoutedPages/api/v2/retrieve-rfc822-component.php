@@ -45,7 +45,6 @@ if(!$lfsobj->canRead())
 {
     $at->setErrorText("Missing read permission");
     $at->output();
-    exit();
 }
 
 $message_headers = [];
@@ -59,7 +58,7 @@ foreach($full_message->getAllHeaders() as $header)
         $res = [];
         foreach($parts as &$part)
         {
-            array_push($res, $part->getValue());
+            $res[] = $part->getValue();
         }
         $message_headers[strtolower($header->getName())] = $res;
     }
