@@ -1,5 +1,7 @@
 <?php
 
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\NodeModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
@@ -8,7 +10,9 @@ use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = Auxilium\APITools::get_instance();
+
+$model = new NodeModel();
+$at = new APITools2($model);
 $at->requireLogin();
 
 function debug_to_console($data)
@@ -55,8 +59,10 @@ try
                 actor: Session::get_current()->getUser(),
                 uuid : new UUID($node_id),
             );
-            $at->setVariable("result", $node_info);
-            $at->setVariable("request", $node_id);
+
+            $model->Result  = $node_info;
+            $model->Request = $node_id;
+
             $at->output();
             break;
     }

@@ -1,6 +1,8 @@
 <?php
 
 use Auxilium\APITools;
+use Auxilium\Auxilium\API\APITools2;
+use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
@@ -8,8 +10,13 @@ use Auxilium\SessionHandling\Session;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = APITools::get_instance();
+// $at = APITools::get_instance();
+
+$model = new QueryModel();
+
+$at = new APITools2($model);
 $at->requireLogin();
+
 
 $queries = [];
 $results = [];
@@ -22,7 +29,7 @@ if(isset($_POST["queries"]))
 {
     if(strlen($_POST["queries"]) > 0)
     {
-        $queries = json_decode($_POST["queries"], true);
+        $queries = json_decode($_POST["queries"], true, 512, JSON_THROW_ON_ERROR);
     }
 }
 
@@ -47,7 +54,7 @@ if(isset($_POST["paginate"]))
 
 if(isset($_POST["page_size"]))
 {
-    $page_size = intval($_POST["page_size"]);
+    $page_size = (int)$_POST["page_size"];
     if($page_size <= 0)
     {
         $page_size = 8;
@@ -56,7 +63,7 @@ if(isset($_POST["page_size"]))
 
 if(isset($_POST["page"]))
 {
-    $current_page = intval($_POST["page"]);
+    $current_page = (int)$_POST["page"];
     if($current_page < 0)
     {
         $current_page = 0;
@@ -67,12 +74,12 @@ try
 {
     if(count($queries) > 1)
     {
-        for($i = 0; $i < count($queries); $i++)
+        for($i = 0, $iMax = count($queries); $i < $iMax; $i++)
         {
             $results[$i] = GraphDatabaseConnection::query(Session::get_current()->getUser(), $queries[$i]);
         }
-        $at->setVariable("results", $results);
-        $at->setVariable("queries", $queries);
+        $model->Results = $results;
+        $model->Queries = $queries;
         $at->output();
     }
     elseif(count($queries) > 0)
@@ -88,9 +95,9 @@ try
                 if($slice >= count($keys))
                 {
                     $results[0]["@rows"] = [];
-                    $at->setVariable("result_slice", $results[0]);
-                    $at->setVariable("start_index", null);
-                    $at->setVariable("page", $current_page);
+                    $model->ResultSlice = $results[0];
+                    $model->StartIndex  = null;
+                    $model->Page        = $current_page;
                 }
                 else
                 {
@@ -109,21 +116,21 @@ try
                         $recontituted_rows[$key] = $rows[$key];
                     }
                     $results[0]["@rows"] = $recontituted_rows;
-                    $at->setVariable("result_slice", $results[0]);
-                    $at->setVariable("start_index", $slice);
-                    $at->setVariable("page", $current_page);
+                    $model->ResultSlice = $results[0];
+                    $model->StartIndex  = $slice;
+                    $model->Page        = $current_page;
                 }
             }
             else
             {
-                $at->setVariable("result", $results[0]);
+                $model->Result = $results[0];
             }
-            $at->setVariable("query", $queries[0]);
+            $model->Query = $queries[0];
         }
         else
         {
-            $at->setVariable("result", $results[0]);
-            $at->setVariable("query", $queries[0]);
+            $model->Result  = $results[0];
+            $model->Query   = $queries[0];
         }
         $at->output();
     }

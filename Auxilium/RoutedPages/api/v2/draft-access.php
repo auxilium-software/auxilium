@@ -1,6 +1,7 @@
 <?php
 
 use Auxilium\APITools;
+use Auxilium\Auxilium\API\Models\DraftModel;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\EmailHandling\InternetMessageTransport;
@@ -15,7 +16,8 @@ use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 
-$at = APITools::get_instance();
+$model = new DraftModel();
+$at = new \Auxilium\Auxilium\API\APITools2($model);
 $at->requireLogin();
 
 $draft_content = null;
@@ -59,7 +61,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST" || $_SERVER["REQUEST_METHOD"] === "PUT"
 
 if($action === "access")
 {
-    $at->setVariable("draft_id", $draft_id);
+    $model->DraftID = $draft_id;
     if($put_data)
     {
         $bytes_written = file_put_contents($message_draft_path, json_encode($draft_content));
@@ -70,12 +72,12 @@ if($action === "access")
         }
         else
         {
-            $at->setVariable("bytes_written", $bytes_written);
+            $model->BytesWritten = $bytes_written;
         }
     }
     else
     {
-        $at->setVariable("content", json_decode(file_get_contents($message_draft_path), true));
+        $model->Content = json_decode(file_get_contents($message_draft_path), true);
     }
     $at->output();
 }
@@ -248,17 +250,17 @@ elseif($action === "send")
             type            : "MIME"
         );
 
-        $at->setVariable("job_reference", $job_reference);
+        $model->JobReference = $job_reference;
 
         if(count($attach_failures) > 0)
         {
-            $at->setVariable("attach_failures", $attach_failures);
+            $model->AttachFailures = $attach_failures;
         }
         if(count($notified_parties) > 0)
         {
-            $at->setVariable("attached_to", $notified_parties);
+            $model->AttachedTo = $notified_parties;
         }
-        $at->setVariable("message_node_id", $message_node->getId());
+        $model->MessageNodeID = $message_node->getId();
         $at->output();
     }
 }
