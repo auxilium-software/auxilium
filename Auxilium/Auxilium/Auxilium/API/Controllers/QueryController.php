@@ -11,6 +11,7 @@ use Auxilium\SessionHandling\Session;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Post;
 use OpenApi\Attributes\Response;
 
 class QueryController extends APIController
@@ -23,7 +24,7 @@ class QueryController extends APIController
 
 
     #[NoReturn]
-    #[Get(
+    #[Post(
         path       : "/api/v2/query",
         operationId: "[POST]/api/v2/query",
         description: "",

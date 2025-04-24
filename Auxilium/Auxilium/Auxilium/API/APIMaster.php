@@ -2,6 +2,9 @@
 
 namespace Auxilium\Auxilium\API;
 
+use App\API\Controllers\IncidentEventController;
+use App\Common\UUID;
+use App\Enumerators\ItemPrepend;
 use Auxilium\Auxilium\API\Controllers\IndexController;
 use Auxilium\Auxilium\API\Controllers\JobRunnerController;
 use Auxilium\Auxilium\API\Controllers\JobLookupController;
@@ -10,57 +13,63 @@ use Auxilium\Auxilium\API\Controllers\MessageController;
 use Auxilium\Auxilium\API\Controllers\NodeController;
 use Auxilium\Auxilium\API\Controllers\PDFController;
 use Auxilium\Auxilium\API\Controllers\QueryController;
+use Auxilium\Auxilium\API\Superclasses\APIController;
+use Auxilium\Utilities\Logging;
 use Composer\Pcre\UnexpectedNullMatchException;
+use PharIo\GnuPG\Exception;
 
 class APIMaster
 {
-    public static function GetController()
+
+
+    protected static function MatchURI(string $regex): bool
     {
-        $endpoint = $_SERVER['REQUEST_URI'];
-        switch($endpoint)
-        {
-            case "/api/v2/lfs":
-                return null;
+        $regex = str_replace(
+            ["/", "?"],
+            ["\\/", "\\?"],
+            $regex
+        );
+        $regex = "/^$regex$/";
 
-            case "/api/v2/nodes":
-                return new NodeController();
+        // strip out any params
+        $urlPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
-            case "/api/v2/outbound-oauth-login":
-                return null;
+        $temp = preg_match(pattern: $regex, subject: $urlPath);
 
-            case "/api/v2/outbound-oauth-register":
-                return null;
-
-            case "/api/v2/query":
-                return new QueryController();
-
-            case "/api/v2/retrieve-rfc822-component":
-                return null;
-
-            case "/api/v2/drafts":
-                return new MessageController();
-
-            case "/api/v2/jobs":
-                return new JobLookupController();
-
-            case "/api/v2/job-stats":
-                return new JobStatisticsController();
-
-            case "/api/v2/job-run":
-                return new JobRunnerController();
-
-            case "/api/v2/indexes":
-                return new IndexController();
-
-            case "/api/v2/pdf":
-                return new PDFController();
-
-            default:
-                return null;
-        }
+        return $temp === 1;
     }
 
-    public static function Get(): array
+    public static function GetController(): ?APIController
+    {
+        Logging::LogAPIRequest();
+
+        $routes = [
+            "/api/v2/lfs"                            => null,
+            "/api/v2/nodes(/.+)"                    => NodeController::class,
+            "/api/v2/outbound-oauth-login"          => null,
+            "/api/v2/outbound-oauth-register"       => null,
+            "/api/v2/query"                         => QueryController::class,
+            "/api/v2/retrieve-rfc822-component"     => null,
+            "/api/v2/jobs"                          => JobLookupController::class,
+            "/api/v2/job-stats"                     => JobStatisticsController::class,
+            "/api/v2/job-run"                       => JobRunnerController::class,
+            "/api/v2/indexes"                       => IndexController::class,
+            "/api/v2/pdf(/.+)"                      => PDFController::class,
+        ];
+
+        foreach ($routes as $regex => $controllerClass)
+        {
+            if (self::MatchURI(regex: $regex))
+            {
+                return $controllerClass ? new $controllerClass() : null;
+            }
+        }
+
+
+        throw new Exception("Endpoint does not exist");
+    }
+
+    public static function Go(): array
     {
         $controller = self::GetController();
         if($controller == null)
@@ -68,7 +77,18 @@ class APIMaster
             throw new UnexpectedNullMatchException();
         }
         $controller->EnforceLogin();
-        $result = $controller->Get();
+        switch($_SERVER['REQUEST_METHOD'])
+        {
+            case "GET":
+                $result = $controller->Get();
+                break;
+            case "POST":
+                $result = $controller->Post();
+                break;
+            case "DELETE":
+                $result = $controller->Delete();
+                break;
+        }
         return $result->ToAssocArray();
     }
 }
