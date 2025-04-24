@@ -20,12 +20,6 @@ use OpenApi\Attributes\Response;
 class JobStatisticsController extends APIController
 {
 
-    //const EXEC_TIME_LIMIT = 5000000000; // stop after 5 seconds
-    const EXEC_TIME_LIMIT = 1000000000; // stop after 1000 msec
-    //const EXEC_TIME_LIMIT = 100000000; // stop after 100 msec
-
-    const REFRESH_RATE = 3;
-
     public function __construct()
     {
         parent::__construct();

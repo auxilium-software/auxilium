@@ -19,12 +19,10 @@ use OpenApi\Attributes\Response;
 
 class JobRunnerController extends APIController
 {
-
     //const EXEC_TIME_LIMIT = 5000000000; // stop after 5 seconds
-    const EXEC_TIME_LIMIT = 1000000000; // stop after 1000 msec
+    private int $EXEC_TIME_LIMIT = 1000000000; // stop after 1000 msec
     //const EXEC_TIME_LIMIT = 100000000; // stop after 100 msec
-
-    const REFRESH_RATE = 3;
+    private int $REFRESH_RATE = 3;
 
     public function __construct()
     {
@@ -80,7 +78,7 @@ class JobRunnerController extends APIController
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/"))
             mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/", 0700, true);
 
-        if($run_diff > REFRESH_RATE)
+        if($run_diff > $this->REFRESH_RATE)
         {
             $job_name = "cron-" . $this_run;
             $job_payload = [
@@ -177,7 +175,7 @@ class JobRunnerController extends APIController
                         file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
                     }
                 }
-                if((hrtime(true) - $time_pre) > EXEC_TIME_LIMIT)
+                if((hrtime(true) - $time_pre) > $this->EXEC_TIME_LIMIT)
                 {
                     break;
                 }
@@ -188,7 +186,7 @@ class JobRunnerController extends APIController
         $this->Model->AttemptedJobs = $attempted_jobs;
         $this->Model->RemainingJobs = $total_jobs - $completed_jobs;
         $this->Model->ElapsedTimeUS = ceil((hrtime(true) - $time_pre) / 1000);
-        $this->Model->ExecTimeLimitUS = EXEC_TIME_LIMIT;
+        $this->Model->ExecTimeLimitUS = $this->EXEC_TIME_LIMIT;
 
         $this->Render();
     }
