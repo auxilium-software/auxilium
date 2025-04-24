@@ -2,24 +2,20 @@
 
 namespace Auxilium\Auxilium\API\Models;
 
-use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
-use Auxilium\Auxilium\API\Enumerators\JobStatus;
 use Auxilium\Auxilium\API\Superclasses\APIModel;
-use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
 #[Schema(
-    schema: "JobStatsModel",
-    title: "JobStats",
+    schema     : "JobStatsModel",
+    title      : "JobStats",
     description: "Stores information about a Job in Queue.",
-    required: [
+    required   : [
         "Status",
         "ResponseCode",
     ],
 )]
 class JobStatsModel extends APIModel
 {
-
 
 
     public array $Jobs;
@@ -29,10 +25,10 @@ class JobStatsModel extends APIModel
     {
         return [
             "response_code" => $this->ResponseCode,
-            "status"        => $this->Status->value,
+            "status" => $this->Status->value,
             "error_message" => $this->ErrorText,
 
-            "jobs"          => $this->Jobs,
+            "jobs" => $this->Jobs,
         ];
     }
 }

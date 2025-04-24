@@ -2,23 +2,20 @@
 
 namespace Auxilium\Auxilium\API\Models;
 
-use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
 use Auxilium\Auxilium\API\Superclasses\APIModel;
-use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
 #[Schema(
-    schema: "DraftModel",
-    title: "Draft",
+    schema     : "DraftModel",
+    title      : "Draft",
     description: "Stores information about an email draft.",
-    required: [
+    required   : [
         "Status",
         "ResponseCode",
     ],
 )]
 class DraftModel extends APIModel
 {
-
 
 
     public mixed $DraftID = null;
@@ -30,21 +27,20 @@ class DraftModel extends APIModel
     public ?string $MessageNodeID = null;
 
 
-
     public function ToAssocArray(): array
     {
         return [
-            "response_code"     => $this->ResponseCode,
-            "status"            => $this->Status->value,
-            "error_message"     => $this->ErrorText,
+            "response_code" => $this->ResponseCode,
+            "status" => $this->Status->value,
+            "error_message" => $this->ErrorText,
 
-            "draft_id"          => $this->DraftID,
-            "bytes_written"     => $this->BytesWritten,
-            "content"           => $this->Content,
-            "job_reference"     => $this->JobReference,
-            "attach_failures"   => $this->AttachFailures,
-            "attached_to"       => $this->AttachedTo,
-            "message_node_id"   => $this->MessageNodeID,
+            "draft_id" => $this->DraftID,
+            "bytes_written" => $this->BytesWritten,
+            "content" => $this->Content,
+            "job_reference" => $this->JobReference,
+            "attach_failures" => $this->AttachFailures,
+            "attached_to" => $this->AttachedTo,
+            "message_node_id" => $this->MessageNodeID,
         ];
     }
 }
