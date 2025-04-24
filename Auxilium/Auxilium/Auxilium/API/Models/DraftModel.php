@@ -28,14 +28,14 @@ class DraftModel
         property: "ResponseCode",
         description: "The HTTP Status code.",
         type: "int",
-        nullable: false,
+        nullable: true,
     )]
     public int $ResponseCode;
     #[Property(
         property: "ErrorText",
         description: "If an error occurs, the message will be placed here.",
         type: "string",
-        nullable: false,
+        nullable: true,
     )]
     public ?string $ErrorText = null;
 
