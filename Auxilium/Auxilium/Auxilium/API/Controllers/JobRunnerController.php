@@ -65,18 +65,33 @@ class JobRunnerController extends APIController
         {
             file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun", time());
         }
-        $last_run = intval(file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun"));
+        $last_run = (int)file_get_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun");
         $this_run = time();
         $run_diff = $this_run - $last_run;
         file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/LastJobRun", $this_run);
 
         // create directories
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/"))
-            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/", 0700, true);
+        {
+            if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/", 0700, true) && !is_dir($concurrentDirectory))
+            {
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
+        }
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/"))
-            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/", 0700, true);
+        {
+            if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/", 0700, true) && !is_dir($concurrentDirectory))
+            {
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
+        }
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/"))
-            mkdir(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/", 0700, true);
+        {
+            if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/", 0700, true) && !is_dir($concurrentDirectory))
+            {
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
+        }
 
         if($run_diff > $this->REFRESH_RATE)
         {
@@ -88,7 +103,7 @@ class JobRunnerController extends APIController
             ];
             file_put_contents(
                 LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name,
-                json_encode($job_payload, JSON_PRETTY_PRINT)
+                json_encode($job_payload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT)
             );
         }
 
@@ -161,18 +176,18 @@ class JobRunnerController extends APIController
                 if($success)
                 {
                     unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name);
-                    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+                    file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Completed/" . $job_name, json_encode($job_payload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
                 }
                 else
                 {
                     if($job_payload["tries"] < $job_payload["max_tries"])
                     {
-                        file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+                        file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name, json_encode($job_payload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
                     }
                     else
                     {
                         unlink(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Queue/" . $job_name);
-                        file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_name, json_encode($job_payload, JSON_PRETTY_PRINT));
+                        file_put_contents(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Jobs/Failed/" . $job_name, json_encode($job_payload, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
                     }
                 }
                 if((hrtime(true) - $time_pre) > $this->EXEC_TIME_LIMIT)
