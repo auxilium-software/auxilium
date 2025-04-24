@@ -2,7 +2,6 @@
 
 namespace Auxilium\Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\DraftModel;
 use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Auxilium\API\Superclasses\APIModel;
@@ -13,7 +12,6 @@ use Auxilium\Schemas\MessageSchema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\Security;
-use Auxilium\Utilities\URIUtilities;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
@@ -31,27 +29,25 @@ class MessageController extends APIController
     }
 
 
-
-
     #[NoReturn]
     #[Get(
-        path: "/api/v2/drafts",
+        path       : "/api/v2/drafts",
         operationId: "[GET]/api/v2/drafts",
         description: "",
-        summary: "Messages",
-        tags: [
+        summary    : "Messages",
+        tags       : [
             "Messages",
         ],
-        responses: [
+        responses  : [
             new Response(
-                response: 200,
+                response   : 200,
                 description: "",
-                content: new JsonContent(
+                content    : new JsonContent(
                     ref: "#/components/schemas/DraftModel"
                 )
             )
         ],
-        deprecated: false,
+        deprecated : false,
     )]
     public function Get()
     {

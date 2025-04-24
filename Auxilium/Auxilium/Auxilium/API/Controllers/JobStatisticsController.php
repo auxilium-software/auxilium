@@ -2,16 +2,8 @@
 
 namespace Auxilium\Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\APITools2;
-use Auxilium\Auxilium\API\Enumerators\JobStatus;
-use Auxilium\Auxilium\API\Models\JobInQueueModel;
-use Auxilium\Auxilium\API\Models\JobLookupModel;
 use Auxilium\Auxilium\API\Models\JobStatsModel;
-use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\Auxilium\API\Superclasses\APIController;
-use Auxilium\EmailHandling\InternetMessageTransport;
-use Auxilium\Utilities\URIUtilities;
-use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
@@ -26,26 +18,25 @@ class JobStatisticsController extends APIController
     }
 
 
-
     #[NoReturn]
     #[Get(
-        path: "/api/v2/job-stats",
+        path       : "/api/v2/job-stats",
         operationId: "[GET]/api/v2/job-stats",
         description: "",
-        summary: "Job statistics",
-        tags: [
+        summary    : "Job statistics",
+        tags       : [
             "Jobs",
         ],
-        responses: [
+        responses  : [
             new Response(
-                response: 200,
+                response   : 200,
                 description: "",
-                content: new JsonContent(
+                content    : new JsonContent(
                     ref: "#/components/schemas/JobStatsModel"
                 )
             )
         ],
-        deprecated: false,
+        deprecated : false,
     )]
     public function Get(): JobStatsModel
     {

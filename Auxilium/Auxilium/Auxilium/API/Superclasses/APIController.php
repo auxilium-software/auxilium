@@ -3,7 +3,6 @@
 namespace Auxilium\Auxilium\API\Superclasses;
 
 use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
-use Auxilium\Auxilium\API\Models\GenericModel;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
 

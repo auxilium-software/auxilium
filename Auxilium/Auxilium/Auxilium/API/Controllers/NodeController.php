@@ -2,15 +2,11 @@
 
 namespace Auxilium\Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\APITools2;
-use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\Auxilium\API\Models\NodeModel;
 use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
-use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
-use Auxilium\Utilities\URIUtilities;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
@@ -24,9 +20,8 @@ class NodeController extends APIController
     {
         parent::__construct();
     }
-    
-    
-    
+
+
     function debug_to_console($data)
     {
         $output = $data;
@@ -37,33 +32,32 @@ class NodeController extends APIController
     }
 
 
-
     #[NoReturn]
     #[Get(
-        path: "/api/v2/nodes",
+        path       : "/api/v2/nodes",
         operationId: "[GET]/api/v2/nodes",
         description: "Gets a Deegraph node.",
-        summary: "Renders a PDF",
-        tags: [
+        summary    : "Renders a PDF",
+        tags       : [
             "Deegraph",
         ],
-        responses: [
+        responses  : [
             new Response(
-                response: 200,
+                response   : 200,
                 description: "",
-                content: new JsonContent(
+                content    : new JsonContent(
                     ref: "#/components/schemas/NodeModel"
                 )
             ),
             new Response(
-                response: 400,
+                response   : 400,
                 description: "",
-                content: new JsonContent(
+                content    : new JsonContent(
                     ref: "#/components/schemas/GenericModel"
                 )
             )
         ],
-        deprecated: false,
+        deprecated : false,
     )]
     public function Get()
     {

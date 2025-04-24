@@ -2,14 +2,12 @@
 
 namespace Auxilium\Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
-use Auxilium\Utilities\URIUtilities;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
@@ -24,27 +22,25 @@ class QueryController extends APIController
     }
 
 
-
-
     #[NoReturn]
     #[Get(
-        path: "/api/v2/query",
+        path       : "/api/v2/query",
         operationId: "[GET]/api/v2/query",
         description: "",
-        summary: "Queries",
-        tags: [
+        summary    : "Queries",
+        tags       : [
             "Queries",
         ],
-        responses: [
+        responses  : [
             new Response(
-                response: 200,
+                response   : 200,
                 description: "",
-                content: new JsonContent(
+                content    : new JsonContent(
                     ref: "#/components/schemas/QueryModel"
                 )
             )
         ],
-        deprecated: false,
+        deprecated : false,
     )]
     public function Get(): void
     {
@@ -187,5 +183,5 @@ class QueryController extends APIController
         }
 
     }
-    
+
 }

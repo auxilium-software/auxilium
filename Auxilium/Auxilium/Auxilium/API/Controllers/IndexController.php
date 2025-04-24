@@ -2,19 +2,17 @@
 
 namespace Auxilium\Auxilium\API\Controllers;
 
-use Auxilium\APITools;
-use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
-use Auxilium\Utilities\URIUtilities;
 use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Response;
+use RuntimeException;
 
 class IndexController extends APIController
 {
@@ -26,28 +24,27 @@ class IndexController extends APIController
 
     #[NoReturn]
     #[Get(
-        path: "/api/v2/indexes",
+        path       : "/api/v2/indexes",
         operationId: "[GET]/api/v2/indexes",
         description: "This API endpoint will get the index for the user, if one doesn't exist, it'll create one, and return that.",
-        summary: "Index generation",
-        tags: [
+        summary    : "Index generation",
+        tags       : [
             "Index Generation",
         ],
-        responses: [
+        responses  : [
             new Response(
-                response: 200,
+                response   : 200,
                 description: "",
-                content: new JsonContent(
+                content    : new JsonContent(
                     ref: "#/components/schemas/IndexModel"
                 )
             )
         ],
-        deprecated: false,
+        deprecated : false,
     )]
     public function Get(): void
     {
         $this->Model = new IndexModel();
-
 
 
         $index_id = $this->URIUtilities->getURIComponents()[count($this->URIUtilities->getURIComponents()) - 1];
@@ -80,7 +77,7 @@ class IndexController extends APIController
         {
             if(!mkdir($concurrentDirectory = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/Indexes/" . Session::get_current()->getUser()->getId() . "/", 0700, true) && !is_dir($concurrentDirectory))
             {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
             }
         }
         $old_index = ["created" => "1970-01-01T00:00:00Z"];
