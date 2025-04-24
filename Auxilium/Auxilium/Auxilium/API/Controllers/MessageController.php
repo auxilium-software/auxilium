@@ -24,12 +24,10 @@ use RuntimeException;
 
 class MessageController extends APIController
 {
-    private URIUtilities $URIUtilities;
 
     public function __construct()
     {
-        $this->URIUtilities = new URIUtilities();
-        $this->EnforceLogin();
+        parent::__construct();
     }
 
 

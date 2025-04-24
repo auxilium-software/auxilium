@@ -20,7 +20,7 @@ class QueryController extends APIController
 
     public function __construct()
     {
-        $this->EnforceLogin();
+        parent::__construct();
     }
 
 

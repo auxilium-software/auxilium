@@ -4,7 +4,17 @@ namespace Auxilium\Auxilium\API\Superclasses;
 
 use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
 use OpenApi\Attributes\Property;
+use OpenApi\Attributes\Schema;
 
+#[Schema(
+    schema: "GenericModel",
+    title: "Generic",
+    description: "Stores the most basic information.",
+    required: [
+        "Status",
+        "ResponseCode",
+    ],
+)]
 class APIModel
 {
     #[Property(

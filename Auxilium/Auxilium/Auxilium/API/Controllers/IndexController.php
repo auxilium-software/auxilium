@@ -18,12 +18,10 @@ use OpenApi\Attributes\Response;
 
 class IndexController extends APIController
 {
-    private URIUtilities $URIUtilities;
-    
+
     public function __construct()
     {
-        $this->URIUtilities = new URIUtilities();
-        $this->EnforceLogin();
+        parent::__construct();
     }
 
     #[NoReturn]

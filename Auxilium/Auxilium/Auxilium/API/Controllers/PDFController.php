@@ -15,6 +15,13 @@ use OpenApi\Attributes\Response;
 
 class PDFController extends APIController
 {
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+
     #[NoReturn]
     #[Get(
         path: "/api/v2/pdf",

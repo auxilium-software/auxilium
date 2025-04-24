@@ -19,12 +19,10 @@ use OpenApi\Attributes\Response;
 
 class NodeController extends APIController
 {
-    private URIUtilities $URIUtilities;
 
     public function __construct()
     {
-        $this->URIUtilities = new URIUtilities();
-        $this->EnforceLogin();
+        parent::__construct();
     }
     
     
@@ -55,6 +53,13 @@ class NodeController extends APIController
                 description: "",
                 content: new JsonContent(
                     ref: "#/components/schemas/NodeModel"
+                )
+            ),
+            new Response(
+                response: 400,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/GenericModel"
                 )
             )
         ],
