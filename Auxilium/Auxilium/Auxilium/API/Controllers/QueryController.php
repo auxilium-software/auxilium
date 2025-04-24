@@ -25,7 +25,7 @@ class QueryController extends APIController
     #[NoReturn]
     #[Get(
         path       : "/api/v2/query",
-        operationId: "[GET]/api/v2/query",
+        operationId: "[POST]/api/v2/query",
         description: "",
         summary    : "Queries",
         tags       : [
@@ -42,7 +42,7 @@ class QueryController extends APIController
         ],
         deprecated : false,
     )]
-    public function Get(): void
+    public function Post(): void
     {
         $this->Model = new QueryModel();
 

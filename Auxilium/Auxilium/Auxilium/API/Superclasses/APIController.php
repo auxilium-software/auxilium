@@ -5,6 +5,7 @@ namespace Auxilium\Auxilium\API\Superclasses;
 use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
+use JetBrains\PhpStorm\NoReturn;
 
 class APIController
 {
@@ -25,7 +26,7 @@ class APIController
     }
 
 
-    public function Render()
+    #[NoReturn] public function Render(): void
     {
         header("Content-Type: application/json; charset=utf-8");
         $this->Model->ResponseCode = http_response_code();
@@ -60,4 +61,29 @@ class APIController
             $this->Render();
         }
     }
+
+
+
+    public function Get()
+    {
+        $this->Model = new APIModel();
+        $this->Model->Status = APIResponseStatus::UNAUTHORISED;
+        $this->Model->ErrorText = "No endpoint exists for the GET method here.";
+        $this->Model->ResponseCode = 405;
+    }
+    public function Post()
+    {
+        $this->Model = new APIModel();
+        $this->Model->Status = APIResponseStatus::UNAUTHORISED;
+        $this->Model->ErrorText = "No endpoint exists for the POST method here.";
+        $this->Model->ResponseCode = 405;
+    }
+    public function Delete()
+    {
+        $this->Model = new APIModel();
+        $this->Model->Status = APIResponseStatus::UNAUTHORISED;
+        $this->Model->ErrorText = "No endpoint exists for the DELETE method here.";
+        $this->Model->ResponseCode = 405;
+    }
+
 }
