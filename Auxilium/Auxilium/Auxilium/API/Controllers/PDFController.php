@@ -5,6 +5,7 @@ namespace Auxilium\Auxilium\API\Controllers;
 use Auxilium\APITools;
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\IndexModel;
+use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Helpers\PDF\PDFGeneration;
 use Auxilium\Utilities\URIUtilities;
 use JetBrains\PhpStorm\NoReturn;
@@ -12,7 +13,7 @@ use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Response;
 
-class PDFController
+class PDFController extends APIController
 {
     #[NoReturn]
     #[Get(
@@ -24,10 +25,15 @@ class PDFController
             "PDF Generation",
         ],
         responses: [
+            new Response(
+                response: 200,
+                description: "",
+                // content:
+            )
         ],
         deprecated: false,
     )]
-    public function GeneratePDF(): void
+    public function Get(): void
     {
         $at = APITools::get_instance();
         $at->requireLogin();

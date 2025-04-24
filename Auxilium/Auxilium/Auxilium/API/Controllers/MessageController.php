@@ -4,28 +4,32 @@ namespace Auxilium\Auxilium\API\Controllers;
 
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\DraftModel;
+use Auxilium\Auxilium\API\Superclasses\APIController;
+use Auxilium\Auxilium\API\Superclasses\APIModel;
+use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\EmailHandling\InternetMessageTransport;
+use Auxilium\Schemas\CollectionSchema;
+use Auxilium\Schemas\MessageSchema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\EncodingTools;
+use Auxilium\Utilities\Security;
 use Auxilium\Utilities\URIUtilities;
+use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
+use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Response;
 use RuntimeException;
 
-class MessageController
+class MessageController extends APIController
 {
-    private DraftModel $Model;
-    private APITools2 $APITools;
     private URIUtilities $URIUtilities;
 
     public function __construct()
     {
-        $this->Model = new DraftModel();
-        $this->APITools = new APITools2($this->Model);
         $this->URIUtilities = new URIUtilities();
-
-        $this->APITools->requireLogin();
+        $this->EnforceLogin();
     }
 
 
@@ -51,8 +55,11 @@ class MessageController
         ],
         deprecated: false,
     )]
-    public function DraftAccess()
+    public function Get()
     {
+        $this->Model = new DraftModel();
+
+
         $draft_content = null;
         $put_data = false;
 
@@ -70,8 +77,9 @@ class MessageController
         }
         if(!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/", $draft_id))
         {
-            $this->APITools->setErrorText("Malformed uuid");
-            $this->APITools->output();
+            $this->Model = new APIModel();
+            $this->Model->ErrorText = "Malformed uuid";
+            $this->Render();
         }
         $message_draft_path = LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/" . $draft_id . ".json";
         if(!file_exists(LOCAL_EPHEMERAL_CREDENTIAL_STORE . "/MessageDrafts/" . Session::get_current()->getUser()->getId() . "/"))
@@ -97,8 +105,9 @@ class MessageController
                 $bytes_written = file_put_contents($message_draft_path, json_encode($draft_content));
                 if($bytes_written === FALSE)
                 {
-                    $this->APITools->setErrorText("Failed to write new message to RAM disk");
-                    $this->APITools->output();
+                    $this->Model = new APIModel();
+                    $this->Model->ErrorText = "Failed to write new message to RAM disk";
+                    $this->Render();
                 }
                 else
                 {
@@ -109,7 +118,7 @@ class MessageController
             {
                 $this->Model->Content = json_decode(file_get_contents($message_draft_path), true);
             }
-            $this->APITools->output();
+            $this->Render();
         }
         elseif($action === "send")
         {
@@ -151,8 +160,9 @@ class MessageController
                     $recipient = new User(substr($recipient_string, 1, 36));
                     if($recipient === null)
                     {
-                        $this->APITools->setErrorText("Failed to create valid RFC822 object. Invalid local user id provided.");
-                        $this->APITools->output();
+                        $this->Model = new APIModel();
+                        $this->Model->ErrorText = "Failed to create valid RFC822 object. Invalid local user id provided.";
+                        $this->Render();
                     }
                     else
                     {
@@ -176,8 +186,9 @@ class MessageController
                     }
                     else
                     {
-                        $this->APITools->setErrorText("Failed to create valid RFC822 object. Invalid external email address provided.");
-                        $this->APITools->output();
+                        $this->Model = new APIModel();
+                        $this->Model->ErrorText = "Failed to create valid RFC822 object. Invalid external email address provided.";
+                        $this->Render();
                     }
                 }
             }
@@ -225,8 +236,9 @@ class MessageController
             $bytes_written = file_put_contents($message_build_path, $build_content);
             if($bytes_written === false)
             {
-                $this->APITools->setErrorText("Failed to write new RFC822 object to RAM disk");
-                $this->APITools->output();
+                $this->Model = new APIModel();
+                $this->Model->ErrorText = "Failed to write new RFC822 object to RAM disk";
+                $this->Render();
             }
             else
             {
@@ -291,14 +303,14 @@ class MessageController
                     $this->Model->AttachedTo = $notified_parties;
                 }
                 $this->Model->MessageNodeID = $message_node->getId();
-                $this->APITools->output();
+                $this->Render();
             }
         }
         else
         {
-            $this->APITools->setErrorText("Invalid action");
-            $this->APITools->output();
+            $this->Model = new APIModel();
+            $this->Model->ErrorText = "Invalid action";
+            $this->Render();
         }
-
     }
 }

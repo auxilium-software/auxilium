@@ -4,6 +4,8 @@ namespace Auxilium\Auxilium\API\Controllers;
 
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\QueryModel;
+use Auxilium\Auxilium\API\Superclasses\APIController;
+use Auxilium\Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
@@ -13,19 +15,12 @@ use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Response;
 
-class QueryController
+class QueryController extends APIController
 {
-    private QueryModel $Model;
-    private APITools2 $APITools;
-    private URIUtilities $URIUtilities;
 
     public function __construct()
     {
-        $this->Model = new QueryModel();
-        $this->APITools = new APITools2($this->Model);
-        $this->URIUtilities = new URIUtilities();
-
-        $this->APITools->requireLogin();
+        $this->EnforceLogin();
     }
 
 
@@ -51,8 +46,11 @@ class QueryController
         ],
         deprecated: false,
     )]
-    public function RunQuery(): void
+    public function Get(): void
     {
+        $this->Model = new QueryModel();
+
+
         $queries = [];
         $results = [];
         $paginate = false;
@@ -70,8 +68,9 @@ class QueryController
 
         if(!is_array($queries))
         {
-            $this->APITools->setErrorText("Queries array must be a JSON array");
-            $this->APITools->output();
+            $this->Model = new APIModel();
+            $this->Model->ErrorText = "Queries array must be a JSON array";
+            $this->Render();
         }
 
         if(isset($_POST["query"]))
@@ -115,7 +114,7 @@ class QueryController
                 }
                 $this->Model->Results = $results;
                 $this->Model->Queries = $queries;
-                $this->APITools->output();
+                $this->Render();
             }
             elseif(count($queries) > 0)
             {
@@ -167,20 +166,24 @@ class QueryController
                     $this->Model->Result = $results[0];
                     $this->Model->Query = $queries[0];
                 }
-                $this->APITools->output();
+                $this->Render();
             }
             else
             {
-                $this->APITools->setErrorText("Missing query parameter");
-                $this->APITools->output();
+                $this->Model = new APIModel();
+                $this->Model->ErrorText = "Missing query parameter";
+                $this->Render();
             }
         }
         catch(DeegraphException $e)
         {
             throw $e;
-            $this->APITools->setErrorText("Query error");
-            $this->APITools->setVariable("stack_trace", $e->getInnerTrace());
-            $this->APITools->output();
+            /*
+            $this->Model = new APIModel();
+            $this->Model->ErrorText = "Query error";
+            // $this->APITools->setVariable("stack_trace", $e->getInnerTrace());
+            $this->Render();
+            */
         }
 
     }

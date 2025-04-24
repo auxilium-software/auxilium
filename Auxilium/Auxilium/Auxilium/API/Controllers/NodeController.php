@@ -5,6 +5,8 @@ namespace Auxilium\Auxilium\API\Controllers;
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\IndexModel;
 use Auxilium\Auxilium\API\Models\NodeModel;
+use Auxilium\Auxilium\API\Superclasses\APIController;
+use Auxilium\Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
@@ -15,19 +17,14 @@ use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Response;
 
-class NodeController
+class NodeController extends APIController
 {
-    private NodeModel $Model;
-    private APITools2 $APITools;
     private URIUtilities $URIUtilities;
 
     public function __construct()
     {
-        $this->Model = new NodeModel();
-        $this->APITools = new APITools2($this->Model);
         $this->URIUtilities = new URIUtilities();
-
-        $this->APITools->requireLogin();
+        $this->EnforceLogin();
     }
     
     
@@ -63,8 +60,11 @@ class NodeController
         ],
         deprecated: false,
     )]
-    public function GetNode()
+    public function Get()
     {
+        $this->Model = new NodeModel();
+
+
         $uri_components = explode("/", $_SERVER["REQUEST_URI"]);
         $last_uri_component = explode("?", end($uri_components));
         $get_params = "";
@@ -78,10 +78,10 @@ class NodeController
 
         if(!preg_match("/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/", $node_id))
         {
-            $this->APITools->setErrorText("Formatting error");
-            $this->APITools->setResponseCode(400);
-            $this->APITools->output();
-            exit();
+            $this->Model = new APIModel();
+            $this->Model->ErrorText = "Formatting error";
+            $this->Model->ResponseCode = 400;
+            $this->Render();
         }
 
         switch($_SERVER['REQUEST_METHOD'])
@@ -89,7 +89,7 @@ class NodeController
             case "DELETE":
                 $query = "DELETE {" . $node_id . "}";
                 GraphDatabaseConnection::query(Session::get_current()->getUser(), $query);
-                $this->APITools->output();
+                $this->Render();
                 break;
             case "GET":
             default:
@@ -101,7 +101,7 @@ class NodeController
                 $this->Model->Result = $node_info;
                 $this->Model->Request = $node_id;
 
-                $this->APITools->output();
+                $this->Render();
                 break;
         }
 

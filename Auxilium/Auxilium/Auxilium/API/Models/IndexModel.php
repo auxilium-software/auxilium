@@ -3,6 +3,7 @@
 namespace Auxilium\Auxilium\API\Models;
 
 use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
+use Auxilium\Auxilium\API\Superclasses\APIModel;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
@@ -16,29 +17,8 @@ use OpenApi\Attributes\Schema;
         "ResponseCode",
     ],
 )]
-class IndexModel
+class IndexModel extends APIModel
 {
-    #[Property(
-        property: "Status",
-        description: "The status of the API request.",
-        type: "string",
-        nullable: false,
-    )]
-    public APIResponseStatus $Status;
-    #[Property(
-        property: "ResponseCode",
-        description: "The HTTP Status code.",
-        type: "int",
-        nullable: true,
-    )]
-    public int $ResponseCode;
-    #[Property(
-        property: "ErrorText",
-        description: "If an error occurs, the message will be placed here.",
-        type: "string",
-        nullable: true,
-    )]
-    public ?string $ErrorText = null;
 
 
 

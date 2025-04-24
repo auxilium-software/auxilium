@@ -5,6 +5,8 @@ namespace Auxilium\Auxilium\API\Controllers;
 use Auxilium\APITools;
 use Auxilium\Auxilium\API\APITools2;
 use Auxilium\Auxilium\API\Models\IndexModel;
+use Auxilium\Auxilium\API\Superclasses\APIController;
+use Auxilium\Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
@@ -14,19 +16,14 @@ use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Response;
 
-class IndexController
+class IndexController extends APIController
 {
-    private IndexModel $Model;
-    private APITools2 $APITools;
     private URIUtilities $URIUtilities;
     
     public function __construct()
     {
-        $this->Model = new IndexModel();
-        $this->APITools = new APITools2($this->Model);
         $this->URIUtilities = new URIUtilities();
-        
-        $this->APITools->requireLogin();
+        $this->EnforceLogin();
     }
 
     #[NoReturn]
@@ -49,15 +46,20 @@ class IndexController
         ],
         deprecated: false,
     )]
-    public function GenerateIndex(): void
+    public function Get(): void
     {
+        $this->Model = new IndexModel();
+
+
+
         $index_id = $this->URIUtilities->getURIComponents()[count($this->URIUtilities->getURIComponents()) - 1];
         $index_id = explode(".", $index_id)[0];
 
         if(!preg_match("/^[0-9a-z_-]+$/", $index_id))
         {
-            $this->APITools->setErrorText("Malformed index name");
-            $this->APITools->output();
+            $this->Model = new APIModel();
+            $this->Model->ErrorText = "Malformed index name";
+            $this->Render();
         }
 
 
@@ -69,8 +71,9 @@ class IndexController
             $index_id = "global";
             if(!array_key_exists("global", $index_list))
             {
-                $this->APITools->setErrorText("Broken indexes.json file. Contact system administrator.");
-                $this->APITools->output();
+                $this->Model = new APIModel();
+                $this->Model->ErrorText = "Broken indexes.json file. Contact system administrator.";
+                $this->Render();
             }
         }
 
@@ -141,6 +144,6 @@ class IndexController
         }
 
         $this->Model->Index = $new_index;
-        $this->APITools->output();
+        $this->Render();
     }
 }

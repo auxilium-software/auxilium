@@ -88,13 +88,5 @@ class APITools2
 
     public function RequireLogin()
     {
-        if(!Session::get_current()?->sessionAuthenticated())
-        {
-            $this->clearReturnData();
-            $this->setStatus(APIResponseStatus::UNAUTHORISED);
-            $this->setErrorText("Login required for this API. Check session token.");
-            $this->setResponseCode(401);
-            $this->output();
-        }
     }
 }
