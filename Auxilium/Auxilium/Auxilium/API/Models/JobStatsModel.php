@@ -8,8 +8,8 @@ use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
 #[Schema(
-    schema: "JobLookupModel",
-    title: "JobInQueueModel",
+    schema: "JobStatsModel",
+    title: "JobStats",
     description: "Stores information about a Job in Queue.",
     required: [
         "Status",

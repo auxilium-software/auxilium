@@ -8,7 +8,7 @@ use OpenApi\Attributes\Schema;
 
 
 #[Schema(
-    schema: "Index",
+    schema: "IndexModel",
     title: "Index",
     description: "Stores information about an Auxilium Index.",
     required: [

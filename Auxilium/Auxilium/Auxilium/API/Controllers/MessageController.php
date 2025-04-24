@@ -7,6 +7,10 @@ use Auxilium\Auxilium\API\Models\DraftModel;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\URIUtilities;
+use JetBrains\PhpStorm\NoReturn;
+use OpenApi\Attributes\Get;
+use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Response;
 use RuntimeException;
 
 class MessageController
@@ -23,7 +27,30 @@ class MessageController
 
         $this->APITools->requireLogin();
     }
-    
+
+
+
+
+    #[NoReturn]
+    #[Get(
+        path: "/api/v2/drafts",
+        operationId: "[GET]/api/v2/drafts",
+        description: "",
+        summary: "Messages",
+        tags: [
+            "Messages",
+        ],
+        responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/DraftModel"
+                )
+            )
+        ],
+        deprecated: false,
+    )]
     public function DraftAccess()
     {
         $draft_content = null;

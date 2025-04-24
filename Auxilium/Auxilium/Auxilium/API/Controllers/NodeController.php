@@ -12,6 +12,8 @@ use Auxilium\Utilities\URIUtilities;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
 use JetBrains\PhpStorm\NoReturn;
 use OpenApi\Attributes\Get;
+use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Response;
 
 class NodeController
 {
@@ -43,14 +45,21 @@ class NodeController
 
     #[NoReturn]
     #[Get(
-        path: "/api/v2/pdf",
-        operationId: "[GET]/api/v2/pdf",
-        description: "Renders a PDF",
+        path: "/api/v2/nodes",
+        operationId: "[GET]/api/v2/nodes",
+        description: "Gets a Deegraph node.",
         summary: "Renders a PDF",
         tags: [
-            "PDF Generation",
+            "Deegraph",
         ],
         responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/NodeModel"
+                )
+            )
         ],
         deprecated: false,
     )]

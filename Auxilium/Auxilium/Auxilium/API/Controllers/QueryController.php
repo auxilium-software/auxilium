@@ -8,6 +8,10 @@ use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
+use JetBrains\PhpStorm\NoReturn;
+use OpenApi\Attributes\Get;
+use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Response;
 
 class QueryController
 {
@@ -23,8 +27,30 @@ class QueryController
 
         $this->APITools->requireLogin();
     }
-    
-    
+
+
+
+
+    #[NoReturn]
+    #[Get(
+        path: "/api/v2/query",
+        operationId: "[GET]/api/v2/query",
+        description: "",
+        summary: "Queries",
+        tags: [
+            "Queries",
+        ],
+        responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/QueryModel"
+                )
+            )
+        ],
+        deprecated: false,
+    )]
     public function RunQuery(): void
     {
         $queries = [];

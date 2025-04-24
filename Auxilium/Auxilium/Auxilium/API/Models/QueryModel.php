@@ -7,7 +7,7 @@ use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
 #[Schema(
-    schema: "Query",
+    schema: "QueryModel",
     title: "Query",
     description: "Stores information about a Deegraph Query.",
     required: [

@@ -7,7 +7,7 @@ use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
 #[Schema(
-    schema: "Node",
+    schema: "NodeModel",
     title: "Node",
     description: "Stores information about a Deegraph Node.",
     required: [

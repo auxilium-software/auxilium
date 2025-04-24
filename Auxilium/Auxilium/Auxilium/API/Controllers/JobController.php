@@ -11,6 +11,10 @@ use Auxilium\Auxilium\API\Models\QueryModel;
 use Auxilium\EmailHandling\InternetMessageTransport;
 use Auxilium\Utilities\URIUtilities;
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
+use OpenApi\Attributes\Get;
+use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Response;
 
 class JobController
 {
@@ -32,7 +36,29 @@ class JobController
         $this->URIUtilities = new URIUtilities();
 
     }
-    
+
+
+
+    #[NoReturn]
+    #[Get(
+        path: "/api/v2/job-stats",
+        operationId: "[GET]/api/v2/job-stats",
+        description: "",
+        summary: "Job statistics",
+        tags: [
+            "Jobs",
+        ],
+        responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/JobStatsModel"
+                )
+            )
+        ],
+        deprecated: false,
+    )]
     public function GetJobStats()
     {
         $this->Model = new JobStatsModel();
@@ -75,8 +101,29 @@ class JobController
         $this->APITools->output();
 
     }
-    
-    
+
+
+
+    #[NoReturn]
+    #[Get(
+        path: "/api/v2/jobs",
+        operationId: "[GET]/api/v2/jobs",
+        description: "",
+        summary: "Jobs",
+        tags: [
+            "Jobs",
+        ],
+        responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/JobLookupModel"
+                )
+            )
+        ],
+        deprecated: false,
+    )]
     public function JobLookup()
     {
         $this->Model = new JobLookupModel();
@@ -163,8 +210,29 @@ class JobController
             $this->APITools->output();
         }
     }
-    
-    
+
+
+
+    #[NoReturn]
+    #[Get(
+        path: "/api/v2/job-run",
+        operationId: "[GET]/api/v2/job-run",
+        description: "",
+        summary: "Jobs",
+        tags: [
+            "Jobs",
+        ],
+        responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/JobInQueueModel"
+                )
+            )
+        ],
+        deprecated: false,
+    )]
     public function HandleJob()
     {
         $this->Model = new JobInQueueModel();

@@ -7,7 +7,7 @@ use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 
 #[Schema(
-    schema: "Draft",
+    schema: "DraftModel",
     title: "Draft",
     description: "Stores information about an email draft.",
     required: [

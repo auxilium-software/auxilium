@@ -9,6 +9,10 @@ use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
 use Darksparrow\DeegraphInteractions\DataStructures\DataURL;
+use JetBrains\PhpStorm\NoReturn;
+use OpenApi\Attributes\Get;
+use OpenApi\Attributes\JsonContent;
+use OpenApi\Attributes\Response;
 
 class IndexController
 {
@@ -24,8 +28,27 @@ class IndexController
         
         $this->APITools->requireLogin();
     }
-    
-    
+
+    #[NoReturn]
+    #[Get(
+        path: "/api/v2/indexes",
+        operationId: "[GET]/api/v2/indexes",
+        description: "This API endpoint will get the index for the user, if one doesn't exist, it'll create one, and return that.",
+        summary: "Index generation",
+        tags: [
+            "Index Generation",
+        ],
+        responses: [
+            new Response(
+                response: 200,
+                description: "",
+                content: new JsonContent(
+                    ref: "#/components/schemas/IndexModel"
+                )
+            )
+        ],
+        deprecated: false,
+    )]
     public function GenerateIndex(): void
     {
         $index_id = $this->URIUtilities->getURIComponents()[count($this->URIUtilities->getURIComponents()) - 1];
