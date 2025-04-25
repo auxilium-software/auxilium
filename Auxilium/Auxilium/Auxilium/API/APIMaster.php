@@ -9,6 +9,7 @@ use Auxilium\Auxilium\API\Controllers\IndexController;
 use Auxilium\Auxilium\API\Controllers\JobRunnerController;
 use Auxilium\Auxilium\API\Controllers\JobLookupController;
 use Auxilium\Auxilium\API\Controllers\JobStatisticsController;
+use Auxilium\Auxilium\API\Controllers\LFSController;
 use Auxilium\Auxilium\API\Controllers\MessageController;
 use Auxilium\Auxilium\API\Controllers\NodeController;
 use Auxilium\Auxilium\API\Controllers\PDFController;
@@ -44,7 +45,7 @@ class APIMaster
         Logging::LogAPIRequest();
 
         $routes = [
-            "/api/v2/lfs"                            => null,
+            "/api/v2/lfs(/.+)"                      => LFSController::class,
             "/api/v2/nodes(/.+)"                    => NodeController::class,
             "/api/v2/outbound-oauth-login"          => null,
             "/api/v2/outbound-oauth-register"       => null,
