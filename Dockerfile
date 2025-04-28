@@ -34,17 +34,17 @@ RUN export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | 
 COPY Auxilium/composer.json /srv/Auxilium/composer.json
 
 # set web perms on the auxilium directory
-RUN chown www-data:www-data /srv/Auxilium2 -R
+RUN chown www-data:www-data /srv/Auxilium -R
 
 # cd & su
-WORKDIR /srv/Auxilium2
+WORKDIR /srv/Auxilium
 USER www-data
 
 # install composer packages
 RUN composer config allow-plugins.endroid/installer true
 RUN composer install
 
-COPY Auxilium /srv/Auxilium2
+COPY Auxilium /srv/Auxilium
 
 COPY ConfigTemplates/Environment.php /srv/Auxilium/Configuration/Configuration/Environment.php
 
