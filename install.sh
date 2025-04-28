@@ -331,7 +331,7 @@ if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`
     sudo mv /etc/php/php.ini.tmp /etc/php/$PHP_VER/apache2/php.ini;
 
-    sudo cp Auxilium/composer.json /var/www/composer.json
+    sudo cp Auxilium/composer.json /srv/Auxilium/composer.json
     
     cd Auxilium
     composer config allow-plugins.endroid/installer true
@@ -343,9 +343,9 @@ if [ "$_MODE__LOCAL_INSTALL" -eq 1 ]; then
     sudo chown www-data:www-data Auxilium/ -R
     f=$(pwd)/Auxilium
     while [[ $f != / ]]; do sudo chmod +rx "$f"; f=$(dirname "$f"); done;
-    sudo ln -s $(pwd)/Auxilium/ /var/www/auxilium2 
+    sudo ln -s $(pwd)/Auxilium/ /srv/Auxilium/auxilium2 
     
-    #cp Scripts/new-keys.php /var/www/new-keys.php
+    #cp Scripts/new-keys.php /srv/Auxilium/new-keys.php
 
     sudo mkdir /var/auxilium
     
@@ -538,7 +538,7 @@ EOF
 cat > apache-auxilium.conf << EOF
 
 <VirtualHost *:80>
-        DocumentRoot /var/www/auxilium2/Public
+        DocumentRoot /srv/Auxilium/Auxilium/Public
 
         ServerName $HOSTNAME
 
@@ -552,7 +552,7 @@ cat > apache-auxilium.conf << EOF
 
 
 <VirtualHost *:443>
-        DocumentRoot /var/www/auxilium2/Public
+        DocumentRoot /srv/Auxilium/Auxilium/Public
 
         ServerName $HOSTNAME
 
