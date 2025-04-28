@@ -2,6 +2,7 @@
 
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\SessionHandling\Session;
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 use Auxilium\Utilities\Security;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
@@ -16,7 +17,7 @@ require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 $at = Auxilium\APITools::get_instance();
 $at->requireLogin();
 
-$nonce = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(Security::GeneratePseudoRandomBytes(length: 16));
+$nonce = EncodingTools::Base64EncodeURLSafe(Security::GeneratePseudoRandomBytes(length: 16));
 
 $uri = new URIUtilities();
 

@@ -1,5 +1,6 @@
 <?php
 
+use Auxilium\Utilities\EncodingTools;
 use Auxilium\Utilities\NavigationUtilities;
 use Auxilium\Utilities\Security;
 use Auxilium\Utilities\URIUtilities;
@@ -16,7 +17,7 @@ require_once __DIR__ . '/../../../Configuration/Configuration/Environment.php';
 //$at->setVariable("req", );
 //$at->output();
 
-$nonce = \Auxilium\Utilities\EncodingTools::Base64EncodeURLSafe(Security::GeneratePseudoRandomBytes(length: 16));
+$nonce = EncodingTools::Base64EncodeURLSafe(Security::GeneratePseudoRandomBytes(length: 16));
 
 $uri = new URIUtilities();
 
