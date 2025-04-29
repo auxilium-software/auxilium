@@ -43,6 +43,13 @@ if(str_starts_with($path, "/api/v2"))
     APIMaster::Go();
 }
 
+// handle index page
+if($path === "/")
+{
+    require_once "$routedDir/index.php";
+    return true;
+}
+
 // Check if the request matches a predefined route
 foreach($routes as $route => $file)
 {
