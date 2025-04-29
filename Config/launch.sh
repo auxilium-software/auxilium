@@ -64,7 +64,7 @@ mkdir -p /var/EphemeralCredentialsStore/MessageDrafts
 mkdir -p /var/EphemeralCredentialsStore/Certificates/{Deegraph,Nginx}/
 cp /etc/ssl/ext-certs/* /var/EphemeralCredentialsStore/Certificates/Nginx/
 
-ln -s /store/local-assets /srv/Auxilium/Public/assets/local
+ln -s /store/local-assets /srv/Auxilium/Public/Dynamic/local
 
 chown -R www-data:www-data /var/EphemeralCredentialsStore
 chown -R www-data:www-data /store/Auxilium
@@ -149,7 +149,8 @@ const INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS = [
         "client_secret" => 'REDACTED'
     ]
 ];
-?>
+
+const ACCEPT_SELF_SIGNED_CERTIFICATES = FALSE;
 EOF
 
 chown www-data:www-data /app/credentials.php
