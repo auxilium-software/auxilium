@@ -59,7 +59,7 @@ class IndexController extends APIController
 
 
         $regenerate_index = false;
-        $index_list = json_decode(file_get_contents(__DIR__ . "/../../../indexes.json"), true, 512, JSON_THROW_ON_ERROR);
+        $index_list = json_decode(file_get_contents(__DIR__ . "/../../../../indexes.json"), true, 512, JSON_THROW_ON_ERROR);
 
         if(!array_key_exists($index_id, $index_list))
         {
