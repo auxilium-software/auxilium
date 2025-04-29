@@ -2,7 +2,7 @@
 
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once '/srv/Auxilium/vendor/autoload.php';
 
 
 /**
