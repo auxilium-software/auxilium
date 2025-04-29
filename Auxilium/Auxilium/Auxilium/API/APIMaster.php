@@ -42,8 +42,6 @@ class APIMaster
 
     public static function GetController(): ?APIController
     {
-        Logging::LogAPIRequest();
-
         $routes = [
             "/api/v2/lfs(/.+)"                      => LFSController::class,
             "/api/v2/nodes(/.+)"                    => NodeController::class,
