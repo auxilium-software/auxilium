@@ -10,19 +10,19 @@ require_once '/srv/Auxilium/vendor/autoload.php';
  *
  * @var string
  */
-const CREDENTIALS_FILE_LOCATION = __DIR__ . '/Credentials.php';
+const CREDENTIALS_FILE_LOCATION = '/app/credentials.php';
 /**
  * Directory path for where the portal should store credentials that should be lost after a reboot (ephemeral).
  *
  * @var string
  */
-const LOCAL_EPHEMERAL_CREDENTIAL_STORE = __DIR__ . '/../../LocalStorage/EphemeralCredentialsStore';
+const LOCAL_EPHEMERAL_CREDENTIAL_STORE = '/var/ecs/EphemeralCredentialsStore';
 /**
  * Directory path for where the portal should store encrypted files.
  *
  * @var string
  */
-const LOCAL_STORAGE_DIRECTORY = __DIR__ . '/../../LocalStorage/LocalStorage';
+const LOCAL_STORAGE_DIRECTORY = '/var/ecs/LocalStorage';
 
 
 

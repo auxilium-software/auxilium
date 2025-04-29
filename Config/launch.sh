@@ -55,22 +55,21 @@ if [ -f /etc/ssl/ext-certs/rootCA.crt ]; then
 #update-ca-certificates
 fi
 
-mkdir /var/ecs/
-mkdir /var/ecs/jobs/
-mkdir /var/ecs/forms-in-progress/
-mkdir /var/ecs/indexes/
-mkdir /var/ecs/message-drafts/
-mkdir /var/ecs/certs/
-mkdir /var/ecs/certs/deegraph/
-mkdir /var/ecs/certs/apache/
-cp /etc/ssl/ext-certs/* /var/ecs/certs/apache/
+
+mkdir -p /var/ecs/FormsInProgress
+mkdir -p /var/ecs/Indexes
+mkdir -p /var/ecs/Jobs/{Completed,Failed,Queue}
+mkdir -p /var/ecs/MessageDrafts
+mkdir /var/ecs/Certificates/
+mkdir -p /var/ecs/Certificates/{Deegraph,Nginx}/
+cp /etc/ssl/ext-certs/* /var/ecs/Certificates/Nginx/
 
 ln -s /store/local-assets /srv/Auxilium/Public/assets/local
 
 chown www-data:www-data /var/ecs -R
 
-cp /etc/ssl/ext-certs/* /var/ecs/certs/deegraph/
-chown deegraph:deegraph /var/ecs/certs/deegraph -R
+cp /etc/ssl/ext-certs/* /var/ecs/Certificates/Deegraph/
+chown deegraph:deegraph /var/ecs/Certificates/Deegraph -R
 
 echo "127.0.0.1     $CONTAINER_FQDN" >> /etc/hosts
 
@@ -79,8 +78,8 @@ cat > /app/config.json << EOF
     "fqdn": "$CONTAINER_FQDN",
     "data_directory": "/store/deegraph/dgdata/",
     "ssl_certs": {
-        "private_key": "/var/ecs/certs/deegraph/privkey.pem",
-        "full_chain": "/var/ecs/certs/deegraph/fullchain.pem"
+        "private_key": "/var/ecs/Certificates/Deegraph/privkey.pem",
+        "full_chain": "/var/ecs/Certificates/Deegraph/fullchain.pem"
     },
     "port": 8880,
     "root_auth_tokens": ["$DEEGRAPH_ROOT_AUTH_TOKEN"],
@@ -107,8 +106,6 @@ while [ $lines -eq 0 ]; do
 done
 DDS_ROOT_NODE=$(find . -maxdepth 1 -name "*.private.jwk" | cut -d '/' -f2 | cut -d '.' -f1)
 cd $QUICK_RETURN
-
-#/etc/init.d/apache2 start
 
 cat > /app/credentials.php << EOF
 <?php
@@ -160,7 +157,8 @@ chown www-data:www-data /app/credentials.php
 #export NGINX_GROUP=www-data
 #export NGINX_PID_FILE=/var/run/nginx.pid
 #export NGINX_LOG_DIR=/var/log/nginx
-nginx
+service nginx start
+service php8.2-fpm start
 
 trap "/etc/init.d/mariadb stop; kill -s SIGTERM \$(cat /store/deegraph/deegraph.pid.tmp); echo \$(date +%s) > /store/last-shutdown.txt" EXIT
 

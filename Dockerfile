@@ -11,7 +11,7 @@ RUN apt-get -y install mariadb-server mariadb-client
 RUN apt-get -y install php8.2 php8.2-fpm
 RUN apt-get -y install php8.2-gd php8.2-mysql php8.2-simplexml php8.2-mysql php8.2-curl php8.2-bcmath php-json php8.2-imap php8.2-mbstring php8.2-zip
 RUN apt-get -y install composer ssl-cert git jq
-RUN apt-get -y install iputils-ping
+RUN apt-get -y install iputils-ping nano
 
 #RUN export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`; a2enmod php$PHP_VER;
 #RUN a2enmod headers
@@ -28,6 +28,9 @@ RUN useradd deegraph -d /store/deegraph
 RUN rm /etc/nginx/sites-enabled/*
 RUN rm /etc/nginx/sites-available/*
 COPY Config/nginx /etc/nginx
+RUN for f in /etc/nginx/sites-available/*; do \
+      ln -s "$f" /etc/nginx/sites-enabled/$(basename "$f"); \
+    done
 
 # copy over the php config
 COPY Config/php.ini /etc/php/php.ini
