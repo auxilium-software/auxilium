@@ -55,21 +55,22 @@ if [ -f /etc/ssl/ext-certs/rootCA.crt ]; then
 #update-ca-certificates
 fi
 
+mkdir -p /store/Auxilium/{LFS,Messages,Misc}
 
-mkdir -p /var/ecs/FormsInProgress
-mkdir -p /var/ecs/Indexes
-mkdir -p /var/ecs/Jobs/{Completed,Failed,Queue}
-mkdir -p /var/ecs/MessageDrafts
-mkdir /var/ecs/Certificates/
-mkdir -p /var/ecs/Certificates/{Deegraph,Nginx}/
-cp /etc/ssl/ext-certs/* /var/ecs/Certificates/Nginx/
+mkdir -p /var/EphemeralCredentialsStore/FormsInProgress
+mkdir -p /var/EphemeralCredentialsStore/Indexes
+mkdir -p /var/EphemeralCredentialsStore/Jobs/{Completed,Failed,Queue}
+mkdir -p /var/EphemeralCredentialsStore/MessageDrafts
+mkdir -p /var/EphemeralCredentialsStore/Certificates/{Deegraph,Nginx}/
+cp /etc/ssl/ext-certs/* /var/EphemeralCredentialsStore/Certificates/Nginx/
 
 ln -s /store/local-assets /srv/Auxilium/Public/assets/local
 
-chown www-data:www-data /var/ecs -R
+chown -R www-data:www-data /var/EphemeralCredentialsStore
+chown -R www-data:www-data /store/Auxilium
 
-cp /etc/ssl/ext-certs/* /var/ecs/Certificates/Deegraph/
-chown deegraph:deegraph /var/ecs/Certificates/Deegraph -R
+cp /etc/ssl/ext-certs/* /var/EphemeralCredentialsStore/Certificates/Deegraph/
+chown deegraph:deegraph /var/EphemeralCredentialsStore/Certificates/Deegraph -R
 
 echo "127.0.0.1     $CONTAINER_FQDN" >> /etc/hosts
 
@@ -78,8 +79,8 @@ cat > /app/config.json << EOF
     "fqdn": "$CONTAINER_FQDN",
     "data_directory": "/store/deegraph/dgdata/",
     "ssl_certs": {
-        "private_key": "/var/ecs/Certificates/Deegraph/privkey.pem",
-        "full_chain": "/var/ecs/Certificates/Deegraph/fullchain.pem"
+        "private_key": "/var/EphemeralCredentialsStore/Certificates/Deegraph/privkey.pem",
+        "full_chain": "/var/EphemeralCredentialsStore/Certificates/Deegraph/fullchain.pem"
     },
     "port": 8880,
     "root_auth_tokens": ["$DEEGRAPH_ROOT_AUTH_TOKEN"],

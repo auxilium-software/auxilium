@@ -70,8 +70,8 @@ COPY Config/launch.sh /app/launch.sh
 RUN chmod +x /app/deegraph.jar
 RUN chmod +x /app/launch.sh
 
-RUN mkdir /var/ecs
-RUN chown www-data:www-data /var/ecs -R
+RUN mkdir /var/EphemeralCredentialsStore
+RUN chown www-data:www-data /var/EphemeralCredentialsStore -R
 
 RUN mkdir /store
 RUN chown www-data:www-data /store -R

@@ -16,13 +16,13 @@ const CREDENTIALS_FILE_LOCATION = '/app/credentials.php';
  *
  * @var string
  */
-const LOCAL_EPHEMERAL_CREDENTIAL_STORE = '/var/ecs/EphemeralCredentialsStore';
+const LOCAL_EPHEMERAL_CREDENTIAL_STORE = '/var/EphemeralCredentialsStore';
 /**
  * Directory path for where the portal should store encrypted files.
  *
  * @var string
  */
-const LOCAL_STORAGE_DIRECTORY = '/var/ecs/LocalStorage';
+const LOCAL_STORAGE_DIRECTORY = '/store/Auxilium';
 
 
 
