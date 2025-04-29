@@ -45,7 +45,7 @@ const ENVIRONMENT_TYPE = "DEV";
 
 
 const INSTANCE_BRANDING_LOGO = "AuxiliumLogo.png"; // <-- Path relative to \$WEB_ROOT_DIRECTORY/assets/, A version of the logo to use of white/black backgrounds
-const INSTANCE_BRANDING_LOGO_CONTRAST_BRAND_COLOR = "AuxiliumLogo-white.png"; // <-- A version of the logo to use on brand color backgrounds
+const INSTANCE_BRANDING_LOGO_CONTRAST_BRAND_COLOR = "AuxiliumLogo-White.png"; // <-- A version of the logo to use on brand color backgrounds
 const INSTANCE_BRANDING_NAME = "Auxilium (Docker)"; // <-- Brand name
 
 
