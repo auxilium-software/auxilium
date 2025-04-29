@@ -64,7 +64,8 @@ mkdir -p /var/EphemeralCredentialsStore/MessageDrafts
 mkdir -p /var/EphemeralCredentialsStore/Certificates/{Deegraph,Nginx}/
 cp /etc/ssl/ext-certs/* /var/EphemeralCredentialsStore/Certificates/Nginx/
 
-ln -s /store/local-assets /srv/Auxilium/Public/Dynamic/local
+mkdir -p /srv/Auxilium/Public/Static/LocalAssets
+ln -s /store/local-assets /srv/Auxilium/Public/Static/LocalAssets
 
 chown -R www-data:www-data /var/EphemeralCredentialsStore
 chown -R www-data:www-data /store/Auxilium
