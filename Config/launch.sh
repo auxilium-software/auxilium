@@ -65,7 +65,7 @@ mkdir /var/ecs/certs/deegraph/
 mkdir /var/ecs/certs/apache/
 cp /etc/ssl/ext-certs/* /var/ecs/certs/apache/
 
-ln -s /store/local-assets /var/www/Public/assets/local
+ln -s /store/local-assets /srv/Auxilium/Public/assets/local
 
 chown www-data:www-data /var/ecs -R
 
@@ -156,8 +156,11 @@ EOF
 
 chown www-data:www-data /app/credentials.php
 
-source /etc/apache2/envvars
-apache2
+#export NGINX_USER=www-data
+#export NGINX_GROUP=www-data
+#export NGINX_PID_FILE=/var/run/nginx.pid
+#export NGINX_LOG_DIR=/var/log/nginx
+nginx
 
 trap "/etc/init.d/mariadb stop; kill -s SIGTERM \$(cat /store/deegraph/deegraph.pid.tmp); echo \$(date +%s) > /store/last-shutdown.txt" EXIT
 

@@ -18,6 +18,7 @@ $routedDir = __DIR__ . "/../RoutedPages";
 
 // Map routes to corresponding files
 $routes = [
+    "/"                 => "$routedDir/index.php",
     "/new"              => "$routedDir/new.php",
     "/graph"            => "$routedDir/graph.php",
     "/form"             => "$routedDir/form.php",

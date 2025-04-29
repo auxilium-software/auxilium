@@ -6,7 +6,10 @@ SHELL ["/bin/bash", "-c"]
 # install packages
 RUN apt-get update
 RUN apt-get -y install supervisor wget grep curl openjdk-17-jre-headless
-RUN apt-get -y install nginx libapache2-mod-php php-gd php-mysql mariadb-server mariadb-client php-simplexml php-mysql php-curl php-bcmath php-json php-imap php-mbstring php-zip
+RUN apt-get -y install nginx
+RUN apt-get -y install mariadb-server mariadb-client
+RUN apt-get -y install php php-fpm
+RUN apt-get -y install php-gd php-mysql php-simplexml php-mysql php-curl php-bcmath php-json php-imap php-mbstring php-zip
 RUN apt-get -y install composer ssl-cert git jq
 RUN apt-get -y install iputils-ping
 
@@ -27,24 +30,27 @@ RUN rm /etc/nginx/sites-available/*
 COPY Config/nginx /etc/nginx
 
 # copy over the php config
-COPY Config/php.ini /etc/php/php.ini.tmp
-RUN export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`; mv /etc/php/php.ini.tmp /etc/php/$PHP_VER/apache2/php.ini;
+COPY Config/php.ini /etc/php/php.ini
+#RUN export PHP_VER=`dpkg -l 'php*' | grep ^ii | grep -oP "php[0-9]+\\.[0-9]*" | cut -c 4- | head -1 | tr -d $'\n'`; mv /etc/php/php.ini.tmp /etc/php/$PHP_VER/apache2/php.ini;
 
 # copy over composer config
-COPY Auxilium/composer.json /srv/Auxilium/composer.json
+#COPY Auxilium/composer.json /srv/Auxilium/composer.json
+#COPY Auxilium/composer.lock /srv/Auxilium/composer.lock
+
+COPY Auxilium /srv/Auxilium
 
 # set web perms on the auxilium directory
-RUN chown www-data:www-data /srv/Auxilium -R
+RUN chown www-data:www-data /srv -R
 
 # cd & su
 WORKDIR /srv/Auxilium
 USER www-data
 
 # install composer packages
+ENV COMPOSER_HOME=/tmp/composer
+RUN mkdir -p $COMPOSER_HOME
 RUN composer config allow-plugins.endroid/installer true
 RUN composer install
-
-COPY Auxilium /srv/Auxilium
 
 COPY ConfigTemplates/Environment.php /srv/Auxilium/Configuration/Configuration/Environment.php
 

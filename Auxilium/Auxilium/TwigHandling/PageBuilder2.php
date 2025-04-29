@@ -23,7 +23,7 @@ class PageBuilder2
 
     public function __construct()
     {
-        $this->loader = new FilesystemLoader(dirname($_SERVER["DOCUMENT_ROOT"]) . "/Templates/");
+        $this->loader = new FilesystemLoader(__DIR__ . "/../../Templates/");
         $this->twig = new Environment($this->loader, [
                 "debug" => true,
                 "cache" => false,
