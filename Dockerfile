@@ -8,8 +8,8 @@ RUN apt-get update
 RUN apt-get -y install supervisor wget grep curl openjdk-17-jre-headless
 RUN apt-get -y install nginx
 RUN apt-get -y install mariadb-server mariadb-client
-RUN apt-get -y install php php-fpm
-RUN apt-get -y install php-gd php-mysql php-simplexml php-mysql php-curl php-bcmath php-json php-imap php-mbstring php-zip
+RUN apt-get -y install php8.2 php8.2-fpm
+RUN apt-get -y install php8.2-gd php8.2-mysql php8.2-simplexml php8.2-mysql php8.2-curl php8.2-bcmath php-json php8.2-imap php8.2-mbstring php8.2-zip
 RUN apt-get -y install composer ssl-cert git jq
 RUN apt-get -y install iputils-ping
 
@@ -52,7 +52,7 @@ RUN mkdir -p $COMPOSER_HOME
 RUN composer config allow-plugins.endroid/installer true
 RUN composer install
 
-COPY ConfigTemplates/Environment.php /srv/Auxilium/Configuration/Configuration/Environment.php
+COPY ConfigTemplates/Environment-Docker.php /srv/Auxilium/Configuration/Configuration/Environment.php
 
 USER root
 WORKDIR /app
