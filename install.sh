@@ -404,7 +404,8 @@ keyUsage = keyCertSign, cRLSign
 EOF
 
 openssl req -x509 -sha256 -days 1825 -config ssc-ca-csr.conf -newkey rsa:2048 -passout pass:auxilium -keyout rootCA.key -out rootCA.crt
-openssl genrsa -out privkey.pem 2048
+# openssl genrsa -out privkey.pem 2048
+openssl genpkey -algorithm RSA -out privkey.pem -pkeyopt rsa_keygen_bits:2048
 
 cat > ssc-csr.conf << EOF
 
