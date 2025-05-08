@@ -52,7 +52,7 @@ class APIMaster
             "/api/v2/jobs"                          => JobLookupController::class,
             "/api/v2/job-stats"                     => JobStatisticsController::class,
             "/api/v2/job-run"                       => JobRunnerController::class,
-            "/api/v2/indexes"                       => IndexController::class,
+            "/api/v2/indexes(/.+)"                  => IndexController::class,
             "/api/v2/pdf(/.+)"                      => PDFController::class,
         ];
 
