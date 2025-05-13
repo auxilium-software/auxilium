@@ -108,7 +108,8 @@ if(file_exists($file))
     header("Content-Type: $mimeType");
     header("Content-Length: " . filesize($file));
 
-    return false;
+    readfile($file);
+    return true;
 }
 
 // Return a 404 response for unmatched routes
