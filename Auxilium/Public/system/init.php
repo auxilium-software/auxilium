@@ -4,6 +4,7 @@ use Auxilium\Auxilium\InitHelpers;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Helpers\ConfigurationManagement\CredentialManagement;
+use Auxilium\Helpers\ConfigurationManagement\EnvironmentManagement;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\NavigationUtilities;
 use Auxilium\Utilities\Security;
@@ -196,6 +197,9 @@ switch($_GET['page'])
 
         $creds = new CredentialManagement(newInstance: true, newVariables: $variables);
         $creds->Write();
+
+        $envs = new EnvironmentManagement(newInstance: true, newVariables: $variables);
+        $envs->Write();
 
 
         NavigationUtilities::Redirect(
