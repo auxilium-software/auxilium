@@ -38,6 +38,7 @@ if(str_starts_with($path, "/api/v1"))
 }
 if(str_starts_with($path, "/api/v2"))
 {
+    require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
     APIMaster::Go();
 }
 
