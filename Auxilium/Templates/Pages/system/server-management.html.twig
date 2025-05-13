@@ -1,0 +1,22 @@
+{% extends "/Bases/StandardWebPage.html.twig" %}
+
+{% block head_assets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div class="inner-content">
+        <div class="navigation-breadcrumb-container">
+            <a class="navigation-breadcrumb" href="/dashboard">{{ "home" | uihdg }}</a>
+            <a class="navigation-breadcrumb" href="/system">{{ "system_settings" | uihdg }}</a>
+            <a class="navigation-breadcrumb" href="/system/server-management">{{ "server_management" | uihdg }}</a>
+        </div>
+
+        <h1><span class="inline-icon-shift-left inline-icon-low-margin terminal-icon"></span>{{ "server_management" | uihdg }}</h1>
+
+        <a href="/system/server-management/branding" class="navigational-link">{{ "modify_branding" | uitxt | ndsentence }}</a><br />
+        <a href="/system/server-management/contact-details" class="navigational-link">{{ "modify_contact_details" | uitxt | ndsentence }}</a><br />
+        <a href="/system/server-management/sql-database" class="navigational-link">{{ "configure_sql_database" | uitxt | ndsentence }}</a><br />
+        <a href="/system/server-management/deegraph" class="navigational-link">{{ "configure_deegraph" | uitxt | ndsentence }}</a><br />
+    </div>
+{% endblock %}
