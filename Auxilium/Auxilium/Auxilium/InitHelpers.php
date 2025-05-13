@@ -19,8 +19,8 @@ class InitHelpers
 {
     #[NoReturn] public static function RenderCriticalError(string $errorMessage): void
     {
-        unlink(filename: __DIR__ . "/../../LocalStorage/LocalStorage/setup.lock");
-        $errorFile = fopen(__DIR__ . "/../../LocalStorage/LocalStorage/setup.error", "w") or die("Unable to write error file!");
+        unlink(filename: LOCAL_STORAGE_DIRECTORY . "/setup.lock");
+        $errorFile = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.error", "w") or die("Unable to write error file!");
         fwrite($errorFile, $errorMessage);
         fclose($errorFile);
         PageBuilder2::Render(
@@ -35,10 +35,10 @@ class InitHelpers
 
         if(isset($_GET["setup_key"]))
         {
-            if(file_exists(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key"))
+            if(file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.key"))
             {
-                $key_file = fopen(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key", "r") or die("Unable to read keyfile!");
-                $file_size = filesize(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key");
+                $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "r") or die("Unable to read keyfile!");
+                $file_size = filesize(LOCAL_STORAGE_DIRECTORY . "/setup.key");
                 $match_key = fread($key_file, $file_size);
                 if(trim($match_key) === trim($_GET["setup_key"]))
                 {
@@ -63,7 +63,7 @@ class InitHelpers
         if($setup_key === null)
         {
             $setup_key = rtrim(strtr(base64_encode(Security::GeneratePseudoRandomBytes(length: 64)), '+/', '-_'), '=');
-            $key_file = fopen(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key", "w") or die("Unable to write keyfile!");
+            $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "w") or die("Unable to write keyfile!");
             fwrite($key_file, $setup_key);
             fclose($key_file);
             NavigationUtilities::Redirect(target: "/system/init?page=1&setup_key=$setup_key");
@@ -74,7 +74,7 @@ class InitHelpers
 
     public static function GetVariables(): array
     {
-        return json_decode(file_get_contents(__DIR__ . "/../../LocalStorage/LocalStorage/setup.vars"), true);
+        return json_decode(file_get_contents(LOCAL_STORAGE_DIRECTORY . "/setup.vars"), true);
     }
 
     public static function AddVariable(string $key, string|int|null|bool $value): void
@@ -82,7 +82,7 @@ class InitHelpers
         $variables = self::GetVariables();
         $variables[$key] = $value;
 
-        $variableFile = fopen(__DIR__ . "/../../LocalStorage/LocalStorage/setup.vars", "w") or die("Unable to write var file!");
+        $variableFile = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.vars", "w") or die("Unable to write var file!");
         fwrite($variableFile, json_encode($variables, JSON_PRETTY_PRINT));
         fclose($variableFile);
     }

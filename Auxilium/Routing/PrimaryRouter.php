@@ -3,6 +3,7 @@
 use Auxilium\Auxilium\API\APIMaster;
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 
 // Get the requested URI
