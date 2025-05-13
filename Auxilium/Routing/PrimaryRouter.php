@@ -64,10 +64,10 @@ foreach($routes as $route => $file)
 $file = $publicDir . $path . '.php';
 if(file_exists($file))
 {
-    if($file !== "/system/init")
+    if($path !== "/system/init")
     {
+        require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
     }
-    require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
     require_once $file;
     return true;
 }
