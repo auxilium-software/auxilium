@@ -76,6 +76,12 @@ if(file_exists($file))
 $file = $publicDir . $path;
 if(file_exists($file))
 {
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $file);
+    finfo_close($finfo);
+
+    header("Content-Type: $mimeType");
+    header("Content-Length: " . filesize($file));
     return false;
 }
 
