@@ -3,6 +3,7 @@
 use Auxilium\Auxilium\InitHelpers;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\Helpers\ConfigurationManagement\CredentialManagement;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\NavigationUtilities;
 use Auxilium\Utilities\Security;
@@ -190,13 +191,19 @@ switch($_GET['page'])
         if(!(array_key_exists(key: 'setupComplete-rootUser', array: $variables) && $variables['setupComplete-rootUser'] === true))
         {
             InitHelpers::CreateRootAccount($variables);
+            InitHelpers::AddVariable("setupComplete-rootUser", true);
         }
+
+        $creds = new CredentialManagement(newInstance: true, newVariables: $variables);
+        $creds->Write();
 
 
         NavigationUtilities::Redirect(
             target: "/system/init?page=6&setup_key=$setup_key",
         );
     case "6":
+        unlink(LOCAL_STORAGE_DIRECTORY . "/setup.key");
+        unlink(LOCAL_STORAGE_DIRECTORY . "/setup.vars");
         PageBuilder2::Render(
             template : "Pages/system/~InitSteps/06.Completed.html.twig",
             variables: [
