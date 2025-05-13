@@ -24,7 +24,7 @@ class InitHelpers
         fwrite($errorFile, $errorMessage);
         fclose($errorFile);
         PageBuilder2::Render(
-            template : "Pages/system/init-failure.html.twig",
+            template : "Pages/system/~InitSteps/InitFailure.html.twig",
             variables: []
         );
     }
@@ -35,10 +35,10 @@ class InitHelpers
 
         if(isset($_GET["setup_key"]))
         {
-            if(file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.key"))
+            if(file_exists(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key"))
             {
-                $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "r") or die("Unable to read keyfile!");
-                $file_size = filesize(LOCAL_STORAGE_DIRECTORY . "/setup.key");
+                $key_file = fopen(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key", "r") or die("Unable to read keyfile!");
+                $file_size = filesize(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key");
                 $match_key = fread($key_file, $file_size);
                 if(trim($match_key) === trim($_GET["setup_key"]))
                 {
@@ -63,7 +63,7 @@ class InitHelpers
         if($setup_key === null)
         {
             $setup_key = rtrim(strtr(base64_encode(Security::GeneratePseudoRandomBytes(length: 64)), '+/', '-_'), '=');
-            $key_file = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.key", "w") or die("Unable to write keyfile!");
+            $key_file = fopen(__DIR__ . "/../../LocalStorage/LocalStorage/setup.key", "w") or die("Unable to write keyfile!");
             fwrite($key_file, $setup_key);
             fclose($key_file);
             NavigationUtilities::Redirect(target: "/system/init?page=1&setup_key=$setup_key");

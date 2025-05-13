@@ -19,10 +19,32 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 $setup_key = InitHelpers::HandleSetupKey();
 
-if(!file_exists(LOCAL_STORAGE_DIRECTORY . "/setup.vars"))
+if(!file_exists(__DIR__ . "/../../LocalStorage/LocalStorage/setup.vars"))
 {
-    file_put_contents(LOCAL_STORAGE_DIRECTORY . "/setup.vars", "{}");
+    file_put_contents(__DIR__ . "/../../LocalStorage/LocalStorage/setup.vars", "{}");
+
+    $creds = new CredentialManagement(newInstance: true, newVariables: [
+        'instance-domain' => "",
+
+        'mariadb-host' => "",
+        'mariadb-username' => "",
+        'mariadb-password' => "",
+        'mariadb-database' => "",
+
+        'deegraph-host' => "",
+        'deegraph-port' => 0,
+        'deegraph-loginNode' => "",
+        'deegraph-rootNode' => "",
+        'deegraph-token'=>"",
+    ]);
+    $creds->Write();
+    $envs = new EnvironmentManagement(newInstance: true, newVariables: []);
+    $envs->Write();
+    NavigationUtilities::Redirect(target: "/system/init");
 }
+
+require_once __DIR__ . '/../../Configuration/Configuration/Environment.php';
+
 foreach($_POST as $key => $value)
 {
     InitHelpers::AddVariable($key, $value);
@@ -91,12 +113,6 @@ switch($_GET['page'])
             ]
         );
     case "3.1":
-        $temp = new DeegraphServer(
-            token               : $variables['deegraph-token'],
-            server              : $variables['deegraph-host'],
-            port                : $variables['deegraph-port'],
-            allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'],
-        );
         try {
             $actorID = new UUID($variables['deegraph-loginNode']);
         }
@@ -107,7 +123,12 @@ switch($_GET['page'])
             );
         }
         try {
-            $temp->ServerInfo(actorID: $actorID);
+            (new DeegraphServer(
+                token               : $variables['deegraph-token'],
+                server              : $variables['deegraph-host'],
+                port                : $variables['deegraph-port'],
+                allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'] === "on",
+            ))->ServerInfo(actorID: $actorID);
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=4&setup_key=$setup_key",
@@ -171,35 +192,52 @@ switch($_GET['page'])
                 "GRANT READ ON /messages/#",                    //
                 "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE", //
             ];
+            if($variables['deegraph-allowSelfSignedCerts'] === "on")
+            {
+                $creds2 = new CredentialManagement();
+                $creds2->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES', value: true);
+                $creds2->Write();
+            }
+            $temp = new DeegraphServer(
+                token               : $variables['deegraph-token'],
+                server              : $variables['deegraph-host'],
+                port                : $variables['deegraph-port'],
+                allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'] === "on",
+            );
             foreach($initialQueries as $query)
             {
                 try
                 {
-                    GraphDatabaseConnection::query(
-                        new User($variables['deegraph-loginNode']),
+                    $temp->RunQuery(
+                        new UUID($variables['deegraph-loginNode']),
                         $query
                     );
                 }
                 catch(Exception $e)
                 {
-                    renderCriticalError(errorMessage: "Deegraph is not reachable... is it online?");
+                    InitHelpers::RenderCriticalError(errorMessage: "Deegraph is not reachable... is it online?");
                 }
             }
 
             InitHelpers::AddVariable("setupComplete-deegraph", true);
         }
 
+        $creds = new CredentialManagement(newInstance: true, newVariables: $variables);
+        if($variables['deegraph-allowSelfSignedCerts'] === "on")
+        {
+            $creds = new CredentialManagement();
+            $creds->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES', value: true);
+        }
+        $creds->Write();
+
+        $envs = new EnvironmentManagement(newInstance: true, newVariables: $variables);
+        $envs->Write();
+
         if(!(array_key_exists(key: 'setupComplete-rootUser', array: $variables) && $variables['setupComplete-rootUser'] === true))
         {
             InitHelpers::CreateRootAccount($variables);
             InitHelpers::AddVariable("setupComplete-rootUser", true);
         }
-
-        $creds = new CredentialManagement(newInstance: true, newVariables: $variables);
-        $creds->Write();
-
-        $envs = new EnvironmentManagement(newInstance: true, newVariables: $variables);
-        $envs->Write();
 
 
         NavigationUtilities::Redirect(

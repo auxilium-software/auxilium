@@ -3,7 +3,6 @@
 use Auxilium\Auxilium\API\APIMaster;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
 
 
 // Get the requested URI
@@ -54,6 +53,7 @@ foreach($routes as $route => $file)
 {
     if(str_starts_with($path, $route))
     {
+        require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
         require_once $file;
         return true;
     }
@@ -63,6 +63,10 @@ foreach($routes as $route => $file)
 $file = $publicDir . $path . '.php';
 if(file_exists($file))
 {
+    if($file !== "/system/init")
+    {
+    }
+    require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
     require_once $file;
     return true;
 }

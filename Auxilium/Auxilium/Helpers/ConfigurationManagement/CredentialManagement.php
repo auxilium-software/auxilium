@@ -110,25 +110,31 @@ class CredentialManagement
 
         $fileContents = <<<PHP
 <?php
-const INSTANCE_DOMAIN_NAME                              = "{$this->Variables["INSTANCE_DOMAIN_NAME"]}";
-const INSTANCE_UUID                                     = "{$this->Variables["INSTANCE_UUID"]}";
-const INSTANCE_CREDENTIAL_SQL_HOST                      = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_HOST"]}";
-const INSTANCE_CREDENTIAL_SQL_USERNAME                  = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_USERNAME"]}";
-const INSTANCE_CREDENTIAL_SQL_PASSWORD                  = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_PASSWORD"]}";
-const INSTANCE_CREDENTIAL_SQL_DATABASE                  = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_DATABASE"]}";
-const INSTANCE_CREDENTIAL_DDS_HOST                      = "{$this->Variables["INSTANCE_CREDENTIAL_DDS_HOST"]}";
-const INSTANCE_CREDENTIAL_DDS_PORT                      = {$this->Variables["INSTANCE_CREDENTIAL_DDS_PORT"]};
-const INSTANCE_CREDENTIAL_DDS_LOGIN_NODE                = "{$this->Variables["INSTANCE_CREDENTIAL_DDS_LOGIN_NODE"]}";
-const INSTANCE_CREDENTIAL_DDS_TOKEN                     = "{$this->Variables["INSTANCE_CREDENTIAL_DDS_TOKEN"]}";
+const INSTANCE_DOMAIN_NAME  = "{$this->Variables["INSTANCE_DOMAIN_NAME"]}";
+const INSTANCE_UUID         = "{$this->Variables["INSTANCE_UUID"]}";
+
+const INSTANCE_CREDENTIAL_SQL_HOST      = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_HOST"]}";
+const INSTANCE_CREDENTIAL_SQL_USERNAME  = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_USERNAME"]}";
+const INSTANCE_CREDENTIAL_SQL_PASSWORD  = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_PASSWORD"]}";
+const INSTANCE_CREDENTIAL_SQL_DATABASE  = "{$this->Variables["INSTANCE_CREDENTIAL_SQL_DATABASE"]}";
+
+const INSTANCE_CREDENTIAL_DDS_HOST          = "{$this->Variables["INSTANCE_CREDENTIAL_DDS_HOST"]}";
+const INSTANCE_CREDENTIAL_DDS_PORT          = {$this->Variables["INSTANCE_CREDENTIAL_DDS_PORT"]};
+const INSTANCE_CREDENTIAL_DDS_LOGIN_NODE    = "{$this->Variables["INSTANCE_CREDENTIAL_DDS_LOGIN_NODE"]}";
+const INSTANCE_CREDENTIAL_DDS_TOKEN         = "{$this->Variables["INSTANCE_CREDENTIAL_DDS_TOKEN"]}";
+
 const INSTANCE_CREDENTIAL_LOCAL_ONLY_API_KEY            = "{$this->Variables["INSTANCE_CREDENTIAL_LOCAL_ONLY_API_KEY"]}";
 const INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET       = "{$this->Variables["INSTANCE_CREDENTIAL_URL_METADATA_JWT_SECRET"]}";
 const INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PRIVATE_KEY    = "{$this->Variables["INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PRIVATE_KEY"]}";
 const INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PUBLIC_KEY     = "{$this->Variables["INSTANCE_CREDENTIAL_AUTH_JWT_EDDSA_PUBLIC_KEY"]}";
 const INSTANCE_CREDENTIAL_LOCAL_IP_RANGES               = $ipRanges;
-const INSTANCE_CREDENTIAL_OPENID_SOURCES                = $openIDSources;
-const INSTANCE_CREDENTIAL_OPENID_CACHE_TIME             = {$this->Variables["INSTANCE_CREDENTIAL_OPENID_CACHE_TIME"]};
-const INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS                = $emailAccounts;
-const ACCEPT_SELF_SIGNED_CERTIFICATES                   = $acceptSelfSigned;
+
+const INSTANCE_CREDENTIAL_OPENID_SOURCES    = $openIDSources;
+const INSTANCE_CREDENTIAL_OPENID_CACHE_TIME = {$this->Variables["INSTANCE_CREDENTIAL_OPENID_CACHE_TIME"]};
+
+const INSTANCE_CREDENTIAL_EMAIL_ACCOUNTS    = $emailAccounts;
+
+const ACCEPT_SELF_SIGNED_CERTIFICATES   = $acceptSelfSigned;
 
 PHP;
 

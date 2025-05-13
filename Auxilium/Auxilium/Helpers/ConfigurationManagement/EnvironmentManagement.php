@@ -16,9 +16,9 @@ class EnvironmentManagement
         if($newInstance)
         {
             $this->Variables = [
-                "CREDENTIALS_FILE_LOCATION"         => "__DIR__ . '/Credentials.php'",
-                "LOCAL_EPHEMERAL_CREDENTIAL_STORE"  => "__DIR__ . '/../../LocalStorage/EphemeralCredentialsStore'",
-                "LOCAL_STORAGE_DIRECTORY"           => "__DIR__ . '/../../LocalStorage/LocalStorage'",
+                "CREDENTIALS_FILE_LOCATION"         => __DIR__ . '/../../../Configuration/Configuration/Credentials.php',
+                "LOCAL_EPHEMERAL_CREDENTIAL_STORE"  => __DIR__ . '/../../../LocalStorage/EphemeralCredentialsStore',
+                "LOCAL_STORAGE_DIRECTORY"           => __DIR__ . '/../../../LocalStorage/LocalStorage',
 
                 "ENVIRONMENT_TYPE"  => "PROD",
 
