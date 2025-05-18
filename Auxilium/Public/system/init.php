@@ -53,6 +53,35 @@ $variables = InitHelpers::GetVariables();
 
 
 
+function generateMariaDBConnection(): PDO
+{
+    global $variables;
+
+    $hostName = $variables['mariadb-host'];
+    $port = $variables['mariadb-port'];
+    $username = $variables['mariadb-username'];
+    $password = $variables['mariadb-password'];
+    $database = $variables['mariadb-database'];
+    return new PDO(
+        dsn     : "mysql:host=$hostName;port=$port;dbname=$database",
+        username: $username,
+        password: $password,
+    );
+}
+function generateDDSConnection(): DeegraphServer
+{
+    global $variables;
+
+    return new DeegraphServer(
+        token               : $variables['deegraph-token'],
+        server              : $variables['deegraph-host'],
+        port                : $variables['deegraph-port'],
+        allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'] === "on",
+    );
+}
+
+
+
 
 switch($_GET['page'])
 {
@@ -81,18 +110,8 @@ switch($_GET['page'])
             ]
         );
     case "2.1":
-        $hostName = $variables['mariadb-host'];
-        $port = $variables['mariadb-port'];
-        $username = $variables['mariadb-username'];
-        $password = $variables['mariadb-password'];
-        $database = $variables['mariadb-database'];
-
         try {
-            $db = new PDO(
-                dsn     : "mysql:host=$hostName;port=$port;dbname=$database",
-                username: $username,
-                password: $password,
-            );
+            $db = generateMariaDBConnection();
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=3&setup_key=$setup_key",
@@ -123,12 +142,7 @@ switch($_GET['page'])
             );
         }
         try {
-            (new DeegraphServer(
-                token               : $variables['deegraph-token'],
-                server              : $variables['deegraph-host'],
-                port                : $variables['deegraph-port'],
-                allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'] === "on",
-            ))->ServerInfo(actorID: $actorID);
+            $t = generateDDSConnection()->ServerInfo(actorID: $actorID);
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=4&setup_key=$setup_key",
@@ -159,25 +173,17 @@ switch($_GET['page'])
     case "5.1":
         if(!(array_key_exists(key: 'setupComplete-mariadb', array: $variables) && $variables['setupComplete-mariadb'] === true))
         {
-            $hostName2 = $variables['mariadb-host'];
-            $port2 = $variables['mariadb-port'];
-            $username2 = $variables['mariadb-username'];
-            $password2 = $variables['mariadb-password'];
-            $database2 = $variables['mariadb-database'];
-            $db = new PDO(
-                dsn     : "mysql:host=$hostName2;port=$port2;dbname=$database2",
-                username: $username2,
-                password: $password2,
-            );
+
             $filePath = __DIR__ . "/../../Public/Static/Misc/MariaDBSchema.sql";
             $schema = file_get_contents($filePath);
-            $result = $db->exec(statement: $schema);
+            $result = generateMariaDBConnection()->exec(statement: $schema);
 
             InitHelpers::AddVariable("setupComplete-mariadb", true);
         }
 
         if(!(array_key_exists(key: 'setupComplete-deegraph', array: $variables) && $variables['setupComplete-deegraph'] === true))
         {
+
             $initialQueries = [
                 // system permissions
                 "GRANT READ,WRITE,DELETE WHERE @creator === /", // grant CRUD permissions where the creator is the current node
@@ -198,18 +204,16 @@ switch($_GET['page'])
                 $creds2->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES', value: true);
                 $creds2->Write();
             }
-            $temp = new DeegraphServer(
-                token               : $variables['deegraph-token'],
-                server              : $variables['deegraph-host'],
-                port                : $variables['deegraph-port'],
-                allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'] === "on",
-            );
+
+            $actorID = new UUID($variables['deegraph-loginNode']);
+            $ddsConnection = generateDDSConnection();
+
             foreach($initialQueries as $query)
             {
                 try
                 {
-                    $temp->RunQuery(
-                        new UUID($variables['deegraph-loginNode']),
+                    $ddsConnection->RunQuery(
+                        $actorID,
                         $query
                     );
                 }
@@ -218,7 +222,6 @@ switch($_GET['page'])
                     InitHelpers::RenderCriticalError(errorMessage: "Deegraph is not reachable... is it online?");
                 }
             }
-
             InitHelpers::AddVariable("setupComplete-deegraph", true);
         }
 
@@ -253,5 +256,4 @@ switch($_GET['page'])
                 "SetupKey"=>$setup_key,
             ]
         );
-
 }
