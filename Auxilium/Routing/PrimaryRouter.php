@@ -1,8 +1,54 @@
 <?php
 
 use Auxilium\Auxilium\API\APIMaster;
+use Auxilium\TwigHandling\Extensions\CommonFilters;
+use Auxilium\TwigHandling\Extensions\CommonFunctions;
+use Auxilium\TwigHandling\PageBuilder2;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+
+function requireComponents(): void
+{
+    if(
+        file_exists(__DIR__ . '/../vendor/autoload.php')
+        && file_exists(__DIR__ . '/../Configuration/Configuration/Environment.php')
+        && file_exists(__DIR__ . '/../Configuration/Configuration/Credentials.php')
+    )
+    {
+        require_once __DIR__ . '/../vendor/autoload.php';
+        require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
+        return;
+    }
+
+    if(!file_exists(__DIR__ . '/../vendor/autoload.php'))
+    {
+        echo "pls install composer";
+        die();
+    }
+
+    require_once __DIR__ . '/../vendor/autoload.php';
+    $loader = new FilesystemLoader(__DIR__ . "/../Templates/");
+    $twig = new Environment($loader, [
+            "debug" => true,
+            "cache" => false,
+        ]
+    );
+    $twig->addExtension(new CommonFilters());
+    $twig->addExtension(new CommonFunctions());
+
+    if(!file_exists(__DIR__ . '/../Configuration/Configuration/Environment.php'))
+    {
+        echo $twig->render('/VirtualPages/MissingEnvironmentFile.html.twig', []);
+        die();
+    }
+    if(!file_exists(__DIR__ . '/../Configuration/Configuration/Credentials.php'))
+    {
+        echo $twig->render('/VirtualPages/MissingCredentialsFile.html.twig', []);
+        die();
+    }
+
+}
 
 
 // Get the requested URI
@@ -38,13 +84,14 @@ if(str_starts_with($path, "/api/v1"))
 }
 if(str_starts_with($path, "/api/v2"))
 {
-    require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
+    requireComponents();
     APIMaster::Go();
 }
 
 // handle index page
 if($path === "/")
 {
+    requireComponents();
     require_once "$routedDir/index.php";
     return true;
 }
@@ -54,7 +101,7 @@ foreach($routes as $route => $file)
 {
     if(str_starts_with($path, $route))
     {
-        require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
+        requireComponents();
         require_once $file;
         return true;
     }
@@ -66,7 +113,7 @@ if(file_exists($file))
 {
     if($path !== "/system/init")
     {
-        require_once __DIR__ . '/../Configuration/Configuration/Environment.php';
+        requireComponents();
     }
     require_once $file;
     return true;
