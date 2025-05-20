@@ -173,6 +173,13 @@ switch($_GET['page'])
     case "5.1":
         if(!(array_key_exists(key: 'setupComplete-mariadb', array: $variables) && $variables['setupComplete-mariadb'] === true))
         {
+            $creds = new CredentialManagement();
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_HOST',      value: 'mariadb-host');
+            // $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PORT', value: 'mariadb-port');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_USERNAME',  value: 'mariadb-username');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PASSWORD',  value: 'mariadb-password');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_DATABASE',  value: 'mariadb-database');
+            $creds->Write();
 
             $filePath = __DIR__ . "/../../Public/Static/Misc/MariaDBSchema.sql";
             $schema = file_get_contents($filePath);
@@ -183,6 +190,13 @@ switch($_GET['page'])
 
         if(!(array_key_exists(key: 'setupComplete-deegraph', array: $variables) && $variables['setupComplete-deegraph'] === true))
         {
+            $creds = new CredentialManagement();
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_HOST',          value: 'deegraph-host');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_PORT',          value: 'deegraph-port');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_LOGIN_NODE',    value: 'deegraph-loginNode');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_TOKEN',         value: 'deegraph-token');
+            $creds->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES',       value: $variables['deegraph-allowSelfSignedCerts'] === "on");
+            $creds->Write();
 
             $initialQueries = [
                 // system permissions
@@ -198,12 +212,6 @@ switch($_GET['page'])
                 "GRANT READ ON /messages/#",                    //
                 "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE", //
             ];
-            if($variables['deegraph-allowSelfSignedCerts'] === "on")
-            {
-                $creds2 = new CredentialManagement();
-                $creds2->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES', value: true);
-                $creds2->Write();
-            }
 
             $actorID = new UUID($variables['deegraph-loginNode']);
             $ddsConnection = generateDDSConnection();
@@ -224,14 +232,6 @@ switch($_GET['page'])
             }
             InitHelpers::AddVariable("setupComplete-deegraph", true);
         }
-
-        $creds = new CredentialManagement(newInstance: true, newVariables: $variables);
-        if($variables['deegraph-allowSelfSignedCerts'] === "on")
-        {
-            $creds = new CredentialManagement();
-            $creds->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES', value: true);
-        }
-        $creds->Write();
 
         $envs = new EnvironmentManagement(newInstance: true, newVariables: $variables);
         $envs->Write();
