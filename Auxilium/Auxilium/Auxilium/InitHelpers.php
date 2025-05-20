@@ -96,21 +96,14 @@ class InitHelpers
         $rootUserEmailAddress   = $variables['rootAccount-email'];
         $rootUserPassword       = $variables['rootAccount-password'];
 
-/*
-        $user_node = GraphDatabaseConnection::new_node(
-            data      : null,
-            media_type: null,
-            schema    : URLHandling::GetURLForSchema(UserSchema::class),
-            creator   : new User($rootDeegraphLoginNode)
-        );
-        $user_node = new User($user_node->getId());
-*/
+        $instanceNode = new User(GraphDatabaseConnection::get_instance_node());
+
         $pre_hashed_password = base64_encode(hash("sha256", $rootUserPassword, true));
         $user_node = GraphDatabaseConnection::new_node(
             data      : null,
             media_type: null,
             schema    : URLHandling::GetURLForSchema(UserSchema::class),
-            creator   : new User($rootDeegraphLoginNode)
+            creator   : $instanceNode,
         );
         $user_node = new User($user_node->getId());
 
