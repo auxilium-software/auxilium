@@ -1,6 +1,7 @@
 <?php
 
 use Auxilium\Auxilium\InitHelpers;
+use Auxilium\DatabaseInteractions\Deegraph\DeegraphServerConnection;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
@@ -132,13 +133,7 @@ switch($_GET['page'])
             );
         }
         try {
-            $ddsConnection = new DeegraphServer(
-                token               : INSTANCE_CREDENTIAL_DDS_TOKEN,
-                server              : INSTANCE_CREDENTIAL_DDS_HOST,
-                port                : INSTANCE_CREDENTIAL_DDS_PORT,
-                allowSelfSignedCerts: ACCEPT_SELF_SIGNED_CERTIFICATES
-            );
-            $t = $ddsConnection->serverInfo($actorID);
+            $t = DeegraphServerConnection::GetConnection()->serverInfo($actorID);
 
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
@@ -190,14 +185,14 @@ switch($_GET['page'])
                 "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE", //
             ];
 
-            $actorID = new User($variables['deegraph-loginNode']);
+            $instanceNode = new User(GraphDatabaseConnection::get_instance_node());
 
             foreach($initialQueries as $query)
             {
                 try
                 {
                     GraphDatabaseConnection::query(
-                        actor: $actorID,
+                        actor: $instanceNode,
                         query: $query
                     );
                 }
