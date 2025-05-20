@@ -174,11 +174,11 @@ switch($_GET['page'])
         if(!(array_key_exists(key: 'setupComplete-mariadb', array: $variables) && $variables['setupComplete-mariadb'] === true))
         {
             $creds = new CredentialManagement();
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_HOST',      value: 'mariadb-host');
-            // $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PORT', value: 'mariadb-port');
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_USERNAME',  value: 'mariadb-username');
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PASSWORD',  value: 'mariadb-password');
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_DATABASE',  value: 'mariadb-database');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_HOST',      value: $variables['mariadb-host']);
+            // $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PORT', value: $variables['mariadb-port']);
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_USERNAME',  value: $variables['mariadb-username']);
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PASSWORD',  value: $variables['mariadb-password']);
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_DATABASE',  value: $variables['mariadb-database']);
             $creds->Write();
 
             $filePath = __DIR__ . "/../../Public/Static/Misc/MariaDBSchema.sql";
@@ -191,10 +191,10 @@ switch($_GET['page'])
         if(!(array_key_exists(key: 'setupComplete-deegraph', array: $variables) && $variables['setupComplete-deegraph'] === true))
         {
             $creds = new CredentialManagement();
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_HOST',          value: 'deegraph-host');
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_PORT',          value: 'deegraph-port');
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_LOGIN_NODE',    value: 'deegraph-loginNode');
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_TOKEN',         value: 'deegraph-token');
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_HOST',          value: $variables['deegraph-host']);
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_PORT',          value: $variables['deegraph-port']);
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_LOGIN_NODE',    value: $variables['deegraph-loginNode']);
+            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_TOKEN',         value: $variables['deegraph-token']);
             $creds->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES',       value: $variables['deegraph-allowSelfSignedCerts'] === "on");
             $creds->Write();
 
