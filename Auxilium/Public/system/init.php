@@ -185,15 +185,13 @@ switch($_GET['page'])
                 "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE", //
             ];
 
-            $actorID = new User($variables['deegraph-loginNode']);
-
             foreach($initialQueries as $query)
             {
                 try
                 {
                     GraphDatabaseConnection::query(
-                        actor: $actorID,
-                        query: $query
+                        new User(INSTANCE_CREDENTIAL_DDS_LOGIN_NODE),
+                        $query
                     );
                 }
                 catch(Exception $e)
