@@ -3,6 +3,7 @@
 use Auxilium\Auxilium\InitHelpers;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\Helpers\ConfigurationManagement\CredentialManagement;
 use Auxilium\Helpers\ConfigurationManagement\EnvironmentManagement;
 use Auxilium\TwigHandling\PageBuilder2;
@@ -52,33 +53,6 @@ foreach($_POST as $key => $value)
 $variables = InitHelpers::GetVariables();
 
 
-
-function generateMariaDBConnection(): PDO
-{
-    global $variables;
-
-    $hostName = $variables['mariadb-host'];
-    $port = $variables['mariadb-port'];
-    $username = $variables['mariadb-username'];
-    $password = $variables['mariadb-password'];
-    $database = $variables['mariadb-database'];
-    return new PDO(
-        dsn     : "mysql:host=$hostName;port=$port;dbname=$database",
-        username: $username,
-        password: $password,
-    );
-}
-function generateDDSConnection(): DeegraphServer
-{
-    global $variables;
-
-    return new DeegraphServer(
-        token               : $variables['deegraph-token'],
-        server              : $variables['deegraph-host'],
-        port                : $variables['deegraph-port'],
-        allowSelfSignedCerts: $variables['deegraph-allowSelfSignedCerts'] === "on",
-    );
-}
 
 
 
@@ -181,11 +155,7 @@ switch($_GET['page'])
             $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_DATABASE',  value: $variables['mariadb-database']);
             $creds->Write();
 
-            $filePath = __DIR__ . "/../../Public/Static/Misc/MariaDBSchema.sql";
-            $schema = file_get_contents($filePath);
-            $result = generateMariaDBConnection()->exec(statement: $schema);
-
-            InitHelpers::AddVariable("setupComplete-mariadb", true);
+            InitHelpers::AddVariable("setupComplete-mariadb", (new MariaDBServerConnection())->InitialDatabaseSetup());
         }
 
         if(!(array_key_exists(key: 'setupComplete-deegraph', array: $variables) && $variables['setupComplete-deegraph'] === true))
