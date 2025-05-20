@@ -4,6 +4,7 @@ namespace Auxilium\Auxilium;
 
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
 use Auxilium\Schemas\UserSchema;
@@ -95,7 +96,7 @@ class InitHelpers
         $rootUserEmailAddress   = $variables['rootAccount-email'];
         $rootUserPassword       = $variables['rootAccount-password'];
 
-
+/*
         $user_node = GraphDatabaseConnection::new_node(
             data      : null,
             media_type: null,
@@ -103,7 +104,7 @@ class InitHelpers
             creator   : new User($rootDeegraphLoginNode)
         );
         $user_node = new User($user_node->getId());
-
+*/
         $pre_hashed_password = base64_encode(hash("sha256", $rootUserPassword, true));
         $user_node = GraphDatabaseConnection::new_node(
             data      : null,
@@ -119,28 +120,16 @@ class InitHelpers
         $hashed_password = password_hash($pre_hashed_password, PASSWORD_BCRYPT, $hash_options);
 
 
-        $hostName = $variables['mariadb-host'];
-        $port = $variables['mariadb-port'];
-        $username = $variables['mariadb-username'];
-        $password = $variables['mariadb-password'];
-        $database = $variables['mariadb-database'];
-        $db = new PDO(
-            dsn     : "mysql:host=$hostName;port=$port;dbname=$database",
-            username: $username,
-            password: $password,
-        );
-
-
+        $db = new MariaDBServerConnection();
         $queryBuilder = SQLQueryBuilderWrapper::INSERT(MariaDBTable::STANDARD_LOGINS)
             ->set(col: 'email_address', value: ':__email_address__')
             ->set(col: 'user_uuid', value: ':__user_uuid__')
             ->set(col: 'password', value: ':__password__')
+            ->bindValue('__email_address__', $rootUserEmailAddress)
+            ->bindValue('__user_uuid__', $user_node->getId())
+            ->bindValue('__password__', $hashed_password)
             ;
-        $statement = $db->prepare($queryBuilder->getStatement());
-        $statement->bindValue('__email_address__', $rootUserEmailAddress);
-        $statement->bindValue('__user_uuid__', $user_node->getId());
-        $statement->bindValue('__password__', $hashed_password);
-        $statement->execute();
+        $db->RunInsert($queryBuilder);
 
 
         GraphDatabaseConnection::query(new User($rootDeegraphLoginNode), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
@@ -148,10 +137,13 @@ class InitHelpers
         // $language_prop = GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
         $language_prop = GraphDatabaseConnection::new_node("en-GB", "text/plain", null, $user_node);
         $user_node->addProperty("preferred_language", $language_prop, $user_node);
+
         $full_name_prop = GraphDatabaseConnection::new_node($rootUserName, "text/plain", null, $user_node);
         $user_node->addProperty("name", $full_name_prop, $user_node);
+
         $name_prop = GraphDatabaseConnection::new_node(explode(" ", $rootUserName)[0], "text/plain", null, $user_node);
         $user_node->addProperty("display_name", $name_prop, $user_node);
+
         $email_name_prop = GraphDatabaseConnection::new_node($rootUserEmailAddress, "text/plain", null, $user_node);
         $user_node->addProperty("contact_email", $email_name_prop, $user_node);
     }
