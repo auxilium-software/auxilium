@@ -114,7 +114,7 @@ switch($_GET['page'])
         );
     case "3.1":
         $creds31 = new CredentialManagement();
-        $creds31->OverwriteVariable(key: 'INSTANCE_UUID',                       value: $variables['deegraph-host']);
+        $creds31->OverwriteVariable(key: 'INSTANCE_UUID',                       value: $variables['deegraph-rootNode']);
         $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_HOST',        value: $variables['deegraph-host']);
         $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_PORT',        value: $variables['deegraph-port']);
         $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_LOGIN_NODE',  value: $variables['deegraph-loginNode']);
@@ -217,6 +217,11 @@ switch($_GET['page'])
             InitHelpers::CreateRootAccount($variables);
             InitHelpers::AddVariable("setupComplete-rootUser", true);
         }
+
+
+        $creds51 = new CredentialManagement();
+        $creds51->OverwriteVariable(key: 'INSTANCE_DOMAIN_NAME',    value: $variables['instance-domain']);
+        $creds51->Write();
 
 
         NavigationUtilities::Redirect(
