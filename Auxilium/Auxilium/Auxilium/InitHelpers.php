@@ -91,7 +91,6 @@ class InitHelpers
 
     public static function CreateRootAccount(array $variables)
     {
-        $rootDeegraphLoginNode  = $variables['deegraph-loginNode'];
         $rootUserName           = $variables['rootAccount-name'];
         $rootUserEmailAddress   = $variables['rootAccount-email'];
         $rootUserPassword       = $variables['rootAccount-password'];
@@ -102,7 +101,7 @@ class InitHelpers
             data      : null,
             media_type: null,
             schema    : URLHandling::GetURLForSchema(UserSchema::class),
-            creator   : new User($rootDeegraphLoginNode)
+            creator   : new User(INSTANCE_CREDENTIAL_DDS_LOGIN_NODE)
         );
         $user_node = new User($user_node->getId());
 
@@ -124,7 +123,7 @@ class InitHelpers
         $db->RunInsert($queryBuilder);
 
 
-        GraphDatabaseConnection::query(new User($rootDeegraphLoginNode), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
+        GraphDatabaseConnection::query(new User(INSTANCE_CREDENTIAL_DDS_LOGIN_NODE), "GRANT READ,WRITE,DELETE,ACT WHERE / === {" . $user_node->getId() . "}");
 
         // $language_prop = GraphDatabaseConnection::new_node(strtoupper(PageBuilder2::GetVariable(variableName: 'selected_lang')), "text/plain", null, $user_node);
         $language_prop = GraphDatabaseConnection::new_node("en-GB", "text/plain", null, $user_node);
