@@ -133,12 +133,13 @@ switch($_GET['page'])
         }
         try {
             $ddsConnection = new DeegraphServer(
-                token: INSTANCE_CREDENTIAL_DDS_TOKEN,
-                server: INSTANCE_CREDENTIAL_DDS_HOST,
-                allowSelfSignedCerts: ACCEPT_SELF_SIGNED_CERTIFICATES,
-                port: INSTANCE_CREDENTIAL_DDS_PORT
+                token               : INSTANCE_CREDENTIAL_DDS_TOKEN,
+                server              : INSTANCE_CREDENTIAL_DDS_HOST,
+                port                : INSTANCE_CREDENTIAL_DDS_PORT,
+                allowSelfSignedCerts: ACCEPT_SELF_SIGNED_CERTIFICATES
             );
-            $ddsConnection->serverInfo($actorID);
+            $t = $ddsConnection->serverInfo($actorID);
+            
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=4&setup_key=$setup_key",
