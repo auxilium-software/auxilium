@@ -84,8 +84,15 @@ switch($_GET['page'])
             ]
         );
     case "2.1":
+        $creds21 = new CredentialManagement();
+        $creds21->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_HOST',        value: $variables['mariadb-host']);
+        // $creds21->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PORT', value: $variables['mariadb-port']);
+        $creds21->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_USERNAME',    value: $variables['mariadb-username']);
+        $creds21->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PASSWORD',    value: $variables['mariadb-password']);
+        $creds21->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_DATABASE',    value: $variables['mariadb-database']);
+        $creds21->Write();
+
         try {
-            $db = generateMariaDBConnection();
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=3&setup_key=$setup_key",
@@ -106,6 +113,15 @@ switch($_GET['page'])
             ]
         );
     case "3.1":
+        $creds31 = new CredentialManagement();
+        $creds31->OverwriteVariable(key: 'INSTANCE_UUID',                       value: $variables['deegraph-host']);
+        $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_HOST',        value: $variables['deegraph-host']);
+        $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_PORT',        value: $variables['deegraph-port']);
+        $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_LOGIN_NODE',  value: $variables['deegraph-loginNode']);
+        $creds31->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_TOKEN',       value: $variables['deegraph-token']);
+        $creds31->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES',     value: $variables['deegraph-allowSelfSignedCerts'] === "on");
+        $creds31->Write();
+
         try {
             $actorID = new UUID($variables['deegraph-loginNode']);
         }
@@ -116,7 +132,13 @@ switch($_GET['page'])
             );
         }
         try {
-            $t = generateDDSConnection()->ServerInfo(actorID: $actorID);
+            $ddsConnection = new DeegraphServer(
+                token: INSTANCE_CREDENTIAL_DDS_TOKEN,
+                server: INSTANCE_CREDENTIAL_DDS_HOST,
+                allowSelfSignedCerts: ACCEPT_SELF_SIGNED_CERTIFICATES,
+                port: INSTANCE_CREDENTIAL_DDS_PORT
+            );
+            $ddsConnection->serverInfo($actorID);
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=4&setup_key=$setup_key",
@@ -147,27 +169,11 @@ switch($_GET['page'])
     case "5.1":
         if(!(array_key_exists(key: 'setupComplete-mariadb', array: $variables) && $variables['setupComplete-mariadb'] === true))
         {
-            $creds = new CredentialManagement();
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_HOST',      value: $variables['mariadb-host']);
-            // $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PORT', value: $variables['mariadb-port']);
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_USERNAME',  value: $variables['mariadb-username']);
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_PASSWORD',  value: $variables['mariadb-password']);
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_SQL_DATABASE',  value: $variables['mariadb-database']);
-            $creds->Write();
-
             InitHelpers::AddVariable("setupComplete-mariadb", (new MariaDBServerConnection())->InitialDatabaseSetup());
         }
 
         if(!(array_key_exists(key: 'setupComplete-deegraph', array: $variables) && $variables['setupComplete-deegraph'] === true))
         {
-            $creds = new CredentialManagement();
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_HOST',          value: $variables['deegraph-host']);
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_PORT',          value: $variables['deegraph-port']);
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_LOGIN_NODE',    value: $variables['deegraph-loginNode']);
-            $creds->OverwriteVariable(key: 'INSTANCE_CREDENTIAL_DDS_TOKEN',         value: $variables['deegraph-token']);
-            $creds->OverwriteVariable(key: 'ACCEPT_SELF_SIGNED_CERTIFICATES',       value: $variables['deegraph-allowSelfSignedCerts'] === "on");
-            $creds->Write();
-
             $initialQueries = [
                 // system permissions
                 "GRANT READ,WRITE,DELETE WHERE @creator === /", // grant CRUD permissions where the creator is the current node
