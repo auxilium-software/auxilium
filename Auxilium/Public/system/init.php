@@ -139,7 +139,7 @@ switch($_GET['page'])
                 allowSelfSignedCerts: ACCEPT_SELF_SIGNED_CERTIFICATES
             );
             $t = $ddsConnection->serverInfo($actorID);
-            
+
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=4&setup_key=$setup_key",
@@ -203,7 +203,7 @@ switch($_GET['page'])
                 }
                 catch(Exception $e)
                 {
-                    InitHelpers::RenderCriticalError(errorMessage: "Deegraph is not reachable... is it online?");
+                    InitHelpers::RenderCriticalError(errorMessage: $e->getMessage());
                 }
             }
             InitHelpers::AddVariable("setupComplete-deegraph", true);
