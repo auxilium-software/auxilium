@@ -213,16 +213,15 @@ switch($_GET['page'])
                 "GRANT READ,WRITE,DELETE ON /assigned_cases/# ON /assigned_cases/#/* ON /assigned_cases/#/messages/# DELEGATABLE", //
             ];
 
-            $actorID = new UUID($variables['deegraph-loginNode']);
-            $ddsConnection = generateDDSConnection();
+            $actorID = new User($variables['deegraph-loginNode']);
 
             foreach($initialQueries as $query)
             {
                 try
                 {
-                    $ddsConnection->RunQuery(
-                        $actorID,
-                        $query
+                    GraphDatabaseConnection::query(
+                        actor: $actorID,
+                        query: $query
                     );
                 }
                 catch(Exception $e)
