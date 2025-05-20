@@ -17,7 +17,7 @@ use Auxilium\Auxilium\API\Controllers\QueryController;
 use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Utilities\Logging;
 use Composer\Pcre\UnexpectedNullMatchException;
-use PharIo\GnuPG\Exception;
+use Exception;
 
 class APIMaster
 {
@@ -64,8 +64,9 @@ class APIMaster
             }
         }
 
-
-        throw new Exception("Endpoint does not exist");
+        http_response_code(response_code: 404);
+        echo "{\"status\": 404}";
+        die();
     }
 
     public static function Go(): array
