@@ -12,9 +12,8 @@ use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\NavigationUtilities;
 use Auxilium\Utilities\Security;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
+use Darksparrow\DeegraphInteractions\Exceptions\InvalidUUIDFormatException;
 use JetBrains\PhpStorm\NoReturn;
-use PDO;
-use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 
 class InitHelpers
 {
@@ -75,7 +74,7 @@ class InitHelpers
 
     public static function GetVariables(): array
     {
-        return json_decode(file_get_contents(LOCAL_STORAGE_DIRECTORY . "/setup.vars"), true);
+        return json_decode(file_get_contents(LOCAL_STORAGE_DIRECTORY . "/setup.vars"), true, 512, JSON_THROW_ON_ERROR);
     }
 
     public static function AddVariable(string $key, string|int|null|bool $value): void
@@ -84,12 +83,15 @@ class InitHelpers
         $variables[$key] = $value;
 
         $variableFile = fopen(LOCAL_STORAGE_DIRECTORY . "/setup.vars", "w") or die("Unable to write var file!");
-        fwrite($variableFile, json_encode($variables, JSON_PRETTY_PRINT));
+        fwrite($variableFile, json_encode($variables, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
         fclose($variableFile);
     }
 
 
-    public static function CreateRootAccount(array $variables)
+    /**
+     * @throws InvalidUUIDFormatException
+     */
+    public static function CreateRootAccount(array $variables): void
     {
         $rootUserName           = $variables['rootAccount-name'];
         $rootUserEmailAddress   = $variables['rootAccount-email'];
