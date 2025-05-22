@@ -99,13 +99,13 @@ switch($_GET['page'])
             $username = INSTANCE_CREDENTIAL_SQL_USERNAME;
             $password = INSTANCE_CREDENTIAL_SQL_PASSWORD;
 
-            $this->pdo = new PDO(
+            $pdo = new PDO(
                 dsn     : "mysql:host=$servername;dbname=$database",
                 username: $username,
                 password: $password,
             );
-            $this->pdo->setAttribute(attribute: PDO::ATTR_ERRMODE, value: PDO::ERRMODE_EXCEPTION);
-            
+            $pdo->setAttribute(attribute: PDO::ATTR_ERRMODE, value: PDO::ERRMODE_EXCEPTION);
+
             InitHelpers::AddVariable("error", null);
             NavigationUtilities::Redirect(
                 target: "/system/init?page=3&setup_key=$setup_key",
