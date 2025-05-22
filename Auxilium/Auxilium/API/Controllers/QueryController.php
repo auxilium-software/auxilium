@@ -1,15 +1,14 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Controllers;
+namespace Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\Models\QueryModel;
-use Auxilium\Auxilium\API\Superclasses\APIController;
-use Auxilium\Auxilium\API\Superclasses\APIModel;
+use Auxilium\API\Models\QueryModel;
+use Auxilium\API\Superclasses\APIController;
+use Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
 use JetBrains\PhpStorm\NoReturn;
-use OpenApi\Attributes\Get;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Post;
 use OpenApi\Attributes\Response;

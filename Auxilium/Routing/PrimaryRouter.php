@@ -1,9 +1,8 @@
 <?php
 
-use Auxilium\Auxilium\API\APIMaster;
+use Auxilium\API\APIMaster;
 use Auxilium\TwigHandling\Extensions\CommonFilters;
 use Auxilium\TwigHandling\Extensions\CommonFunctions;
-use Auxilium\TwigHandling\PageBuilder2;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

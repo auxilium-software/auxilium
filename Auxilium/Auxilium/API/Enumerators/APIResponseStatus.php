@@ -1,6 +1,6 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Enumerators;
+namespace Auxilium\API\Enumerators;
 
 enum APIResponseStatus: string
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Controllers;
+namespace Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\Models\NodeModel;
-use Auxilium\Auxilium\API\Superclasses\APIController;
-use Auxilium\Auxilium\API\Superclasses\APIModel;
+use Auxilium\API\Models\NodeModel;
+use Auxilium\API\Superclasses\APIController;
+use Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\SessionHandling\Session;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;

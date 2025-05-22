@@ -1,9 +1,8 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Models;
+namespace Auxilium\API\Models;
 
-use Auxilium\Auxilium\API\Enumerators\JobStatus;
-use Auxilium\Auxilium\API\Superclasses\APIModel;
+use Auxilium\API\Superclasses\APIModel;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 

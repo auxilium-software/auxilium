@@ -1,9 +1,9 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Controllers;
+namespace Auxilium\API\Controllers;
 
+use Auxilium\API\Superclasses\APIController;
 use Auxilium\APITools;
-use Auxilium\Auxilium\API\Superclasses\APIController;
 use Auxilium\Helpers\PDF\PDFGeneration;
 use Auxilium\Utilities\URIUtilities;
 use JetBrains\PhpStorm\NoReturn;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Superclasses;
+namespace Auxilium\API\Superclasses;
 
-use Auxilium\Auxilium\API\Enumerators\APIResponseStatus;
+use Auxilium\API\Enumerators\APIResponseStatus;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\URIUtilities;
 use JetBrains\PhpStorm\NoReturn;

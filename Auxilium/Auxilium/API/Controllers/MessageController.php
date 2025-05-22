@@ -1,10 +1,11 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Controllers;
+namespace Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\Models\DraftModel;
-use Auxilium\Auxilium\API\Superclasses\APIController;
-use Auxilium\Auxilium\API\Superclasses\APIModel;
+use Auxilium\API\Models\DraftModel;
+use Auxilium\API\Superclasses\APIController;
+use Auxilium\API\Superclasses\APIModel;
+use Auxilium\Auxilium\API\Controllers\User;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\EmailHandling\InternetMessageTransport;
 use Auxilium\Schemas\CollectionSchema;

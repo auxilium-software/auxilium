@@ -1,9 +1,10 @@
 <?php
 
-namespace Auxilium\Auxilium\API\Controllers;
+namespace Auxilium\API\Controllers;
 
-use Auxilium\Auxilium\API\Models\JobInQueueModel;
-use Auxilium\Auxilium\API\Superclasses\APIController;
+use Auxilium\API\Models\JobInQueueModel;
+use Auxilium\API\Superclasses\APIController;
+use Auxilium\Auxilium\API\Controllers\RuntimeException;
 use Auxilium\EmailHandling\InternetMessageTransport;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
