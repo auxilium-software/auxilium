@@ -6,6 +6,7 @@ use Auxilium\API\Models\QueryModel;
 use Auxilium\API\Superclasses\APIController;
 use Auxilium\API\Superclasses\APIModel;
 use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
+use Auxilium\DatabaseInteractions\Redis\RedisServerConnection;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\SessionHandling\Session;
 use JetBrains\PhpStorm\NoReturn;
@@ -110,7 +111,6 @@ class QueryController extends APIController
                 }
                 $this->Model->Results = $results;
                 $this->Model->Queries = $queries;
-                $this->Render();
             }
             elseif(count($queries) > 0)
             {
@@ -162,14 +162,52 @@ class QueryController extends APIController
                     $this->Model->Result = $results[0];
                     $this->Model->Query = $queries[0];
                 }
-                $this->Render();
             }
             else
             {
                 $this->Model = new APIModel();
                 $this->Model->ErrorText = "Missing query parameter";
-                $this->Render();
             }
+
+            // handles getting objects stored in redis
+            $rows2 = &$this->Model->Result['@rows'];
+            foreach ($rows2 as &$row2)
+            {
+                foreach ($row2 as $key2 => &$value2)
+                {
+                    if ($key2 === '@id' || $key2 === '@schema' || $value2 === null)
+                    {
+                        continue;
+                    }
+
+                    if (is_array($value2))
+                    {
+                        foreach ($value2 as &$innerValue)
+                        {
+                            if (
+                                is_string($innerValue)
+                                && str_contains(haystack: $innerValue, needle: 'redis://')
+                                && str_starts_with(haystack: $innerValue, needle: 'redis://')
+                            )
+                            {
+                                $redisObjectID = substr($innerValue, 8); // 'redis://' is 8 chars
+                                $innerValue = RedisServerConnection::Get(id: $redisObjectID);
+                            }
+                        }
+                        unset($innerValue);
+                    }
+                    elseif (is_string($value2) && str_starts_with($value2, 'redis://'))
+                    {
+                        $redisObjectID = substr($value2, 8);
+                        $value2 = RedisServerConnection::Get(id: $redisObjectID);
+                    }
+                }
+                unset($value2);
+            }
+            unset($row2);
+
+
+            $this->Render();
         }
         catch(DeegraphException $e)
         {

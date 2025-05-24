@@ -30,7 +30,6 @@
         "ext-openssl": "*",
         "ext-dom": "*",
         "ext-sodium": "*",
-        "ext-pdo": "*",
         "ext-mbstring": "*",
         "ext-fileinfo": "*",
 
@@ -59,10 +58,11 @@
 
         "ezyang/htmlpurifier": "^4.14",
 
+        "ext-pdo": "*",
         "aura/sqlquery": "3.0.0",
-
         "darksparrow/deegraph-interactions": "dev-dev",
-        "darksparrow/auxilium-schema-builder": "v0.1",
+        "darksparrow/auxilium-schema-builder": "0.1",
+        "predis/predis": "3.0.1",
 
         "geerlingguy/ping": "1.2.1",
 

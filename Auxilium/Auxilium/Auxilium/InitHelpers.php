@@ -7,6 +7,7 @@ use Auxilium\DatabaseInteractions\GraphDatabaseConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBServerConnection;
 use Auxilium\DatabaseInteractions\MariaDB\MariaDBTable;
 use Auxilium\DatabaseInteractions\MariaDB\SQLQueryBuilderWrapper;
+use Auxilium\DatabaseInteractions\Redis\RedisServerConnection;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\TwigHandling\PageBuilder2;
 use Auxilium\Utilities\NavigationUtilities;

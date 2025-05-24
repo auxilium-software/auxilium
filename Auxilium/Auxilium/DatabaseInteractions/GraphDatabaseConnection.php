@@ -5,6 +5,7 @@ namespace Auxilium\DatabaseInteractions;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphNode;
 use Auxilium\DatabaseInteractions\Deegraph\DeegraphServerConnection;
 use Auxilium\DatabaseInteractions\Deegraph\Nodes\User;
+use Auxilium\DatabaseInteractions\Redis\RedisServerConnection;
 use Auxilium\Exceptions\DatabaseConnectionException;
 use Auxilium\Exceptions\DeegraphException;
 use Auxilium\Schemas\CaseSchema;
@@ -85,14 +86,14 @@ class GraphDatabaseConnection
                 if($escape_char)
                 {
                     $escape_char = false;
-                    $query_buffer = $query_buffer . "`";
+                    $query_buffer .= "`";
                 }
                 else
                 {
                     if($backtick_switch)
                     {
                         $backtick_switch = false;
-                        $query_buffer = $query_buffer . "\"data:text/plain," . urlencode($data_buffer) . "\"";
+                        $query_buffer .= "\"data:text/plain," . urlencode($data_buffer) . "\"";
                     }
                     else
                     {
@@ -143,6 +144,7 @@ class GraphDatabaseConnection
 
         //echo $query;
         $ret_val = GraphDatabaseConnection::raw_request($actor, "/api/v1/@query", "POST", $query);
+
         if(is_array($ret_val))
         {
             $ret_val["@generated_query"] = $query;
@@ -254,10 +256,16 @@ class GraphDatabaseConnection
             $actor = Session::get_current()?->getUser();
         }
 
-        $rawNode = DeegraphServerConnection::GetConnection()->GetRawNode(
+        $rawNode = DeegraphServerConnection::GetConnection()->getRawNode(
             actorID: new UUID($actor->getId()),
             nodeID : $uuid,
         );
+        if(str_starts_with(haystack: $rawNode->OtherProperties['@data'], needle: 'redis://'))
+        {
+            $rawNode->OtherProperties['@data'] = RedisServerConnection::Get(
+                id: str_replace(search: 'redis://', replace: '', subject: $rawNode->OtherProperties['@data']),
+            );
+        }
         return json_decode($rawNode->AsJSON(), true, 512, JSON_THROW_ON_ERROR);
 
         /*
@@ -286,7 +294,31 @@ class GraphDatabaseConnection
                 default             => "data:" . $media_type . ";base64," . base64_encode($data),
             };
         }
-        return GraphDatabaseConnection::new_node_raw($data_url, $schema, $creator);
+
+        if(str_starts_with($data_url, 'auxlfs://') || $data_url === null)
+        {
+            return GraphDatabaseConnection::new_node_raw(
+                $data_url,
+                $schema,
+                $creator
+            );
+        }
+
+
+        // store the actual data in redis:
+
+        $redisObjectID = RedisServerConnection::Set(
+            value: $data_url,
+        );
+
+        $newNode = GraphDatabaseConnection::new_node_raw(
+            "redis://$redisObjectID",
+            $schema,
+            $creator
+        );
+        return $newNode;
+
+
     }
 
     public static function new_node_raw(string $data_url = null, string $schema = null, User $creator = null)
