@@ -15,8 +15,10 @@ use Auxilium\Schemas\OrganisationSchema;
 use Auxilium\Schemas\UserSchema;
 use Auxilium\SessionHandling\Session;
 use Auxilium\Utilities\Security;
+use Aws\DeviceFarm\Exception\DeviceFarmException;
 use Darksparrow\AuxiliumSchemaBuilder\Utilities\URLHandling;
 use Darksparrow\DeegraphInteractions\DataStructures\UUID;
+use phpDocumentor\Transformer\Exception;
 
 require_once CREDENTIALS_FILE_LOCATION;
 
@@ -149,6 +151,46 @@ class GraphDatabaseConnection
         {
             $ret_val["@generated_query"] = $query;
         }
+
+        // handles getting objects stored in redis
+        $rows2 = &$ret_val['@rows'];
+        foreach ($rows2 as &$row2)
+        {
+            foreach ($row2 as $key2 => &$value2)
+            {
+                if ($key2 === '@id' || $key2 === '@schema' || $value2 === null)
+                {
+                    continue;
+                }
+
+                if (is_array($value2))
+                {
+                    foreach ($value2 as &$dataURL)
+                    {
+                        if (
+                            is_string($dataURL)
+                            && str_contains(haystack: $dataURL, needle: AbstractedDataRetrieval::$URLScheme)
+                            && str_starts_with(haystack: $dataURL, needle: AbstractedDataRetrieval::$URLScheme)
+                        )
+                        {
+                            $dataURL = AbstractedDataRetrieval::GetData(dataURL: $dataURL);
+                        }
+                    }
+                }
+                elseif (is_string($value2) && str_starts_with($value2, AbstractedDataRetrieval::$URLScheme))
+                {
+                    $redisObjectID = substr($value2, 8);
+                    $value2 = AbstractedDataRetrieval::GetData(dataURL: $redisObjectID);
+                }
+                else
+                {
+                    throw new Exception("");
+                }
+            }
+        }
+
+
+
         return $ret_val;
     }
 
@@ -260,10 +302,10 @@ class GraphDatabaseConnection
             actorID: new UUID($actor->getId()),
             nodeID : $uuid,
         );
-        if(str_starts_with(haystack: $rawNode->OtherProperties['@data'], needle: 'redis://'))
+        if(str_starts_with(haystack: $rawNode->OtherProperties['@data'], needle: AbstractedDataRetrieval::$URLScheme))
         {
-            $rawNode->OtherProperties['@data'] = RedisServerConnection::Get(
-                id: str_replace(search: 'redis://', replace: '', subject: $rawNode->OtherProperties['@data']),
+            $rawNode->OtherProperties['@data'] = AbstractedDataRetrieval::GetData(
+                dataURL: $rawNode->OtherProperties['@data'],
             );
         }
         return json_decode($rawNode->AsJSON(), true, 512, JSON_THROW_ON_ERROR);
@@ -304,15 +346,11 @@ class GraphDatabaseConnection
             );
         }
 
-
         // store the actual data in redis:
-
-        $redisObjectID = RedisServerConnection::Set(
-            value: $data_url,
-        );
-
         $newNode = GraphDatabaseConnection::new_node_raw(
-            "redis://$redisObjectID",
+            AbstractedDataRetrieval::CreateData(
+                data: $data_url
+            ),
             $schema,
             $creator
         );

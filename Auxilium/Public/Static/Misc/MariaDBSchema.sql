@@ -1,3 +1,14 @@
+
+DROP TABLE IF EXISTS data;
+
+CREATE TABLE data
+(
+    id          CHAR(36)    NOT NULL,
+    sha512_hash TEXT        NOT NULL,
+    data        TEXT        NOT NULL,
+) DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+
+
 DROP TABLE IF EXISTS email_verification_codes;
 
 CREATE TABLE email_verification_codes

@@ -12,4 +12,5 @@ enum MariaDBTable: string
     case STANDARD_LOGINS = "standard_logins";
     case TOTP_SECRETS = "totp_secrets";
     case TOTP_USED_CODES = "totp_used_codes";
+    case DATA = "data";
 }
