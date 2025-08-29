@@ -5,7 +5,7 @@
 [submodule "auxilium-portal"]
 	path = auxilium-portal
 	url = https://github.com/auxilium-software/auxilium-portal.git
-	branch = main
+	branch = project-nighshade
 [submodule "auxilium-microservices"]
 	path = auxilium-microservices
 	url = https://github.com/auxilium-software/auxilium-microservices.git
