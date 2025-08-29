@@ -1,0 +1,12 @@
+[submodule "auxilium-api"]
+	path = auxilium-api
+	url = https://github.com/auxilium-software/auxilium-api.git
+	branch = main
+[submodule "auxilium-portal"]
+	path = auxilium-portal
+	url = https://github.com/auxilium-software/auxilium-portal.git
+	branch = main
+[submodule "auxilium-microservices"]
+	path = auxilium-microservices
+	url = https://github.com/auxilium-software/auxilium-microservices.git
+	branch = main
