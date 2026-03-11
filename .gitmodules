@@ -1,12 +1,25 @@
-[submodule "auxilium-api"]
-	path = auxilium-api
+
+[submodule "auxilium-services-api"]
+	path = auxilium-services-api
 	url = https://github.com/auxilium-software/auxilium-api.git
-	branch = main
+	branch = dev
+
+[submodule "auxilium-services-background-task-runner"]
+	path = auxilium-services-background-task-runner
+	url = https://github.com/auxilium-software/auxilium-microservices.git
+	branch = dev
+
 [submodule "auxilium-portal"]
 	path = auxilium-portal
 	url = https://github.com/auxilium-software/auxilium-portal.git
-	branch = project-nighshade
-[submodule "auxilium-microservices"]
-	path = auxilium-microservices
-	url = https://github.com/auxilium-software/auxilium-microservices.git
+	branch = project-raven
+
+[submodule "auxilium-admin-tools"]
+	path = auxilium-admin-tools
+	url = https://github.com/auxilium-software/auxilium-admin-tools.git
+	branch = main
+
+[submodule "auxilium-manual"]
+	path = auxilium-manual
+	url = https://github.com/auxilium-software/auxilium-manual.git
 	branch = main
