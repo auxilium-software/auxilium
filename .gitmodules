@@ -1,12 +1,12 @@
 
 [submodule "auxilium-services-api"]
 	path = auxilium-services-api
-	url = https://github.com/auxilium-software/auxilium-api.git
+	url = https://github.com/auxilium-software/auxilium-services-api.git
 	branch = dev
 
 [submodule "auxilium-services-background-task-runner"]
 	path = auxilium-services-background-task-runner
-	url = https://github.com/auxilium-software/auxilium-microservices.git
+	url = https://github.com/auxilium-software/auxilium-services-background-task-runner.git
 	branch = dev
 
 [submodule "auxilium-portal"]
