@@ -104,17 +104,3 @@ fix_permissions
 build_c_sharp_stuff
 
 exit 0
-
-
-
-
-
-
-
-
-
-
-
-
-    
-}
