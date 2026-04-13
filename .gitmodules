@@ -17,7 +17,7 @@
 [submodule "auxilium-admin-tools"]
 	path = auxilium-admin-tools
 	url = https://github.com/auxilium-software/auxilium-admin-tools.git
-	branch = testing
+	branch = main
 
 [submodule "auxilium-manual"]
 	path = auxilium-manual
