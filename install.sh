@@ -4,6 +4,10 @@
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PHP_VER=8.4
+
+
+
 cd "$SCRIPT_DIR"
 
 
@@ -13,6 +17,10 @@ cd "$SCRIPT_DIR"
 ####################################################################################################
 # FUNCTIONS
 ####################################################################################################
+install_php() {
+    sudo apt install php${PHP_VER}-fpm php${PHP_VER}-mbstring
+}
+
 install_dotnet() {
     echo "==> .NET SDK not found, installing..."
 
@@ -67,6 +75,12 @@ fix_permissions() {
     sudo chown -R "$(whoami)" "$SCRIPT_DIR/auxilium-services-api"
 }
 
+run_composer() {
+    cd $SCRIPT_DIR/auxilium-portal
+    composer install
+    composer update
+}
+
 build_c_sharp_stuff() {
     echo "==> Building auxilium-services-background-task-runner (CLI)..."
     cd "$SCRIPT_DIR/auxilium-services-background-task-runner"
@@ -101,6 +115,10 @@ export DOTNET_ROOT=/home/cal66-admin/.dotnet
 init_submodules
 git submodule update --init --remote
 fix_permissions
+run_composer
 build_c_sharp_stuff
+
+mkdir -p /etc/auxilium
+mkdir -p /var/lib/auxilium/aux3-test/{aux-lfs,form-data}
 
 exit 0
