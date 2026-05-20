@@ -2,22 +2,22 @@
 [submodule "auxilium-services--api"]
 	path = auxilium-services--api
 	url = https://github.com/auxilium-software/auxilium-services--api.git
-	branch = testing
+	branch = dev
 
-[submodule "auxilium-services---task-runner"]
+[submodule "auxilium-services--task-runner"]
 	path = auxilium-services--task-runner
 	url = https://github.com/auxilium-software/auxilium-services--task-runner.git
-	branch = testing
+	branch = dev
 
 [submodule "auxilium-services--admin-tools"]
 	path = auxilium-services--admin-tools
 	url = https://github.com/auxilium-software/auxilium-services--admin-tools.git
-	branch = main
+	branch = dev
 
 [submodule "auxilium-portal"]
 	path = auxilium-portal
 	url = https://github.com/auxilium-software/auxilium-portal.git
-	branch = testing
+	branch = main
 
 [submodule "auxilium-manual"]
 	path = auxilium-manual
