@@ -9,9 +9,9 @@
 	url = https://github.com/auxilium-software/auxilium-services--task-runner.git
 	branch = testing
 
-[submodule "auxilium-services--administration-tools"]
-	path = auxilium-admin-tools
-	url = https://github.com/auxilium-software/auxilium-services--administration-tools.git
+[submodule "auxilium-services--admin-tools"]
+	path = auxilium-services--admin-tools
+	url = https://github.com/auxilium-software/auxilium-services--admin-tools.git
 	branch = main
 
 [submodule "auxilium-portal"]
