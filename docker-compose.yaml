@@ -1,0 +1,132 @@
+
+services:
+  ##################################################
+  # AUXILIUM PORTAL
+  portal:
+    build:
+      context: ./auxilium-portal
+      target: prod
+    volumes:
+      - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
+      - formdata:/var/auxilium/formdata
+      - auxlfs:/var/auxilium/auxlfs
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    networks:
+      - auxilium-net
+    restart: unless-stopped
+
+
+  ##################################################
+  # AUXILIUM API
+  api:
+    build:
+      context: ./auxilium-services--api
+      target: prod
+    volumes:
+      - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
+      - formdata:/var/auxilium/formdata
+      - auxlfs:/var/auxilium/auxlfs
+    # Reachable internally at http://api:1983
+    # Uncomment to also expose publicly:
+    # ports:
+    #   - "1983:1983"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - auxilium-net
+    restart: unless-stopped
+
+
+  ##################################################
+  # AUXILIUM TASK RUNNER
+  task-runner:
+    build:
+      context: ./auxilium-services--task-runner
+      target: prod
+    volumes:
+      - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    networks:
+      - auxilium-net
+    restart: unless-stopped
+
+
+  ##################################################
+  # AUXILIUM ADMIN TOOLS
+  # Usage: docker compose run --rm admin-tools <command>
+  #   or:  docker compose run --rm admin-tools auxilium-admin <command>
+  admin-tools:
+    build:
+      context: ./auxilium-services--admin-tools
+      target: prod
+    volumes:
+      - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
+    networks:
+      - auxilium-net
+    profiles:
+      - tools
+
+
+  ##################################################
+  # MARIADB
+  mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE:      ${MARIADB_DATABASE:-auxilium}
+      MARIADB_USER:          ${MARIADB_USER:-auxilium}
+      MARIADB_PASSWORD:      ${MARIADB_PASSWORD}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - auxilium-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ##################################################
+  # RABBITMQ
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-auxilium}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - auxilium-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mariadb-data:
+  rabbitmq-data:
+  formdata:     # FileSystem.RootStorageDirectories.FormData
+  auxlfs:       # FileSystem.RootStorageDirectories.AuxLFS
+
+networks:
+  auxilium-net:
+    driver: bridge
+

@@ -1,0 +1,98 @@
+
+##################################################
+# Database Configuration
+Databases:
+  MariaDB:
+    Host: mariadb
+    Port: 3306
+    Username: auxilium
+    Password: null # <-- CHANGEME
+    Database: auxilium
+  RabbitMQ:
+    Host: rabbitmq
+    Port: 5672
+    Username: auxilium
+    Password: null # <-- CHANGEME
+    VirtualHost: Auxilium
+    HeartbeatIntervalInSeconds: 600
+    BlockedConnectionTimeoutInSeconds: 300
+    ExchangeName: Auxilium API
+    Queues:
+      Notifications: auxilium3_notifications_dev
+
+
+##################################################
+# ReCAPTCHA Configuration
+ReCAPTCHA:
+  UseReCAPTCHA: true
+  SiteKey: null # <-- CHANGEME
+  SecretKey: null # <-- CHANGEME
+  ScoreThreshold: 0.5
+
+
+##################################################
+# JWT Configuration
+JWT:
+  SecretKey: null # <-- CHANGEME
+  Algorithm: HS256
+  MfaTokenExpirationInSeconds: 300
+  AccessTokenExpirationInMinutes: 15
+  RefreshTokenExpirationInDays: 7
+  ValidIssuer: Auxilium API
+  ValidAudiencePrefix: Auxilium 3
+
+
+##################################################
+# API Configuration
+API:
+  AvailableFrom:
+    - http://0.0.0.0:8080
+  AvailableAt: http://api:8080
+  CORS:
+    AllowedOrigins:
+      - http://api:8080
+      - http://portal:80
+    AllowedHosts:
+      - api
+      - portal
+
+
+##################################################
+# SMTP Configuration
+SMTP:
+  SendEmailsFromPortal: true
+  Connection:
+    Host: null # <-- CHANGEME
+    Port: null # <-- CHANGEME
+    UseTls: null # <-- CHANGEME
+  Authentication:
+    UseAuthentication: true
+    Username: null # <-- CHANGEME
+    Password: null # <-- CHANGEME
+  From:
+    Address: null # <-- CHANGEME
+    Name: Auxilium 3
+
+
+##################################################
+# File System Configuration
+FileSystem:
+  RootStorageDirectories:
+    FormData: /var/auxilium/formdata
+    AuxLFS:   /var/auxilium/auxlfs
+
+
+##################################################
+# Argon2 Configuration
+Argon2:
+  MemoryCost: 65536
+  TimeCost: 3
+  Parallelism: 1
+  HashLength: 32
+  SaltLength: 16
+
+
+##################################################
+# Development Configuration
+Development:
+  PHPAcceptSelfSignedCertificatesForAPI: false
