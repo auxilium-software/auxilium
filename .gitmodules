@@ -17,7 +17,7 @@
 [submodule "auxilium-portal"]
 	path = auxilium-portal
 	url = https://github.com/auxilium-software/auxilium-portal.git
-	branch = main
+	branch = project-raven
 
 [submodule "auxilium-manual"]
 	path = auxilium-manual
