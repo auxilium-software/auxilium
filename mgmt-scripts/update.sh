@@ -9,7 +9,7 @@ dotnet tool install --global dotnet-ef
 
 git reset --hard HEAD
 git pull
-git submodules --init --recursive
+git submodule update --init --recursive
 
 
 cd auxilium-services--admin-tools/AuxiliumSoftware.AuxiliumServices.AdministrationTools
