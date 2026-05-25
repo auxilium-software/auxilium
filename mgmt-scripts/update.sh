@@ -6,6 +6,12 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 dotnet tool install --global dotnet-ef
 
 
+
+git reset --hard HEAD
+git pull
+git submodule --init --recursive
+
+
 cd auxilium-services--admin-tools/AuxiliumSoftware.AuxiliumServices.AdministrationTools
 dotnet clean
 dotnet build
