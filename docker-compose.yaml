@@ -79,11 +79,14 @@ services:
   admin-tools:
     build:
       context: ./auxilium-services--admin-tools
-      target: prod
+      target: migrate
     volumes:
       - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
     networks:
       - auxilium-net
+    depends_on:
+      mariadb:
+        condition: service_healthy
     profiles:
       - tools
 
