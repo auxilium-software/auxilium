@@ -90,6 +90,20 @@ services:
     profiles:
       - tools
 
+  admin-tools-cli:
+    build:
+      context: ./auxilium-services--admin-tools
+      target: prod
+    volumes:
+      - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
+    networks:
+      - auxilium-net
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    profiles:
+      - tools
+
 
 
   ##################################################
