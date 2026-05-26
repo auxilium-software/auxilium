@@ -11,12 +11,14 @@ services:
       - formdata:/var/auxilium/formdata
       - auxlfs:/var/auxilium/auxlfs
     ports:
-      - "127.0.0.1:${PORTAL_PORT:-8081}:80" # host nginx proxies here; users see 443 externally
+      - "127.0.0.1:${PORTAL_PORT:-8081}:80"
     depends_on:
       api:
         condition: service_healthy
       mariadb:
         condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
     networks:
       - auxilium-net
     restart: unless-stopped
@@ -33,14 +35,13 @@ services:
       - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
       - formdata:/var/auxilium/formdata
       - auxlfs:/var/auxilium/auxlfs
-    # plain HTTP internally; TLS terminated by host nginx
     ports:
       - "127.0.0.1:${API_PORT:-1938}:1938"
     depends_on:
       mariadb:
         condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
     networks:
       - auxilium-net
     restart: unless-stopped
@@ -62,10 +63,10 @@ services:
     volumes:
       - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       mariadb:
         condition: service_healthy
+      rabbitmq-init:
+        condition: service_completed_successfully
     networks:
       - auxilium-net
     restart: unless-stopped
@@ -128,13 +129,15 @@ services:
       start_period: 30s
 
 
+
   ##################################################
   # RABBITMQ
   rabbitmq:
     image: rabbitmq:4-management-alpine
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-auxilium}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_USER:  ${RABBITMQ_USER:-auxilium}
+      RABBITMQ_DEFAULT_PASS:  ${RABBITMQ_PASSWORD}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:-auxilium-erlang-cookie}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -146,6 +149,23 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
+  rabbitmq-init:
+    image: rabbitmq:4-management-alpine
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    command: >
+      sh -c "
+        rabbitmqctl -n rabbit@rabbitmq add_vhost Auxilium || true &&
+        rabbitmqctl -n rabbit@rabbitmq set_permissions -p Auxilium ${RABBITMQ_USER:-auxilium} '.*' '.*' '.*' || true
+      "
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:-auxilium-erlang-cookie}
+    networks:
+      - auxilium-net
+
+
 
 volumes:
   mariadb-data:
