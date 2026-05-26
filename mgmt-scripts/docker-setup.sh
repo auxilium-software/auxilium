@@ -164,6 +164,20 @@ cancel_check
 
 
 ####################################################################################################
+# PORTS
+
+PORTAL_PORT=$(ask "Ports" \
+    "Host port for the portal (must be unique per instance):" \
+    "8081")
+cancel_check
+
+API_PORT=$(ask "Ports" \
+    "Host port for the API (must be unique per instance):" \
+    "1938")
+cancel_check
+
+
+####################################################################################################
 # WRITE config.docker.yaml
 
 cat > "$CONFIG_OUT" << EOF
@@ -283,6 +297,9 @@ MARIADB_PASSWORD=${MARIADB_PASSWORD}
 
 RABBITMQ_USER=auxilium
 RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+
+PORTAL_PORT=${PORTAL_PORT}
+API_PORT=${API_PORT}
 EOF
 
 
