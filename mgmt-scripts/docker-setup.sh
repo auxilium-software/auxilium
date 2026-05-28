@@ -230,7 +230,7 @@ API:
   UseHttpsRedirection: false
   AvailableFrom:
     - http://0.0.0.0:1938
-  AvailableAt: ${API_AVAILABLE_AT}
+  PrimarilyAvailableAt: ${API_AVAILABLE_AT}
   CORS:
     AllowedOrigins:
       - http://api:1938
