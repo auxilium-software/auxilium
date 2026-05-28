@@ -132,6 +132,7 @@ services:
   # RABBITMQ
   rabbitmq:
     image: rabbitmq:4-management-alpine
+    hostname: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER:  ${RABBITMQ_USER:-auxilium}
       RABBITMQ_DEFAULT_PASS:  ${RABBITMQ_PASSWORD}
