@@ -22,6 +22,8 @@ services:
     networks:
       - auxilium-net
     restart: unless-stopped
+    dns:
+      - ${DOCKER_DNS:-8.8.8.8}
 
 
 
@@ -51,6 +53,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    dns:
+      - ${DOCKER_DNS:-8.8.8.8}
 
 
 
@@ -70,6 +74,8 @@ services:
     networks:
       - auxilium-net
     restart: unless-stopped
+    dns:
+      - ${DOCKER_DNS:-8.8.8.8}
 
 
 
