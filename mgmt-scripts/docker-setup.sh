@@ -200,6 +200,7 @@ Databases:
     BlockedConnectionTimeoutInSeconds: 300
     ExchangeName: Auxilium API
     Queues:
+      DeadLetter: auxilium3_deadletter
       Notifications: auxilium3_notifications
 
 
@@ -266,7 +267,8 @@ SMTP:
 FileSystem:
   RootStorageDirectories:
     FormData: /var/auxilium/formdata
-    AuxLFS:   /var/auxilium/auxlfs
+    AuxLFS: /var/auxilium/auxlfs
+    Metrics: /var/auxilium/metrics
 
 
 ####################################################################################################
