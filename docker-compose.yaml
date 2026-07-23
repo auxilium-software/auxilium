@@ -37,6 +37,7 @@ services:
       - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
       - formdata:/var/auxilium/formdata
       - auxlfs:/var/auxilium/auxlfs
+      - metrics-data:/metrics
     ports:
       - "127.0.0.1:${API_PORT:-1938}:1938"
     depends_on:
@@ -66,6 +67,7 @@ services:
       target: prod
     volumes:
       - ./config.docker.yaml:/etc/auxilium/config.yaml:ro
+      - metrics-data:/metrics
     depends_on:
       mariadb:
         condition: service_healthy
@@ -177,6 +179,7 @@ volumes:
   rabbitmq-data:
   formdata:     # FileSystem.RootStorageDirectories.FormData
   auxlfs:       # FileSystem.RootStorageDirectories.AuxLFS
+  metrics-data:
 
 networks:
   auxilium-net:
