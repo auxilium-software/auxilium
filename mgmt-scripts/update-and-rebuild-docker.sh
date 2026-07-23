@@ -35,15 +35,19 @@ cd ../../
 
 cd auxilium-portal
 sudo docker compose build
+cd ../../
 
 cd auxilium-services--admin-tools
 sudo docker compose build
+cd ../../
 
 cd auxilium-services--api
 sudo docker compose build
+cd ../../
 
 cd auxilium-services--task-runner
 sudo docker compose build
+cd ../../
 
 
 
