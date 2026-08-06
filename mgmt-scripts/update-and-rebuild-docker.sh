@@ -1,56 +1,67 @@
-#!/bin/bash
-set -euo pipefail
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_NOLOGO=1
 
-dotnet tool install --global dotnet-ef
+readonly SCRIPT_DIR="$(
+    cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1
+    pwd
+)"
+
+cd "$SCRIPT_DIR"
 
 
+build_dotnet_project() {
+    local project_path="$1"
+
+    echo
+    echo "=================================================="
+    echo "Building .NET project: $project_path"
+    echo "=================================================="
+
+    dotnet clean "$project_path"
+    dotnet build "$project_path" --no-restore
+}
+
+
+ensure_dotnet_ef() {
+    if dotnet tool list --global | awk '{print $1}' | grep -qx "dotnet-ef"; then
+        echo "dotnet-ef is already installed."
+    else
+        echo "Installing dotnet-ef..."
+        dotnet tool install --global dotnet-ef
+    fi
+}
+
+
+echo
+echo "=================================================="
+echo "Preparing repository"
+echo "=================================================="
+
+ensure_dotnet_ef
 
 git reset --hard HEAD
-git pull
+git pull --ff-only
+git submodule sync --recursive
 git submodule update --init --recursive
 
 
-cd auxilium-services--admin-tools/AuxiliumSoftware.AuxiliumServices.AdministrationTools
-dotnet clean
-dotnet build
-cd ../../
-
-cd auxilium-services--api/AuxiliumSoftware.AuxiliumServices.API
-dotnet clean
-dotnet build
-cd ../../
-
-cd auxilium-services--task-runner/AuxiliumSoftware.AuxiliumServices.BackgroundTaskRunner
-dotnet clean
-dotnet build
-cd ../../
+build_dotnet_project "auxilium-services--admin-tools/AuxiliumSoftware.AuxiliumServices.AdministrationTools/AuxiliumSoftware.AuxiliumServices.AdministrationTools.csproj"
+build_dotnet_project "auxilium-services--api/AuxiliumSoftware.AuxiliumServices.API/AuxiliumSoftware.AuxiliumServices.API.csproj"
+build_dotnet_project "auxilium-services--task-runner/AuxiliumSoftware.AuxiliumServices.BackgroundTaskRunner/AuxiliumSoftware.AuxiliumServices.BackgroundTaskRunner.csproj"
 
 
+echo
+echo "=================================================="
+echo "Building Docker images"
+echo "=================================================="
 
-
-
-
-
-cd auxilium-portal
 sudo docker compose build
-cd ../../
-
-cd auxilium-services--admin-tools
-sudo docker compose build
-cd ../../
-
-cd auxilium-services--api
-sudo docker compose build
-cd ../../
-
-cd auxilium-services--task-runner
-sudo docker compose build
-cd ../../
 
 
-
-
-exit 0
-
+echo
+echo "=================================================="
+echo "Build completed successfully"
+echo "=================================================="
