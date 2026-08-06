@@ -4,13 +4,6 @@ set -Eeuo pipefail
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_NOLOGO=1
 
-readonly SCRIPT_DIR="$(
-    cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1
-    pwd
-)"
-
-cd "$SCRIPT_DIR"
-
 
 build_dotnet_project() {
     local project_path="$1"
