@@ -14,12 +14,12 @@
 	url = https://github.com/auxilium-software/auxilium-services--admin-tools.git
 	branch = main
 
-[submodule "auxilium-portal"]
-	path = auxilium-portal
-	url = https://github.com/auxilium-software/auxilium-portal.git
-	branch = project-raven
-
 [submodule "auxilium-manual"]
 	path = auxilium-manual
 	url = https://github.com/auxilium-software/auxilium-manual.git
+	branch = main
+
+[submodule "auxilium-services--frontend"]
+	path = auxilium-services--frontend
+	url = https://github.com/auxilium-software/auxilium-services--frontend.git
 	branch = main
