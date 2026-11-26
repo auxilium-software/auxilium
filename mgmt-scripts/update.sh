@@ -15,16 +15,19 @@ git submodule update --init --recursive
 cd auxilium-services--admin-tools/AuxiliumSoftware.AuxiliumServices.AdministrationTools
 dotnet clean
 dotnet build
+dotnet publish -c Release -o ./bin/publish
 cd ../../
 
 cd auxilium-services--api/AuxiliumSoftware.AuxiliumServices.API
 dotnet clean
 dotnet build
+dotnet publish -c Release -o ./bin/publish
 cd ../../
 
 cd auxilium-services--task-runner/AuxiliumSoftware.AuxiliumServices.BackgroundTaskRunner
 dotnet clean
 dotnet build
+dotnet publish -c Release -o ./bin/publish
 cd ../../
 
 exit 0
